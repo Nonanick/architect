@@ -31,7 +31,7 @@ function serve() {
 }
 
 export default {
-	input: 'src/main.ts',
+	input: 'src/scripts/ui.boot.ts',
 	output: {
 		sourcemap: true,
 		format: 'iife',
@@ -67,7 +67,7 @@ export default {
 
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated
-		!production && serve(),
+		//!production && serve(),
 
 		// Watch the `public` directory and refresh the
 		// browser on changes when not in production

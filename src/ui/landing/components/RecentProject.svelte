@@ -17,9 +17,7 @@
             .map((piece) => piece.charAt(0).toLocaleUpperCase())
             .join("")
         : icon}
-        <slot name="icon">
-          
-        </slot>
+      <slot name="icon" />
     </div>
   </div>
   <div class="project-info">
@@ -47,6 +45,13 @@
     display: grid;
     grid-template-rows: 100%;
     grid-template-columns: 60px 1fr;
+    filter: grayscale(1);
+    transition: filter 0.4s 0.2s;
+    cursor: pointer;
+    user-select: none;
+  }
+  .recent-project:hover {
+    filter: grayscale(0.2);
   }
 
   .icon {
@@ -80,9 +85,10 @@
 
   .title {
     font-weight: 600;
-    font-size: 18pt;
+    font-size: 16pt;
     grid-column: 1 / 2;
     grid-row: 1 / 2;
+    user-select: text;
   }
 
   .description {
@@ -90,6 +96,7 @@
     font-size: 10pt;
     grid-column: 1 / 2;
     grid-row: 2 / 3;
+    user-select: text;
   }
 
   .version {
@@ -97,6 +104,7 @@
     font-size: 8pt;
     color: rgba(0, 0, 0, 0.7);
     text-align: right;
+    user-select: text;
   }
 
   .author {
@@ -104,5 +112,6 @@
     font-size: 8pt;
     color: rgba(0, 0, 0, 0.9);
     text-align: right;
+    user-select: text;
   }
 </style>

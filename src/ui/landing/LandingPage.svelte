@@ -123,7 +123,7 @@
 	.title-container {
 		grid-column: 2 / 2;
 		grid-row: 1 / 1;
-		font-size: max(40px, 5vw);
+		font-size: max(40px, 4.5vw);
 		line-height: max(56px, 8vw);
 		font-weight: bold;
 		color: var(--main-color);
@@ -132,7 +132,7 @@
 	.slogan-container {
 		grid-column: 2 / 2;
 		grid-row: 2 / 2;
-		font-size: max(14px, 1.6vw);
+		font-size: max(14px, 1.2vw);
 		line-height: max(24px, 2vw);
 		font-weight: 300;
 	}

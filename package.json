@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c -w",
+    "dev:ui": "rollup -c -w",
+    "dev:app": "nodemon --watch './src' --exec 'electron ./src/scripts/app.boot.js'",
     "start": "sirv public",
     "validate": "svelte-check"
   },
@@ -12,11 +13,14 @@
     "@rollup/plugin-node-resolve": "^11.0.1",
     "@rollup/plugin-typescript": "^8.1.0",
     "@tsconfig/svelte": "^1.0.0",
+    "electron": "^11.2.1",
+    "nodemon": "^2.0.7",
     "rollup": "^2.3.4",
     "rollup-plugin-css-only": "^3.1.0",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-svelte": "^7.0.0",
     "rollup-plugin-terser": "^7.0.0",
+    "sirv-cli": "^1.0.10",
     "svelte": "^3.0.0",
     "svelte-check": "^1.0.0",
     "svelte-preprocess": "^4.0.0",
@@ -24,8 +28,7 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "path-to-regexp": "^6.2.0",
-    "sirv-cli": "^1.0.0",
-    "tauri": "^0.14.0"
-  }
+    "path-to-regexp": "^6.2.0"
+  },
+  "license": "GPL-3.0"
 }

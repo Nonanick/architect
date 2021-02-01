@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ESNext",
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "importHelpers": true,
+    "strict": true,
+    "sourceMap": false,
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "baseUrl": "./src",
+    "experimentalDecorators": true
+  },
+  "include": [
+    "./src"
+  ],
+  "exclude": [
+    "./src/ui",
+    "node_modules",
+    "public",
+    ".vscode"
+  ]
+}

@@ -4,7 +4,8 @@
   "scripts": {
     "build": "rollup -c",
     "dev:ui": "rollup -c -w",
-    "dev:app": "nodemon --watch './src' --exec 'electron ./src/scripts/app.boot.js'",
+    "dev:build": "tsc -p ./tsconfig.electron.json -w",
+    "dev:app": "nodemon --watch src/app --watch src/server --exec electron ./src/app/app.boot.js",
     "start": "sirv public",
     "validate": "svelte-check"
   },
@@ -28,7 +29,10 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "path-to-regexp": "^6.2.0"
+    "electron-store": "^7.0.0",
+    "nanoid": "^3.1.20",
+    "path-to-regexp": "^6.2.0",
+    "v8-compile-cache": "^2.2.0"
   },
   "license": "GPL-3.0"
 }

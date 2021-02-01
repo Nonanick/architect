@@ -31,9 +31,9 @@ function serve() {
 }
 
 export default {
-	input: 'src/scripts/ui.boot.ts',
+	input: 'src/ui/ui.boot.ts',
 	output: {
-		sourcemap: true,
+		sourcemap: false,
 		format: 'iife',
 		name: 'app',
 		file: 'public/build/bundle.js'

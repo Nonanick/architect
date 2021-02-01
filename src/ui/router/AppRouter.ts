@@ -16,12 +16,12 @@ class Router {
 
   private routeChangedHandler = async (newURL: string) => {
     let activateRoute: Route = null;
-    let urlParams : {
-      [name : string] : any
+    let urlParams: {
+      [name: string]: any;
     } = {};
 
     let pureURL = this.stripQueryString(newURL);
-    
+
     for (let tryRoute of this.routes) {
       const urlMatches = match(tryRoute.pattern);
       let matches = urlMatches(pureURL);
@@ -31,7 +31,7 @@ class Router {
         break;
       }
     }
-    
+
     if (activateRoute === null) {
       this.routeNotFound(newURL);
       return;
@@ -71,7 +71,7 @@ class Router {
     }
     if (Array.isArray(activateRoute.onActivation)) {
       for (let activationStep of activateRoute.onActivation) {
-        await activationStep(pureURL, {...urlParams},{ ...queryParams });
+        await activationStep(pureURL, { ...urlParams }, { ...queryParams });
       }
     } else {
       await activateRoute.onActivation(pureURL, urlParams, queryParams);
@@ -86,7 +86,7 @@ class Router {
 
     let params = url.substr(indexOfQuestionMark + 1);
     let helper = new URLSearchParams(params);
-    let returnObject = {};
+    let returnObject: any = {};
     helper.forEach((value, key) => {
       returnObject[value] = key;
     });
@@ -141,7 +141,7 @@ class Router {
     return this.strategy.currentURL();
   }
 
-  navigateTo(url : string, callListeners = true) {
+  navigateTo(url: string, callListeners = true) {
     return this.strategy.changeURL(url, callListeners);
   }
 }

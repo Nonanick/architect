@@ -51,6 +51,10 @@
 		<div class="slogan-container">
 			<div class="slogan">simple, yet powerful</div>
 		</div>
+		<div class="project-actions">
+			<div class="create-project">Create a new project</div>
+			<div class="open-project">Open a new project</div>
+		</div>
 	</section>
 	<section class="architect-body">
 		<div class="customize-properties">
@@ -74,7 +78,7 @@
 		</div>
 		<div class="architect-tips">
 			<div class="tips-title">
-				<h3>Did you know?</h3>
+				<h3>Did you knowa?</h3>
 			</div>
 			<div class="tip-slider">
 				<div class="slide-container" />
@@ -89,17 +93,18 @@
 
 <style>
 	.architect-header {
+		--header-size : 8vw;
 		display: block;
 		width: 100%;
-		height: 10vw;
+		height: var(--header-size);
 		min-height: 80px;
 		display: grid;
 		column-gap: 20px;
-		grid-template-columns: minmax(80px, 10vw) 1fr;
-		grid-template-rows: minmax(56px, 7vw) minmax(24px, 3vw);
+		grid-template-columns: minmax(80px, var(--header-size)) 1fr 200px;
+		grid-template-rows: minmax(56px, calc(var(--header-size) * 0.7)) minmax(24px, calc(var(--header-size) * 0.3));
 	}
 	.logo-container {
-		grid-column: 1 / 1;
+		grid-column: 1 / 2;
 		grid-row: 1 / 3;
 		position: relative;
 		display: flex;
@@ -108,6 +113,14 @@
 		position: relative;
 		width: 100%;
 		height: 100%;
+	}
+	.project-actions {
+		grid-column: 3 / 4;
+		grid-row: 1 / 3;
+		display: flex;
+		justify-items: flex-end;
+		align-items: flex-end;
+		flex-direction: column;
 	}
 	.logo-background {
 		border-radius: 50%;
@@ -123,8 +136,8 @@
 	.title-container {
 		grid-column: 2 / 2;
 		grid-row: 1 / 1;
-		font-size: max(40px, 4.5vw);
-		line-height: max(56px, 8vw);
+		font-size: max(40px, calc(var(--header-size) * 0.45));
+		line-height: max(56px, calc(var(--header-size) * 0.8));
 		font-weight: bold;
 		color: var(--main-color);
 	}
@@ -138,8 +151,43 @@
 	}
 
 	.architect-body {
+		box-sizing: border-box;
 		display: grid;
+		column-gap: 15px;
 		grid-template-columns: 250px minmax(250px, 1fr) 250px;
 		grid-template-rows: auto;
+		padding-bottom: 20px;
+	}
+
+.architect-body h3 {
+	font-weight: 600;
+	font-size: 1.3vw;
+}
+	@media only screen and (min-width: 768px) and (max-width: 1024px) {
+		.architect-body {
+			grid-template-columns: minmax(250px, 1fr) 250px;
+			grid-template-rows: auto;
+			row-gap: 20px;
+		}
+		.customize-properties {
+			grid-column: 1 / 2;
+			grid-row: 2 / 3;
+		}
+		.architect-tips {
+			grid-column: 2 / 3;
+			grid-row: 1 / 3;
+		}
+	}
+
+	@media only screen and (max-width: 768px) {
+		.architect-body {
+			row-gap: 20px;
+			grid-template-columns: 1fr;
+			grid-template-rows: auto;
+		}
+		.customize-properties {
+			grid-column: 1 / 2;
+			grid-row: 2 / 3;
+		}
 	}
 </style>

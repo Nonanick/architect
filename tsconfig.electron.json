@@ -18,6 +18,7 @@
     "./src"
   ],
   "exclude": [
+    "dev",
     "./src/ui",
     "node_modules",
     "public",

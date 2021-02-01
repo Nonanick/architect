@@ -39,7 +39,7 @@
 <style>
   .recent-project {
     width: 100%;
-    height: 80px;
+    height: 70px;
     padding: 10px 0%;
     position: relative;
     display: grid;
@@ -60,17 +60,17 @@
     width: 100%;
     height: 100%;
     box-sizing: border-box;
-    line-height: 80px;
+    line-height: 70px;
     text-align: center;
-    font-size: 22pt;
-    font-weight: 900;
+    font-size: 20pt;
+    font-weight: 600;
     color: white;
   }
   .icon-bg {
-    width: 80px;
-    height: 80px;
-    margin: -10px -5px;
-    background-color: coral;
+    width: 70px;
+    height: 70px;
+    margin: -5px 0px;
+    background-color: var(--secondary-color);
     border-radius: 50%;
   }
   .project-info {
@@ -80,12 +80,13 @@
     display: grid;
     grid-template-columns: 0.7fr 0.3fr;
     grid-template-rows: 30px 20px;
-    padding: 5px 20px;
+    padding: 5px 30px;
+    margin-left: -10px;
   }
 
   .title {
     font-weight: 600;
-    font-size: 16pt;
+    font-size: 14pt;
     grid-column: 1 / 2;
     grid-row: 1 / 2;
     user-select: text;
@@ -93,7 +94,7 @@
 
   .description {
     font-weight: 300;
-    font-size: 10pt;
+    font-size: 9pt;
     grid-column: 1 / 2;
     grid-row: 2 / 3;
     user-select: text;

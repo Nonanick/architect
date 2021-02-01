@@ -1,5 +1,6 @@
 import { AppRouter } from './router/AppRouter';
 import Viewport from './Viewport.svelte';
+import { setContext } from 'svelte';
 
 let app: Viewport;
 
@@ -10,6 +11,7 @@ app = new Viewport({
 	}
 });
 
+
 window.Architect.Server.get("config/bootCount")
 	.then(resp => {
 		console.log("Response: ", resp);
@@ -17,7 +19,8 @@ window.Architect.Server.get("config/bootCount")
 		window.Architect.Server.patch("config/bootCount/" + ++count);
 	})
 	.catch(err => {
-		console.error("Failed to get from architect", err);
+		console.error("Failed to get from architect!", err);
 	});
+
 
 export default app; 

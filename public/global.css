@@ -5,6 +5,9 @@ html, body {
 	background-color: #fafafa;
 
 	--main-color: #008081;
+	--secondary-color: #2c1320;
+	--distress-color: #383d57;
+
 	min-width: 512px;
 	
 }

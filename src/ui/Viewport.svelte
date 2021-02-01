@@ -110,7 +110,7 @@
     left: 0px;
     width: 100%;
     height: 100%;
-    padding: 5px 20px;
+    padding: 7px 10px;
     box-sizing: border-box;
   }
 

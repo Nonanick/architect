@@ -15,6 +15,7 @@ app.on('ready', () => {
     width: 800,
     height: 400,
     show: false,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,
       allowRunningInsecureContent: false,
@@ -28,16 +29,13 @@ app.on('ready', () => {
     path.join(ArchitectPublicPath, 'index.html')
   );
 
-  window.maximize();
-
-
   bootServer();
+  window.maximize();
+  window.show();
 
   window.on('ready-to-show', () => {
     console.log('Window is ready to show');
-    window.show();
   });
-
 
 });
 

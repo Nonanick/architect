@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "rollup -c",
+    "dev": "node ./dev/run.js",
     "dev:ui": "rollup -c -w",
     "dev:build": "tsc -p ./tsconfig.electron.json -w",
     "dev:app": "nodemon --watch src/app --watch src/server --exec electron ./src/app/app.boot.js",

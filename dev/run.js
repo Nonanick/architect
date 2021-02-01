@@ -1,6 +1,6 @@
 const SvelteUiBundler = require('./run.ui.bundler');
-const TranspileApp = require('./run.tsc.app');
-const ElectronApp = require('./run.open.app');
+const TranspileApp = require('./run.app.tsc');
+const ElectronApp = require('./run.app.electron');
 
 // ------- # Svelte UI Bundler
 const BundleSvelteUI = SvelteUiBundler();

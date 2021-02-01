@@ -3,6 +3,7 @@
 	import SVGImage from "../components/SVGImage.svelte";
 	import RecentProject from "./components/RecentProject.svelte";
 	import type RecentProjectType from "./components/RecentProjectType";
+import SvgImage from "../components/SVGImage.svelte";
 
 	const recentProjects: RecentProjectType[] = [
 		{
@@ -21,6 +22,8 @@
 			created_at: new Date(Date.now() - 60 * 60 * 24 * 60),
 		},
 	];
+
+	let themeConfig = window.Architect.Server.get("config/theme");
 
 	function selectArchitectProject(initialDir?: string) {
 		alert("Ok! Select Project!");
@@ -52,8 +55,12 @@
 			<div class="slogan">simple, yet powerful</div>
 		</div>
 		<div class="project-actions">
-			<div class="create-project">Create a new project</div>
-			<div class="open-project">Open a new project</div>
+			<div class="create-project" on:click={() => createArchitectProject()}>
+				<SvgImage src="/img/icons/new.project.svg" color="var(--main-color)" ></SvgImage> New project
+			</div>
+			<div class="open-project" on:click={() => selectArchitectProject()}>
+				<SvgImage src="/img/icons/open.svg" color="var(--main-color)" ></SvgImage> Open
+			</div>
 		</div>
 	</section>
 	<section class="architect-body">
@@ -61,7 +68,24 @@
 			<div class="properties-title">
 				<h3>Properties</h3>
 			</div>
-			<div class="item">Theme</div>
+			<div class="item">
+				Theme :
+				{#await themeConfig}
+					...
+				{:then theme}
+					<div
+						on:click={async () => {
+							let currentTheme = await themeConfig;
+							themeConfig = Promise.resolve(
+								currentTheme === "light" ? "dark" : "light"
+							);
+							window.Architect.Server.patch("config/theme/" + currentTheme);
+						}}
+					>
+						{theme ?? "light"}
+					</div>
+				{/await}
+			</div>
 			<div class="item">Workspace</div>
 			<div class="item" />
 		</div>
@@ -93,7 +117,7 @@
 
 <style>
 	.architect-header {
-		--header-size : 8vw;
+		--header-size: 8vw;
 		display: block;
 		width: 100%;
 		height: var(--header-size);
@@ -101,7 +125,10 @@
 		display: grid;
 		column-gap: 20px;
 		grid-template-columns: minmax(80px, var(--header-size)) 1fr 200px;
-		grid-template-rows: minmax(56px, calc(var(--header-size) * 0.7)) minmax(24px, calc(var(--header-size) * 0.3));
+		grid-template-rows: minmax(56px, calc(var(--header-size) * 0.7)) minmax(
+				24px,
+				calc(var(--header-size) * 0.3)
+			);
 	}
 	.logo-container {
 		grid-column: 1 / 2;
@@ -159,10 +186,34 @@
 		padding-bottom: 20px;
 	}
 
-.architect-body h3 {
-	font-weight: 600;
-	font-size: 1.3vw;
-}
+	.architect-body h3 {
+		font-weight: 600;
+		font-size: 1.3vw;
+	}
+
+	.project-actions {
+		display: flex;
+		width: 100%;
+		height: 100%;
+	}
+	.project-actions div {
+		margin-top: 10px;
+    padding: 4px 10px;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(0,0,0,0.6);
+    cursor: pointer;
+    background-color: transparent;
+		transition: background-color 0.4s;
+		width: 100%;
+		text-align:left;
+		margin-left: 5px;
+	}
+	.project-actions div:hover {
+		 background-color: rgba(0,0,0,0.1);
+	}
+	.project-actions div:active {
+		 background-color: rgba(0,0,0,0.2);
+	}
 	@media only screen and (min-width: 768px) and (max-width: 1024px) {
 		.architect-body {
 			grid-template-columns: minmax(250px, 1fr) 250px;

@@ -8,9 +8,9 @@ export interface AppPageDefinition {
   icon?: string;
   pattern: string;
   component: typeof SvelteComponent;
-  guard? : GuardRoute | GuardRoute[];
+  guard?: GuardRoute | GuardRoute[];
   onActivation?: () => Promise<void>;
-  onDeactivation?: () => Promise<true|string>;
+  onDeactivation?: () => Promise<true | string>;
 }
 
 export default function GetAppPages() {
@@ -22,12 +22,12 @@ export default function GetAppPages() {
       component: HomePage,
     },
     {
-      title : "New Project",
-      icon : "",
-      pattern : "new-project",
-      component : CreateProject,
-      onDeactivation : async() => {
-        return "You should really create a new project!";
+      title: "New Project",
+      icon: "",
+      pattern: "new-project",
+      component: CreateProject,
+      onDeactivation: async () => {
+        return true;//"You should really create a new project!";
       }
     }
   ];

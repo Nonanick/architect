@@ -3,7 +3,8 @@
 	import SVGImage from "../components/SVGImage.svelte";
 	import RecentProject from "./components/RecentProject.svelte";
 	import type RecentProjectType from "./components/RecentProjectType";
-import SvgImage from "../components/SVGImage.svelte";
+	import SvgImage from "../components/SVGImage.svelte";
+	import { fade, fly } from 'svelte/transition';
 
 	const recentProjects: RecentProjectType[] = [
 		{
@@ -34,7 +35,7 @@ import SvgImage from "../components/SVGImage.svelte";
 	}
 </script>
 
-<main>
+<main class="page" transition:fade >
 	<section class="architect-header">
 		<div class="logo-container">
 			<div class="app-logo">
@@ -56,10 +57,12 @@ import SvgImage from "../components/SVGImage.svelte";
 		</div>
 		<div class="project-actions">
 			<div class="create-project" on:click={() => createArchitectProject()}>
-				<SvgImage src="/img/icons/new.project.svg" color="var(--main-color)" ></SvgImage> New project
+				<SvgImage src="/img/icons/create.project.svg" color="var(--main-color)" /> 
+				New project
 			</div>
 			<div class="open-project" on:click={() => selectArchitectProject()}>
-				<SvgImage src="/img/icons/open.svg" color="var(--main-color)" ></SvgImage> Open
+				<SvgImage src="/img/icons/open.project.svg" color="var(--main-color)" />
+				Open
 			</div>
 		</div>
 	</section>
@@ -73,7 +76,7 @@ import SvgImage from "../components/SVGImage.svelte";
 				{#await themeConfig}
 					...
 				{:then theme}
-					<div
+					<span
 						on:click={async () => {
 							let currentTheme = await themeConfig;
 							themeConfig = Promise.resolve(
@@ -83,7 +86,7 @@ import SvgImage from "../components/SVGImage.svelte";
 						}}
 					>
 						{theme ?? "light"}
-					</div>
+					</span>
 				{/await}
 			</div>
 			<div class="item">Workspace</div>
@@ -102,7 +105,7 @@ import SvgImage from "../components/SVGImage.svelte";
 		</div>
 		<div class="architect-tips">
 			<div class="tips-title">
-				<h3>Did you knowa?</h3>
+				<h3>Did you know?</h3>
 			</div>
 			<div class="tip-slider">
 				<div class="slide-container" />
@@ -124,11 +127,13 @@ import SvgImage from "../components/SVGImage.svelte";
 		min-height: 80px;
 		display: grid;
 		column-gap: 20px;
-		grid-template-columns: minmax(80px, var(--header-size)) 1fr 200px;
-		grid-template-rows: minmax(56px, calc(var(--header-size) * 0.7)) minmax(
-				24px,
-				calc(var(--header-size) * 0.3)
+		grid-template-columns: minmax(80px, var(--header-size)) 1fr minmax(
+				250px,
+				25vw
 			);
+		grid-template-rows:
+			minmax(56px, calc(var(--header-size) * 0.7))
+			minmax(24px, calc(var(--header-size) * 0.3));
 	}
 	.logo-container {
 		grid-column: 1 / 2;
@@ -195,24 +200,30 @@ import SvgImage from "../components/SVGImage.svelte";
 		display: flex;
 		width: 100%;
 		height: 100%;
+		flex-direction: row;
 	}
 	.project-actions div {
 		margin-top: 10px;
-    padding: 4px 10px;
-    box-sizing: border-box;
-    border-bottom: 1px solid rgba(0,0,0,0.6);
-    cursor: pointer;
-    background-color: transparent;
+		padding: 4px 10px;
+		box-sizing: border-box;
+		border-bottom: 1px solid var(--distress-color);
+		cursor: pointer;
+		background-color: transparent;
 		transition: background-color 0.4s;
 		width: 100%;
-		text-align:left;
+		text-align: left;
 		margin-left: 5px;
+		display: flex;
+		align-items: center;
+	}
+	.project-actions div > :global(div) {
+		margin-right: 10px;
 	}
 	.project-actions div:hover {
-		 background-color: rgba(0,0,0,0.1);
+		background-color: rgba(0, 0, 0, 0.1);
 	}
 	.project-actions div:active {
-		 background-color: rgba(0,0,0,0.2);
+		background-color: rgba(0, 0, 0, 0.2);
 	}
 	@media only screen and (min-width: 768px) and (max-width: 1024px) {
 		.architect-body {

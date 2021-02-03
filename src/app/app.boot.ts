@@ -16,6 +16,7 @@ app.on('ready', () => {
     height: 400,
     show: false,
     autoHideMenuBar: true,
+    icon: path.join(ArchitectPublicPath, 'img', 'favicon.png'),
     webPreferences: {
       nodeIntegration: false,
       allowRunningInsecureContent: false,

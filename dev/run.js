@@ -23,10 +23,14 @@ TranspileAppProccess.stdout.on("data", (data) => {
 
 // -------- # Electron App runner
 function launchElectronApp() {
-  ElectronAppRunner = ElectronApp();
+  const ElectronAppRunner = ElectronApp();
   ElectronAppRunner.stdout.on("data", (data) => {
     if (!String(data).match(/\[nodemon\]/)) {
       console.log("\u001b[34m[AppRunner]:\n\u001b[0m", data, "\u001b[0m");
     }
+  });
+
+  ElectronAppRunner.stderr.on("data", (data) => {
+    console.log("\u001b[34m[AppRunner]:\n\u001b[0m\u001b[31m", data, "\u001b[0m");
   });
 }

@@ -1,9 +1,16 @@
 const { exec } = require("child_process");
+const chokidar = require('chokidar');
+const path = require('path');
+/**
+ * @type import("child_process").ChildProcess | undefined
+ */
+let currentApp = undefined;
 
-module.exports = function OpenArchitectApp() {
+function OpenArchitectApp(url) {
 
-  console.log("\n\u001b[34m[AppRunner]:\u001b[0m", "Electron App is launching with nodemon!", "\u001b[0m");
-  const ElectronAppRunner = exec("yarn nodemon --delay 1 --watch src/app --watch src/server --exec npx electron ./src/app/app.boot.js", (err, stdin, stdout) => {
+  console.log("\n\u001b[34m[AppRunner]:\u001b[0m", "Electron App is launching!", "\u001b[0m");
+  console.log("With URL? ", url);
+  const ElectronAppRunner = exec("electron ./src/app/app.boot.js --dev " + (url != null ? "--url " + url : ""), (err, stdin, stdout) => {
     if (err) console.error(err);
   });
 
@@ -15,6 +22,61 @@ module.exports = function OpenArchitectApp() {
     console.log("App Runner ended with code", code, signal);
   });
 
+  if (currentApp === undefined) {
+    WatchForChanges();
+  }
+
+  currentApp = ElectronAppRunner;
+
+  ElectronAppRunner.stdout.on("data", (data) => {
+    console.log("\u001b[34m[AppRunner]:\n\u001b[0m", data, "\u001b[0m");
+  });
+
+  ElectronAppRunner.stderr.on("data", (data) => {
+    console.log("\u001b[34m[AppRunner]:\n\u001b[0m\u001b[31m", data, "\u001b[0m");
+  });
+  
   return ElectronAppRunner;
 
 };
+
+function WatchForChanges() {
+  let batchUpdate;
+
+  for (let dir of ['app', 'modules', 'server']) {
+    let p = path.resolve(
+      __dirname, '..', 'src', dir
+    );
+    console.log("Binding to ", p);
+    chokidar
+      .watch(p, {
+        ignoreInitial: true
+      })
+      .on("all", (event, changed) => {
+        console.log("FileWatcher reported a change!\n", event, '->', changed);
+
+        if (batchUpdate === undefined && changed.match(/.js$/)) {
+          console.log("Scheduling app restart!");
+          batchUpdate = setTimeout(() => {
+            console.log("Restarting Electron app!");
+
+            if (currentApp !== undefined) {
+              currentApp.stdout.once("data", msg => {
+                console.log("Received data!", msg)
+                OpenArchitectApp(msg);
+              });
+              currentApp.stdin.write("SIGKILL");
+              
+            } else {
+              OpenArchitectApp();
+            }
+
+            delete batchUpdate;
+          }, 2000);
+        }
+      }
+      );
+  }
+}
+
+module.exports = OpenArchitectApp;

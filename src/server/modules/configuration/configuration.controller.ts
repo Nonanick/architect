@@ -1,6 +1,8 @@
 import { Controller, Resolver, Route } from "maestro";
 import { storage } from "../../data/store/ElectronStore";
 
+export const ConfigStore = "config";
+
 export class ConfigurationController extends Controller {
 
   get baseURL(): string {
@@ -11,7 +13,7 @@ export class ConfigurationController extends Controller {
     url: 'list',
   })
   public list: Resolver = (req) => {
-    return storage('configuration').store;
+    return storage(ConfigStore).store;
   };
 
   @Route({
@@ -19,7 +21,7 @@ export class ConfigurationController extends Controller {
     url: ':name'
   })
   public get: Resolver = (req) => {
-    return storage('configuration').get(req.get('name'));
+    return storage(ConfigStore).get(req.get('name'));
   };
 
   @Route({
@@ -28,9 +30,9 @@ export class ConfigurationController extends Controller {
   })
   public set: Resolver = (req) => {
     let newValue = req.get('value');
-    let old = storage('configuration').get(req.get('name'));
+    let old = storage(ConfigStore).get(req.get('name'));
 
-    storage('configuration').set(req.get('name'), req.get('value'));
+    storage(ConfigStore).set(req.get('name'), req.get('value'));
 
     return {
       oldValue: old,

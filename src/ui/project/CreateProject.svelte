@@ -2,6 +2,52 @@
   import SvgImage from "../components/SVGImage.svelte";
   import { AppRouter } from "../router/AppRouter";
   import { fade } from "svelte/transition";
+
+  let defaultWorkspace = "";
+  
+  $: {
+    Architect.Server.get("project/default-workspace").then(w => {
+      console.log('Default workspace: ', w);
+      defaultWorkspace = w;
+      workspace = w;
+    }).catch(err => {
+      console.error("Failed to fetch default workspace!", err);
+    });
+  }
+
+  let identifier = "";
+  let title = "";
+  let description;
+  let workspace  = "";
+
+  let keepTitleInSync = true;
+
+
+  let invalidCharacters = /[^A-z0-9_\-@\.\/]/g;
+
+  function createProject() {
+    Architect.Server.post("project/create", {
+      identifier,
+      workspace,
+      title,
+      description
+    }).then(answer => {
+      console.log("Create answer:", answer);
+    });
+  }
+
+  function syncTitle() {
+    if(keepTitleInSync) {
+      title = identifier.replace(/[@]/g,'').split(/[_\-A-Z\/]/).map(p => p.charAt(0).toLocaleUpperCase() + p.substr(1)).join(" ");
+    }
+  }
+
+function verifyIdentifier() {
+  if(identifier.match(invalidCharacters)) {
+    console.error("Invalid character in identifier!");
+    identifier = identifier.replace(invalidCharacters,'');
+  }
+}
 </script>
 
 <main class="create-project-page page" transition:fade>
@@ -44,20 +90,33 @@
     </div>
     <div class="form-container">
       <div class="first-step form">
-        <div class="input text">
-          Name the project: <br />
-          <input type="text" name="project-name" />
-        </div>
+        
         <div class="input text" >
           Project identifier <br />
-          <input type="text" name="identifier" />
+          <input type="text" required name="identifier" on:keyup={async () => {
+            identifier = identifier.toLocaleLowerCase();
+            verifyIdentifier();
+            syncTitle();
+          }} bind:value={identifier} />
         </div>
+        
+        <div class="input text">
+          Title: <br />
+          <input type="text" name="title" on:keydown={() => keepTitleInSync=false} bind:value={title}/>
+        </div>
+
         <div class="input description">
           Description: <br />
-          <textarea placeholder="Project description">
-             
-          </textarea>
+          <textarea placeholder="Project description" bind:value={description} name="description"></textarea>
         </div>
+        <div class="input workspace">
+          Project root folder
+          <input type="text" name="workspace" bind:value={workspace} />
+        </div>
+      </div>
+
+      <div class="create-project button" on:click={() => createProject()}>
+        Create!
       </div>
     </div>
   </sector>

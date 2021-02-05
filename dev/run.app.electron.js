@@ -10,7 +10,7 @@ function OpenArchitectApp(url) {
 
   console.log("\n\u001b[34m[AppRunner]:\u001b[0m", "Electron App is launching!", "\u001b[0m");
   console.log("With URL? ", url);
-  const ElectronAppRunner = exec("electron ./src/app/app.boot.js --dev " + (url != null ? "--url " + url : ""), (err, stdin, stdout) => {
+  const ElectronAppRunner = exec("electron ./src/app/app.boot.js" + (url != null ? "--url " + url : ""), (err, stdin, stdout) => {
     if (err) console.error(err);
   });
 
@@ -35,7 +35,7 @@ function OpenArchitectApp(url) {
   ElectronAppRunner.stderr.on("data", (data) => {
     console.log("\u001b[34m[AppRunner]:\n\u001b[0m\u001b[31m", data, "\u001b[0m");
   });
-  
+
   return ElectronAppRunner;
 
 };
@@ -43,40 +43,39 @@ function OpenArchitectApp(url) {
 function WatchForChanges() {
   let batchUpdate;
 
-  for (let dir of ['app', 'modules', 'server']) {
-    let p = path.resolve(
-      __dirname, '..', 'src', dir
-    );
-    console.log("Binding to ", p);
-    chokidar
-      .watch(p, {
-        ignoreInitial: true
-      })
-      .on("all", (event, changed) => {
-        console.log("FileWatcher reported a change!\n", event, '->', changed);
+  let p = path.resolve(
+    __dirname, '..', 'src', 'app'
+  );
 
-        if (batchUpdate === undefined && changed.match(/.js$/)) {
-          console.log("Scheduling app restart!");
-          batchUpdate = setTimeout(() => {
-            console.log("Restarting Electron app!");
+  console.log("Binding to ", p);
+  chokidar
+    .watch(p, {
+      ignoreInitial: true
+    })
+    .on("all", (event, changed) => {
+      console.log("FileWatcher reported a change!\n", event, '->', changed);
 
-            if (currentApp !== undefined) {
-              currentApp.stdout.once("data", msg => {
-                console.log("Received data!", msg)
-                OpenArchitectApp(msg);
-              });
-              currentApp.stdin.write("SIGKILL");
-              
-            } else {
-              OpenArchitectApp();
-            }
+      if (batchUpdate === undefined && changed.match(/.js$/)) {
+        console.log("Scheduling app restart!");
+        batchUpdate = setTimeout(() => {
+          console.log("Restarting Electron app!");
 
-            delete batchUpdate;
-          }, 2000);
-        }
+          if (currentApp !== undefined) {
+            currentApp.stdout.once("data", msg => {
+              console.log("Received data!", msg)
+              OpenArchitectApp(msg);
+            });
+            currentApp.stdin.write("SIGKILL");
+
+          } else {
+            OpenArchitectApp();
+          }
+
+          delete batchUpdate;
+        }, 2000);
       }
-      );
-  }
+    }
+    );
 }
 
 module.exports = OpenArchitectApp;

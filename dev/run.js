@@ -16,7 +16,7 @@ TranspileAppProccess = TranspileApp();
 TranspileAppProccess.stdout.on("data", (data) => {
   if (String(data).match(/Found [0-9]+ errors. Watching for file changes./i)) {
     console.log("");
-    console.log("[Transpiler]:\u001b[32m", "\nReady and in watch mode!\n> Starting Electron App!", "\u001b[0m");
+    console.log("[Transpiler]:\u001b[32m", "\nReady and in watch mode!", "\u001b[0m");
 
     if (!process.argv.includes('--no-app') && !alreadyLaunched) {
       console.log("Launching Electron!");

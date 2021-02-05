@@ -1,9 +1,8 @@
 //import 'v8-compile-cache';
-import { app, BrowserWindow, ipcMain, protocol } from "electron";
+import { app, BrowserWindow, protocol } from "electron";
 import path from "path";
 import { InterceptAbsoluteFileResolution } from "./scripts/intercept_file_protocol";
-import ArchitectServer from "../server/server.boot";
-import { ElectronIPCAdapter } from "maestro-electron";
+import { bootServer } from "./app.server.boot";
 
 export const ArchitectPublicPath = path.resolve(
   __dirname,
@@ -20,6 +19,9 @@ app.on("ready", () => {
     let ioURL = process.argv.indexOf("--url") + 1;
     url = "#" + process.argv[ioURL];
   }
+
+  // Will run the server
+  bootServer();
 
   let window = new BrowserWindow({
     width: 800,
@@ -46,16 +48,15 @@ app.on("ready", () => {
     }
   });
 
-  window.loadFile(path.resolve(ArchitectPublicPath, 'index.html'), {
-    hash : url ?? ''
+  window.loadFile(path.resolve(ArchitectPublicPath, "index.html"), {
+    hash: url ?? "",
   });
 
-  bootServer();
   window.maximize();
   window.show();
 
   window.on("ready-to-show", () => {
-    if(url != undefined) {
+    if (url != undefined) {
     }
     console.log("Window is ready to show");
   });
@@ -64,15 +65,6 @@ app.on("ready", () => {
 app.on("window-all-closed", () => {
   app.exit(0);
 });
-
-async function bootServer(): Promise<void> {
-  let adapter = new ElectronIPCAdapter(ipcMain);
-  ArchitectServer.addAdapter(
-    adapter,
-  );
-
-  ArchitectServer.start();
-}
 
 process.on("SIGINT", () => {
   app.exit(0);

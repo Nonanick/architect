@@ -5,6 +5,7 @@
 
   let defaultWorkspace = "";
   
+  console.log("Architect Server -> ", Architect.Server);
   $: {
     Architect.Server.get("project/default-workspace").then(w => {
       console.log('Default workspace: ', w);

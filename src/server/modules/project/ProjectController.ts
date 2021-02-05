@@ -41,8 +41,9 @@ export class ProjectController extends Controller {
       storage(ConfigStore).get("workspace") ??
       path.join(os.homedir(), ProjectDefaultFolderName);
 
+      
     console.log(
-      "Will create project",
+      "Will create project a",
       projectIdentifier,
       "with title",
       projectTitle,

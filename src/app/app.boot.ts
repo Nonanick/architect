@@ -1,4 +1,4 @@
-//import 'v8-compile-cache';
+import 'v8-compile-cache';
 import { app, BrowserWindow, ipcMain, protocol } from "electron";
 import path from "path";
 import { InterceptAbsoluteFileResolution } from "./scripts/intercept_file_protocol";

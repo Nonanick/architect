@@ -14,7 +14,7 @@ export const ArchitectPublicPath = path.resolve(
 
 app.on("ready", () => {
   protocol.interceptFileProtocol("file", InterceptAbsoluteFileResolution);
-  let url = undefined;
+  let url: string | undefined = undefined;
 
   if (process.argv.includes("--url")) {
     let ioURL = process.argv.indexOf("--url") + 1;
@@ -33,6 +33,7 @@ app.on("ready", () => {
       allowRunningInsecureContent: false,
       contextIsolation: false,
       enableWebSQL: true,
+      webSecurity: false,
       preload: path.resolve(__dirname, "scripts", "preload_page.js"),
     },
   });
@@ -40,6 +41,7 @@ app.on("ready", () => {
   process.stdin.on("data", (msg) => {
     if (String(msg) === "SIGKILL") {
       process.stdout.write(
+        'url: ' +
         String(window.webContents.getURL()).split("#")[1] ?? "",
       );
       app.exit(0);
@@ -47,7 +49,7 @@ app.on("ready", () => {
   });
 
   window.loadFile(path.resolve(ArchitectPublicPath, 'index.html'), {
-    hash : url ?? ''
+    hash: url ?? ''
   });
 
   bootServer();
@@ -55,7 +57,7 @@ app.on("ready", () => {
   window.show();
 
   window.on("ready-to-show", () => {
-    if(url != undefined) {
+    if (url != undefined) {
     }
     console.log("Window is ready to show");
   });

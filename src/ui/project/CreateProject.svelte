@@ -38,8 +38,15 @@
 
   function syncTitle() {
     if(keepTitleInSync) {
-      title = identifier.replace(/[@]/g,'').split(/[_\-A-Z\/]/).map(p => p.charAt(0).toLocaleUpperCase() + p.substr(1)).join(" ");
+      title = convertToTitle(identifier);
     }
+  }
+
+  function convertToTitle(str : string) {
+     return str.split(/[\-_]/).map((pieces) =>
+      pieces.charAt(0).toLocaleUpperCase() + pieces.substr(1)
+    ).join(" ").replace(/([A-Z])/g, ' $1');
+
   }
 
 function verifyIdentifier() {

@@ -8,5 +8,6 @@
     "src/**/*.js": {
       "when": "$(basename).ts"
     }
-  }
+  },
+  "terminal.integrated.fontSize": 11
 }

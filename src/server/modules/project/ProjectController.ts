@@ -13,7 +13,7 @@ export class ProjectController extends Controller {
 
   @Route({
     url: "create",
-    methods : "post",
+    methods: "post",
     schema: {
       body: {
         type: "object",
@@ -32,10 +32,7 @@ export class ProjectController extends Controller {
   public create: Resolver = (req) => {
     const currentDate = new Date(Date.now());
     const projectIdentifier = req.get("identifier");
-    const projectTitle = req.get("title") ??
-      String(projectIdentifier).split(/[\-_A-Z]/).map((pieces) =>
-        pieces.charAt(0).toLocaleUpperCase() + pieces.substr(1)
-      ).join(" ");
+    const projectTitle = req.get("title") ?? this.convertToTitle(String(projectIdentifier));
 
     const projectWorkspace = req.get("workspace") ??
       storage(ConfigStore).get("workspace") ??
@@ -54,15 +51,22 @@ export class ProjectController extends Controller {
       currentDate,
     );
 
+
     return "ok!";
   };
 
+  private convertToTitle(str: string) {
+    return str.split(/[\-_]/).map((pieces) =>
+      pieces.charAt(0).toLocaleUpperCase() + pieces.substr(1)
+    ).join(" ").replace(/([A-Z])/g, ' $1');
+  }
+
   @Route({
-    url : 'default-workspace',
-    schema : {
-      response : {
-        '2xx' : {
-          type : 'string'
+    url: 'default-workspace',
+    schema: {
+      response: {
+        '2xx': {
+          type: 'string'
         }
       }
     }
@@ -73,11 +77,11 @@ export class ProjectController extends Controller {
   };
 
   @Route({
-    url : 'current-user',
+    url: 'current-user',
     schema: {
-      response : {
-        '2xx' : {
-          type :'string'
+      response: {
+        '2xx': {
+          type: 'string'
         }
       }
     }

@@ -35,7 +35,7 @@ function OpenArchitectApp(url) {
   ElectronAppRunner.stderr.on("data", (data) => {
     console.log("\u001b[34m[AppRunner]:\n\u001b[0m\u001b[31m", data, "\u001b[0m");
   });
-  
+
   return ElectronAppRunner;
 
 };
@@ -62,11 +62,11 @@ function WatchForChanges() {
 
             if (currentApp !== undefined) {
               currentApp.stdout.once("data", msg => {
-                console.log("Received data!", msg)
-                OpenArchitectApp(msg);
+                console.log("Received data!", msg);
+                OpenArchitectApp(msg.replace(/^url: /, ''));
               });
               currentApp.stdin.write("SIGKILL");
-              
+
             } else {
               OpenArchitectApp();
             }

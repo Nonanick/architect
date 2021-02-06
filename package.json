@@ -16,23 +16,22 @@
     "@rollup/plugin-node-resolve": "^11.1.1",
     "@rollup/plugin-typescript": "^8.1.1",
     "@tsconfig/svelte": "^1.0.0",
-    "electron": "^11.2.1",
-    "electron-reload": "^1.5.0",
+    "chokidar": "^3.5.1",
+    "electron": "^11.2.2",
     "rollup": "^2.38.4",
     "rollup-plugin-css-only": "^3.1.0",
     "rollup-plugin-livereload": "^2.0.0",
     "rollup-plugin-svelte": "^7.1.0",
     "rollup-plugin-terser": "^7.0.0",
-    "sirv-cli": "^1.0.10",
+    "sirv-cli": "^1.0.11",
     "svelte": "^3.32.1",
     "svelte-check": "^1.1.32",
     "svelte-preprocess": "^4.6.6",
     "tslib": "^2.0.0",
-    "typescript": "^4.1.3",
-    "chokidar": "^3.5.1"
+    "typescript": "^4.1.3"
   },
   "dependencies": {
-    "electron-store": "^7.0.0",
+    "electron-store": "^7.0.1",
     "nanoid": "^3.1.20",
     "path-to-regexp": "^6.2.0",
     "v8-compile-cache": "^2.2.0"

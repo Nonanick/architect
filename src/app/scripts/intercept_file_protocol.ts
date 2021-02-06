@@ -4,7 +4,7 @@ import os from 'os';
 import path from 'path';
 import { ArchitectPublicPath } from "../app.boot";
 
-export function InterceptAbsoluteFileResolution(req: ProtocolRequest, cb: (resp : ProtocolResponse) => void) {
+export function InterceptAbsoluteFileResolution(req: ProtocolRequest, cb: (resp: ProtocolResponse) => void) {
   let hashPath = req.url.split('#')[1] ?? '';
 
   let filePath = req.url.split('#')[0].replace(/^file:\/\//, '').replace(/\\/g, '/');
@@ -30,7 +30,7 @@ export function InterceptAbsoluteFileResolution(req: ProtocolRequest, cb: (resp 
   fs.readFile(filePath, (readFileExc, fileData) => {
 
     if (readFileExc != null) {
-      console.error('Error while loading file', '\n',filePath, '\n', readFileExc);
+      console.error('Error while loading file', '\n', filePath, '\n', readFileExc);
       cb({
         error: 404
       });
@@ -41,9 +41,8 @@ export function InterceptAbsoluteFileResolution(req: ProtocolRequest, cb: (resp 
       method: req.method,
       referrer: req.referrer,
       headers: req.headers,
-      path: filePath ,
+      path: filePath,
       data: fileData,
-
     });
 
   });

@@ -4,24 +4,26 @@
   import { fade } from "svelte/transition";
 
   let defaultWorkspace = "";
-  
+
+  console.log("Architect Server -> ", Architect.Server);
   $: {
-    Architect.Server.get("project/default-workspace").then(w => {
-      console.log('Default workspace: ', w);
-      defaultWorkspace = w;
-      workspace = w;
-    }).catch(err => {
-      console.error("Failed to fetch default workspace!", err);
-    });
+    Architect.Server.get("project/default-workspace")
+      .then((w) => {
+        console.log("Default workspace: ", w);
+        defaultWorkspace = w;
+        workspace = w;
+      })
+      .catch((err) => {
+        console.error("Failed to fetch default workspace!", err);
+      });
   }
 
   let identifier = "";
   let title = "";
   let description;
-  let workspace  = "";
+  let workspace = "";
 
   let keepTitleInSync = true;
-
 
   let invalidCharacters = /[^A-z0-9_\-@\.\/]/g;
 
@@ -30,31 +32,35 @@
       identifier,
       workspace,
       title,
-      description
-    }).then(answer => {
+      description,
+    }).then((answer) => {
       console.log("Create answer:", answer);
     });
   }
 
   function syncTitle() {
-    if(keepTitleInSync) {
+    if (keepTitleInSync) {
       title = convertToTitle(identifier);
     }
   }
 
-  function convertToTitle(str : string) {
-     return str.split(/[\-_]/).map((pieces) =>
-      pieces.charAt(0).toLocaleUpperCase() + pieces.substr(1)
-    ).join(" ").replace(/([A-Z])/g, ' $1');
-
+  function convertToTitle(str: string) {
+    return str
+      .replace(/([A-Z])/g, " $1")
+      .replace(/[@]/g, '')
+      .replace(/\//g, '-')
+      .split(/[\/\-_]/)
+      .map((pieces) => pieces.charAt(0).toLocaleUpperCase() + pieces.substr(1))
+      .join(" ");
   }
+      
 
-function verifyIdentifier() {
-  if(identifier.match(invalidCharacters)) {
-    console.error("Invalid character in identifier!");
-    identifier = identifier.replace(invalidCharacters,'');
+  function verifyIdentifier() {
+    if (identifier.match(invalidCharacters)) {
+      console.error("Invalid character in identifier!");
+      identifier = identifier.replace(invalidCharacters, "");
+    }
   }
-}
 </script>
 
 <main class="create-project-page page" transition:fade>
@@ -92,39 +98,49 @@ function verifyIdentifier() {
   </sector>
 
   <sector class="body">
-    <div class="progress-indicator">
-      Form progress
-    </div>
+    <div class="progress-indicator">Form progress</div>
     <div class="form-container">
-      <div class="first-step form">
-        
-        <div class="input text" >
-          Project identifier <br />
-          <input type="text" required name="identifier" on:keyup={async () => {
+      <div class="input text">
+        Project identifier <br />
+        <input
+          type="text"
+          required
+          name="identifier"
+          on:keyup={async () => {
             identifier = identifier.toLocaleLowerCase();
             verifyIdentifier();
             syncTitle();
-          }} bind:value={identifier} />
-        </div>
-        
-        <div class="input text">
-          Title: <br />
-          <input type="text" name="title" on:keydown={() => keepTitleInSync=false} bind:value={title}/>
-        </div>
-
-        <div class="input description">
-          Description: <br />
-          <textarea placeholder="Project description" bind:value={description} name="description"></textarea>
-        </div>
-        <div class="input workspace">
-          Project root folder
-          <input type="text" name="workspace" bind:value={workspace} />
-        </div>
+          }}
+          bind:value={identifier}
+        />
       </div>
 
-      <div class="create-project button" on:click={() => createProject()}>
-        Create!
+      <div class="input text">
+        Title: <br />
+        <input
+          type="text"
+          name="title"
+          on:keydown={() => (keepTitleInSync = false)}
+          bind:value={title}
+        />
       </div>
+
+      <div class="input description span2">
+        Description: <br />
+        <textarea
+          placeholder="Project description"
+          bind:value={description}
+          name="description"
+        />
+      </div>
+      <div class="input workspace">
+        Project root folder
+        <input type="text" name="workspace" bind:value={workspace} />
+      </div>
+    </div>
+
+    <div class="create-project button" on:click={() => createProject()}>
+      Create!
     </div>
   </sector>
 </main>
@@ -209,5 +225,39 @@ function verifyIdentifier() {
     display: grid;
     height: 40px;
     padding: 5px 10px;
+  }
+  .progress-indicator {
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: grid;
+    grid-template-columns: 10vw 1fr;
+    grid-template-columns: auto;
+  }
+
+  .form-container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    display: flex;
+    column-gap: 10px;
+  }
+
+  .form-container .input {
+    position: relative;
+    width: 100%;
+    height: 80px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+    flex: 50%;
+  }
+
+  .form-container .input.span2 {
+    column-count: 2;
+  }
+
+  @media screen and (max-width: 700px) {
+    .form-container .input {
+      flex: 100%;
+    }
   }
 </style>

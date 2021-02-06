@@ -10,7 +10,7 @@ function OpenArchitectApp(url) {
 
   console.log("\n\u001b[34m[AppRunner]:\u001b[0m", "Electron App is launching!", "\u001b[0m");
   console.log("With URL? ", url);
-  const ElectronAppRunner = exec("electron ./src/app/app.boot.js --dev " + (url != null ? "--url " + url : ""), (err, stdin, stdout) => {
+  const ElectronAppRunner = exec("electron ./src/app/app.boot.js " + (url != null ? "--url " + url : ""), (err, stdin, stdout) => {
     if (err) console.error(err);
   });
 
@@ -43,9 +43,10 @@ function OpenArchitectApp(url) {
 function WatchForChanges() {
   let batchUpdate;
 
-  for (let dir of ['app', 'modules', 'server']) {
+
+  for (let subpath of ["app", "server", "modules"]) {
     let p = path.resolve(
-      __dirname, '..', 'src', dir
+      __dirname, '..', 'src', subpath
     );
     console.log("Binding to ", p);
     chokidar
@@ -62,8 +63,8 @@ function WatchForChanges() {
 
             if (currentApp !== undefined) {
               currentApp.stdout.once("data", msg => {
-                console.log("Received data!", msg);
-                OpenArchitectApp(msg.replace(/^url: /, ''));
+                console.log("Received data!", msg)
+                OpenArchitectApp(msg);
               });
               currentApp.stdin.write("SIGKILL");
 
@@ -76,6 +77,7 @@ function WatchForChanges() {
         }
       }
       );
+
   }
 }
 

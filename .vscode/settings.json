@@ -9,5 +9,14 @@
       "when": "$(basename).ts"
     }
   },
-  "terminal.integrated.fontSize": 11
+  "terminal.integrated.fontSize": 11,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "Try",
+      "database": "/home/nicholas/architect-workspace/asd/.architect/db/asd.sqlite"
+    }
+  ],
+  "sqltools.useNodeRuntime": true
 }

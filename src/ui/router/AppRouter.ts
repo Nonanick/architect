@@ -132,6 +132,7 @@ class Router {
   }
 
   onRouteNotFound() {
+    this.strategy.changeURL("/");
   }
 
   onRouteGuarded() {

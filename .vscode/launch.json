@@ -5,13 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "node",
+      "type": "pwa-node",
       "request": "launch",
-      "name": "Launch Dev Env",
+      "name": "Start Dev Env",
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}\\dev\\run.js",
+      "program": "${workspaceFolder}/dev/run.js",
       "outFiles": [
         "${workspaceFolder}/**/*.js"
       ]

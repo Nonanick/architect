@@ -1,8 +1,8 @@
-import { ArchitectServices as Services } from "../services/inject_services";
+import { ArchitectServices as Services, InjectServices } from "../services/inject_services";
 
-window.Architect = Services;
+InjectServices(window);
 
-type ArchitectServicesType = typeof Services;
+type ArchitectServicesType = ReturnType<typeof Services>;
 
 declare global {
   

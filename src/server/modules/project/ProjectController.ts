@@ -3,6 +3,7 @@ import path from "path";
 import { Controller, Resolver, Route } from "maestro";
 import { storage } from "../../data/store/ElectronStore";
 import { ConfigStore } from "../configuration/configuration.controller";
+import { createProject } from "./Project";
 
 export const ProjectDefaultFolderName = "architect-workspace";
 
@@ -29,16 +30,17 @@ export class ProjectController extends Controller {
       },
     },
   })
-  public create: Resolver = (req) => {
+  public create: Resolver = async (req) => {
     const currentDate = new Date(Date.now());
     const projectIdentifier = req.get("identifier");
-    const projectTitle = req.get("title") ?? this.convertToTitle(String(projectIdentifier));
+
+    const projectTitle = req.get("title") ??
+      this.convertToTitle(String(projectIdentifier));
 
     const projectWorkspace = req.get("workspace") ??
       storage(ConfigStore).get("workspace") ??
       path.join(os.homedir(), ProjectDefaultFolderName);
 
-      
     console.log(
       "Will create project a",
       projectIdentifier,
@@ -52,25 +54,42 @@ export class ProjectController extends Controller {
       currentDate,
     );
 
+    await createProject({
+      name: projectIdentifier,
+      icon: req.get("icon"),
+      title: req.get("title"),
+      description: req.get("description") ?? "",
+      author: this.currentUser(),
+      created_at: new Date(Date.now()),
+      folder_name: this.convertToFolderName(projectIdentifier),
+      root: projectWorkspace,
+    });
 
-    return "ok!";
+    return `Will create project ${projectIdentifier} with title ${projectTitle} on folder ${projectWorkspace} with author - ${this.currentUser()} on date ${currentDate}`;
   };
+
+  private convertToFolderName(identifier: string) {
+    return identifier
+      .replace(/[^A-z0-9\-\_\.\/\\]/g, "")
+      .replace(/\.\.|\.\/|\.\\/g, "")
+      .toLocaleLowerCase();
+  }
 
   private convertToTitle(str: string) {
     return str.split(/[\-_]/).map((pieces) =>
       pieces.charAt(0).toLocaleUpperCase() + pieces.substr(1)
-    ).join(" ").replace(/([A-Z])/g, ' $1');
+    ).join(" ").replace(/([A-Z])/g, " $1");
   }
 
   @Route({
-    url: 'default-workspace',
+    url: "default-workspace",
     schema: {
       response: {
-        '2xx': {
-          type: 'string'
-        }
-      }
-    }
+        "2xx": {
+          type: "string",
+        },
+      },
+    },
   })
   public defaultWorkspace: Resolver = () => {
     return storage(ConfigStore).get("workspace") ??
@@ -78,16 +97,16 @@ export class ProjectController extends Controller {
   };
 
   @Route({
-    url: 'current-user',
+    url: "current-user",
     schema: {
       response: {
-        '2xx': {
-          type: 'string'
-        }
-      }
-    }
+        "2xx": {
+          type: "string",
+        },
+      },
+    },
   })
   public currentUser() {
     return os.userInfo().username + "!";
-  };
+  }
 }

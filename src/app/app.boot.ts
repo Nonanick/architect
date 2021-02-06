@@ -17,7 +17,7 @@ app.on("ready", () => {
 
   if (process.argv.includes("--url")) {
     let ioURL = process.argv.indexOf("--url") + 1;
-    url = "#" + process.argv[ioURL];
+    url =  process.argv[ioURL];
   }
 
   // Will run the server
@@ -51,7 +51,7 @@ app.on("ready", () => {
   });
 
   window.loadFile(path.resolve(ArchitectPublicPath, 'index.html'), {
-    hash: url ?? ''
+    //hash: url ?? ''
   });
 
   window.maximize();

@@ -3,7 +3,8 @@
     "module": "CommonJS",
     "target": "ESNext",
     "lib": [
-      "DOM"
+      "DOM",
+      "ESNext"
     ],
     "importHelpers": true,
     "strict": true,

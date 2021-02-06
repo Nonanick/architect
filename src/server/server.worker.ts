@@ -8,8 +8,12 @@ if(isMainThread) {
 
 const Server = ArchitectServer;
 
+if(parentPort == null) {
+  throw new Error("Server Worker cannot be run, ParentPort is not defined!");
+}
+
 Server.addAdapter(
-  new WorkerAdapter(parentPort)
+  new WorkerAdapter(parentPort!)
 );
 
 Server.start();

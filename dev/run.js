@@ -14,7 +14,6 @@ BundleSvelteUI.stdout.on("data", (data) => {
 console.log("");
 TranspileAppProccess = TranspileApp();
 TranspileAppProccess.stdout.on("data", (data) => {
-  console.log("-", data);
   if (String(data).match(/Found [0-9]+ errors. Watching for file changes./i)) {
     console.log("");
     console.log("[Transpiler]:\u001b[32m", "\nReady and in watch mode!", "\u001b[0m");

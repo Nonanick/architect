@@ -1,4 +1,4 @@
-//import 'v8-compile-cache';
+import 'v8-compile-cache';
 import { app, BrowserWindow, protocol } from "electron";
 import path from "path";
 import { InterceptAbsoluteFileResolution } from "./scripts/intercept_file_protocol";
@@ -17,7 +17,7 @@ app.on("ready", () => {
 
   if (process.argv.includes("--url")) {
     let ioURL = process.argv.indexOf("--url") + 1;
-    url =  process.argv[ioURL];
+    url = process.argv[ioURL];
   }
 
   // Will run the server

@@ -125,7 +125,7 @@
         />
       </div>
 
-      <div class="input description span2">
+      <div class="input description">
         Description: <br />
         <textarea
           placeholder="Project description"
@@ -134,7 +134,7 @@
         />
       </div>
       <div class="input workspace">
-        Project root folder
+        Location:
         <input type="text" name="workspace" bind:value={workspace} />
       </div>
     </div>
@@ -223,8 +223,12 @@
     width: 100%;
     height: calc(100% - var(--body-top));
     display: grid;
-    height: 40px;
     padding: 5px 10px;
+    width: 60vw;
+    left: 20vw;
+    overflow: hidden;
+    height: auto;
+
   }
   .progress-indicator {
     position: relative;
@@ -233,27 +237,73 @@
     display: grid;
     grid-template-columns: 10vw 1fr;
     grid-template-columns: auto;
+    font-size: 20pt;
+    height: 80px;
+    line-height: 80px;
   }
 
   .form-container {
     position: relative;
     width: 100%;
     height: auto;
-    display: flex;
-    column-gap: 10px;
+    display: grid;
+    column-gap: 20px;
+    row-gap: 20px;
+    background-color: white;
+    box-sizing: border-box;
+    padding: 20px 20px;
+    box-shadow: 0px 0px 4px 1px rgb(0 0 0 / 10%);
+    border-radius: 4px;
   }
 
   .form-container .input {
     position: relative;
     width: 100%;
-    height: 80px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-    flex: 50%;
+    min-height: 80px;
+    height: auto;
   }
 
-  .form-container .input.span2 {
-    column-count: 2;
+  .input input {
+    width: 100%;
+    border-radius: 5px;
+    margin-top: 4px;
+    background-color: rgba(255,255,255,0.6);
   }
+
+  .input textarea {
+    width: 100%;
+    height: 100px;
+    border-radius: 5px;
+    margin-top: 4px;
+    background-color: rgba(255,255,255,0.6);
+  }
+
+
+  .create-project.button {
+    width: 200px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    margin-left: calc(50% - 100px);
+    background-color: var(--main-color);
+    margin-top: 20px;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    opacity: 0.8;
+    will-change: opacity;
+    transition: opacity 0.4s;
+    font-weight: bold;
+  }
+
+  .create-project.button:hover {
+    opacity: 0.85;
+  }
+
+  .create-project.button:active {
+    opacity: 1;
+  }
+
 
   @media screen and (max-width: 700px) {
     .form-container .input {

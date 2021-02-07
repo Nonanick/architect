@@ -4,7 +4,8 @@ export interface NewProjectInfo {
   
   title? : string;
   description? : string;
-  
+  version? : string;
+    
   author : string;
   created_at : Date;
   

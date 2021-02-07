@@ -59,6 +59,7 @@ export class ProjectController extends Controller {
       icon: req.get("icon"),
       title: req.get("title"),
       description: req.get("description") ?? "",
+      version : req.get("version","0.0.1"),
       author: this.currentUser(),
       created_at: new Date(Date.now()),
       folder_name: this.convertToFolderName(projectIdentifier),

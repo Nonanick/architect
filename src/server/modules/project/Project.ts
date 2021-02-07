@@ -30,7 +30,7 @@ export async function folderInfo(path: string): Promise<Dir | undefined> {
 
 export async function createFolder(path: string): Promise<Dir | undefined> {
   try {
-    let newFolder = await fs.mkdir(path, { recursive: true });
+    await fs.mkdir(path, { recursive: true });
   } catch (err) {
     console.error("Failed to create directory!", err);
     return undefined;
@@ -81,7 +81,6 @@ const NewProjectEntities = [
 ];
 
 export async function createProjectDatabase(dbFilename: string) {
-
   let sqlite = new SQLite(dbFilename);
   let newProjectFactory = new NewProjectFactory(sqlite);
   let newStore = new Store(newProjectFactory);
@@ -89,7 +88,7 @@ export async function createProjectDatabase(dbFilename: string) {
   newStore.add(...NewProjectEntities);
 
   console.log("Creating project db structure!");
-  
+
   for (let entity of newStore.allEntities()) {
     let createRequest: IEntityProcedureRequest = {
       context: {},
@@ -102,6 +101,64 @@ export async function createProjectDatabase(dbFilename: string) {
   }
 }
 
+const ArchitectTemplatePath = path.resolve(
+  __dirname,
+  "..",
+  "..",
+  "..",
+  "templates",
+  "project",
+);
+
+export async function copyEmptyProjectTemplate(to: string) {
+  console.log("Will now copy project template: ", ArchitectTemplatePath);
+  return copyFolder(ArchitectTemplatePath, to);
+}
+
+export async function copyFolder(from: string, to: string) {
+  let readDir = await fs.readdir(
+    from,
+    { withFileTypes: true },
+  );
+
+  for (let subitem of readDir) {
+    if (subitem.isDirectory()) {
+      let folderPath = path.join(from, subitem.name);
+      let destinationFolder = path.join(to, subitem.name);
+      createFolder(destinationFolder).then((_) => {
+        copyFolder(folderPath, destinationFolder);
+      });
+    }
+
+    if (subitem.isFile()) {
+      fs.copyFile(path.join(from, subitem.name), path.join(to, subitem.name));
+    }
+
+    if (subitem.isSymbolicLink()) {
+      let linkPath = await fs.readlink(path.join(from, subitem.name));
+      fs.symlink(linkPath, path.join(to, subitem.name));
+    }
+  }
+}
+
+export async function updateProjectFolder(
+  folder: string,
+  info: NewProjectInfo,
+) {
+  // Update package.json
+  let packageConfig = JSON.parse(
+    await fs.readFile(
+      path.join(folder, "package.json"),
+      { encoding: "utf-8" },
+    ),
+  );
+
+  packageConfig.name = info.name,
+  packageConfig.author = info.author;
+  packageConfig.version = info.version;
+
+}
+
 export async function createProject(info: NewProjectInfo) {
   let projectDirPath = path.resolve(
     info.root,
@@ -109,6 +166,7 @@ export async function createProject(info: NewProjectInfo) {
   );
 
   // 1 - Create the folder structure inside the workspace
+
   await createFolder(projectDirPath);
   let innerFolderCreated: Promise<any>[] = [];
 
@@ -118,14 +176,6 @@ export async function createProject(info: NewProjectInfo) {
       ".architect/scripts",
       ".architect/versions",
       ".architect/migrations",
-      "src/server",
-      "src/ui",
-      "src/lib",
-      "src/data",
-      "src/validations",
-      "src/processors",
-      "src/typings",
-      "dist",
     ]
   ) {
     innerFolderCreated.push(
@@ -136,6 +186,7 @@ export async function createProject(info: NewProjectInfo) {
   await Promise.all(innerFolderCreated);
 
   // 2 - Build/copy the template files inside it
+
   try {
     await createProjectManifest(
       path.join(projectDirPath, ".architect", ".manifest"),
@@ -154,7 +205,7 @@ export async function createProject(info: NewProjectInfo) {
           projectDirPath,
           "architect",
           "db",
-          info.name + ".sqlite",
+          info.folder_name + ".sqlite",
         ),
         version: "0.0.1",
       },
@@ -163,11 +214,26 @@ export async function createProject(info: NewProjectInfo) {
     console.error("Failed to create manifest file", err);
   }
 
+  try {
+    await copyEmptyProjectTemplate(
+      projectDirPath,
+    );
+  } catch (err) {
+    console.error("Failed to create project template", err);
+  }
+
   // 3 - Generate a project SQLite database for it
   await createProjectDatabase(
     path.join(projectDirPath, ".architect", "db", info.folder_name + ".sqlite"),
   );
-  // 4 - Run build tools
 
-  // 5 - Test it
+  // 4 - Update files with project info
+  await updateProjectFolder(
+    projectDirPath,
+    info,
+  );
+
+  // 5 - Run build tools
+
+  // 6 - Test it
 }

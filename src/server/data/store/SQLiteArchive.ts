@@ -1,10 +1,18 @@
 import type { IArchive } from "clerk";
-import { Archive as PgArchive } from 'clerk-pgsql';
+import { SQLite } from 'clerk-sqlite';
+import path from 'path';
+import { createFolder } from '../../modules/project/Project';
 
-export const SQLiteArchive: IArchive = new PgArchive({
-  host: 'localhost',
-  port: 5432,
-  user: 'Architect',
-  password: 'architect',
-  database: 'architect'
-});
+const ArchitectSQLiteDbFolder = path.resolve(
+  __dirname,
+  '..',
+  'database'
+);
+
+const ArchitectSQLiteDbFilename = "Architect.sqlite";
+
+createFolder(ArchitectSQLiteDbFolder);
+
+export const SQLiteArchive: IArchive = new SQLite(
+  path.resolve(ArchitectSQLiteDbFolder, ArchitectSQLiteDbFilename)
+);

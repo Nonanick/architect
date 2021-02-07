@@ -1,9 +1,9 @@
 <script lang="ts">
   export let src: string;
-  export let color: string = "";
+  export let color: string = "black";
   export let bgColor: string = "transparent";
   export let radius: string = "0px";
-  export let size: string = "20px";
+  export let size: string = "22px";
   export let ratio: number = 1;
 </script>
 
@@ -30,6 +30,7 @@
     
     background-color: var(--bg-color);
     overflow: hidden;
+    vertical-align: middle;
   }
   .fix-ratio {
     position: absolute;

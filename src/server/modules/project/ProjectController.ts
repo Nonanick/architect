@@ -3,7 +3,8 @@ import path from "path";
 import { Controller, Resolver, Route } from "maestro";
 import { storage } from "../../data/store/ElectronStore";
 import { ConfigStore } from "../configuration/configuration.controller";
-import { createProject } from "./Project";
+import { ProjectModule } from "./project.module";
+import { FileSystem } from '../../services/file-system/file-system.service';
 
 export const ProjectDefaultFolderName = "architect-workspace";
 
@@ -35,7 +36,7 @@ export class ProjectController extends Controller {
     const projectIdentifier = req.get("identifier");
 
     const projectTitle = req.get("title") ??
-      this.convertToTitle(String(projectIdentifier));
+      ProjectModule.convertPackageNameToTitle(String(projectIdentifier));
 
     const projectWorkspace = req.get("workspace") ??
       storage(ConfigStore).get("workspace") ??
@@ -54,33 +55,54 @@ export class ProjectController extends Controller {
       currentDate,
     );
 
-    await createProject({
+   /* await ProjectModule.createProject({
       name: projectIdentifier,
       icon: req.get("icon"),
       title: req.get("title"),
       description: req.get("description") ?? "",
-      version : req.get("version","0.0.1"),
+      version: req.get("version", "0.0.1"),
       author: this.currentUser(),
       created_at: new Date(Date.now()),
-      folder_name: this.convertToFolderName(projectIdentifier),
+      folder_name: ProjectModule.convertPackageNameToFolderPath(projectIdentifier),
       root: projectWorkspace,
-    });
+    });*/
 
     return `Will create project ${projectIdentifier} with title ${projectTitle} on folder ${projectWorkspace} with author - ${this.currentUser()} on date ${currentDate}`;
   };
 
-  private convertToFolderName(identifier: string) {
-    return identifier
-      .replace(/[^A-z0-9\-\_\.\/\\]/g, "")
-      .replace(/\.\.|\.\/|\.\\/g, "")
-      .toLocaleLowerCase();
-  }
+  @Route({
+    url: "create-folder",
+    methods: "post",
+    schema: {
+      body: {
+        type: "object",
+        properties: {
+          path: {
+            type: "string",
+            minLength: 3,
+          },
+        },
+      },
+    },
+  })
+  public createFolder: Resolver = async (req) => {
+    let folderPath = req.get("path");
+    let alreadyExists = await FileSystem.folderInfo(folderPath);
 
-  private convertToTitle(str: string) {
-    return str.split(/[\-_]/).map((pieces) =>
-      pieces.charAt(0).toLocaleUpperCase() + pieces.substr(1)
-    ).join(" ").replace(/([A-Z])/g, " $1");
-  }
+    if (alreadyExists != undefined) {
+      if (alreadyExists.length > 0) {
+        return new Error("Choosen directory already exists and its not empty!");
+      } else {
+        return "OK! Directory already existed and it's empty! NOOP";
+      }
+    }
+
+    let creation = await FileSystem.createFolder(folderPath);
+
+    return creation != null
+      ? `OK! Directory '${folderPath}' was created successfully!`
+      : "Failed to create the folder!";
+  };
 
   @Route({
     url: "default-workspace",

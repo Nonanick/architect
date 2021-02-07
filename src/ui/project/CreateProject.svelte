@@ -2,21 +2,16 @@
   import SvgImage from "../components/SVGImage.svelte";
   import { AppRouter } from "../router/AppRouter";
   import { fade } from "svelte/transition";
+  import TextInput from "../components/form/TextInput.svelte";
+  import { ProjectModule } from "./project.module";
 
-  let defaultWorkspace = "";
-
-  console.log("Architect Server -> ", Architect.Server);
-  $: {
-    Architect.Server.get("project/default-workspace")
-      .then((w) => {
-        console.log("Default workspace: ", w);
-        defaultWorkspace = w;
-        workspace = w;
-      })
-      .catch((err) => {
-        console.error("Failed to fetch default workspace!", err);
-      });
-  }
+  Architect.Server.get("project/default-workspace")
+    .then((w) => {
+      workspace = w;
+    })
+    .catch((err) => {
+      console.error("Failed to fetch default workspace!", err);
+    });
 
   let identifier = "";
   let title = "";
@@ -25,41 +20,27 @@
 
   let keepTitleInSync = true;
 
-  let invalidCharacters = /[^A-z0-9_\-@\.\/]/g;
+  let showProgress = false;
 
   function createProject() {
+    showProgress = true;
+
     Architect.Server.post("project/create", {
       identifier,
       workspace,
       title,
       description,
-    }).then((answer) => {
-      console.log("Create answer:", answer);
-    });
+    }).then(async (answer) => {});
   }
 
   function syncTitle() {
     if (keepTitleInSync) {
-      title = convertToTitle(identifier);
+      title = ProjectModule.convertPackageNameToTitle(identifier);
     }
   }
-
-  function convertToTitle(str: string) {
-    return str
-      .replace(/([A-Z])/g, " $1")
-      .replace(/[@]/g, '')
-      .replace(/\//g, '-')
-      .split(/[\/\-_]/)
-      .map((pieces) => pieces.charAt(0).toLocaleUpperCase() + pieces.substr(1))
-      .join(" ");
-  }
-      
 
   function verifyIdentifier() {
-    if (identifier.match(invalidCharacters)) {
-      console.error("Invalid character in identifier!");
-      identifier = identifier.replace(invalidCharacters, "");
-    }
+    identifier = ProjectModule.sanitizePackageName(identifier);
   }
 </script>
 
@@ -87,43 +68,116 @@
         <SvgImage src="/img/architect.logo.svg" color="var(--main-color)" />
         Home
       </div>
-      <div class="navigation-item active">
-        <SvgImage
-          src="/img/icons/create.project.svg"
-          color="var(--secondary-color)"
-        />
-        Create Project
-      </div>
     </div>
   </sector>
 
   <sector class="body">
-    <div class="progress-indicator">Form progress</div>
-    <div class="form-container">
-      <div class="input text">
-        Project identifier <br />
-        <input
-          type="text"
-          required
-          name="identifier"
-          on:keyup={async () => {
-            identifier = identifier.toLocaleLowerCase();
-            verifyIdentifier();
-            syncTitle();
-          }}
-          bind:value={identifier}
+    <div class="form-header">
+      <div class="form-title">
+        <SvgImage
+          src="/img/icons/create.project.svg"
+          color="var(--secondary-color)"
+          size="40px"
         />
+        Create Project
+      </div>
+      <div class="form-progress">
+        <div class="progress-indicator">
+          <div class="progress-bg" />
+          <div class="progress-center" />
+        </div>
+      </div>
+    </div>
+    <div class="form-container">
+      <div class="create-project-progress {showProgress ? 'visible' : ''}">
+        <pre>
+
+========================== Architect New Project ===============================
+--------------------------------------------------------------------------------
+
+[New Project]: Creating new project entitled 'New Project'!
+  - name : new-project
+  - versioned/version : yes - 0.0.1
+  - stored in : /path/to/project
+  - architect version : 0.0.1
+  - author : nicholas
+  - license : MIT
+  - creation time: now
+  - private : y/n
+        
+[#1] - Create folder
+  OK, Architect could create project folder on the desired Location
+
+[#2] - Install architect
+  1. OK, Architect metadata about the project was installed on folder '.architect'
+  2. Project's Architect control database was created succesfully!
+  3. Architect's dependencies were installed!
+
+[#3] - Create project template
+  1. Created common backed login
+  2. Created Svelte UI folder and scripts
+
+[#4] - Configure project
+  1. Changing project template to the desired configurations
+
+[#5] - Install project dependencies
+  Running script with 'pnpm'!
+    -- Pnpm output:
+    [...pnpm install dependecies output!]
+  OK, no errors while installing dependencies!
+
+[#6] - Openning project!
+  Preparing project to be editted on Architect!
+
+      </pre>
       </div>
 
-      <div class="input text">
-        Title: <br />
-        <input
-          type="text"
-          name="title"
-          on:keydown={() => (keepTitleInSync = false)}
-          bind:value={title}
-        />
-      </div>
+      <TextInput
+        class="input"
+        name="identifier"
+        bind:value={identifier}
+        on:keyup={() => {
+          identifier = identifier.toLocaleLowerCase();
+          verifyIdentifier();
+          syncTitle();
+        }}
+        inputButtons={[
+          {
+            label:
+              (keepTitleInSync ? "( ON )" : "( OFF )") +
+              " Synchronize title with package name",
+            icon: {
+              src: "/img/icons/sync.svg",
+              color: keepTitleInSync ? "green" : "var(--error-color)",
+            },
+            showLabel: false,
+            onClick: () => {
+              if (keepTitleInSync) {
+                keepTitleInSync = false;
+              } else {
+                keepTitleInSync = true;
+                syncTitle();
+              }
+            },
+          },
+        ]}
+      >
+        Package Name:
+        <div slot="label-icon">
+          <SvgImage src="/img/icons/medal.svg" size="20px" />
+        </div>
+      </TextInput>
+
+      <TextInput
+        class="input"
+        name="title"
+        bind:value={title}
+        on:input={() => {
+          keepTitleInSync = false;
+        }}
+      >
+        Title:
+      </TextInput>
 
       <div class="input description">
         Description: <br />
@@ -133,10 +187,29 @@
           name="description"
         />
       </div>
-      <div class="input workspace">
+
+      <TextInput
+        class="input"
+        name="workspace"
+        bind:value={workspace}
+        inputButtons={[
+          {
+            label: "Pick Location",
+            icon: {
+              src: "/img/icons/pick.folder.svg",
+            },
+            showLabel: false,
+          },
+        ]}
+        validate={async (value) => {
+          return value.length > 0 ? true : "Cannot be empty!";
+        }}
+      >
         Location:
-        <input type="text" name="workspace" bind:value={workspace} />
-      </div>
+        <div slot="label-icon">
+          <SvgImage src="/img/icons/folder.location.svg" size="25px" />
+        </div>
+      </TextInput>
     </div>
 
     <div class="create-project button" on:click={() => createProject()}>
@@ -157,6 +230,7 @@
     overflow: hidden;
     background-color: var(--main-bg-color);
   }
+
   .header {
     position: absolute;
     top: 0px;
@@ -165,7 +239,6 @@
     display: grid;
     grid-template-columns: 40px 1fr 120px;
     height: 40px;
-    background-color: rgba(0, 0, 0, 0.02);
     padding: 5px 10px;
   }
 
@@ -178,9 +251,11 @@
     cursor: pointer;
     transition: background-color 0.4s;
   }
+
   .go-back:hover {
     background-color: rgba(0, 0, 0, 0.2);
   }
+
   .go-back:active {
     background-color: rgba(0, 0, 0, 0.3);
   }
@@ -203,10 +278,6 @@
   .navigation-item > :global(div) {
     margin-right: 10px;
   }
-  .navigation-item.active {
-    font-size: 14pt;
-    font-weight: 500;
-  }
 
   .navigation-item:hover:not(.active) {
     text-decoration: underline;
@@ -228,18 +299,24 @@
     left: 20vw;
     overflow: hidden;
     height: auto;
-
   }
-  .progress-indicator {
+
+  .form-header {
     position: relative;
     width: 100%;
     height: auto;
     display: grid;
-    grid-template-columns: 10vw 1fr;
-    grid-template-columns: auto;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
     font-size: 20pt;
     height: 80px;
     line-height: 80px;
+    box-sizing: border-box;
+    padding: 0 20px;
+  }
+
+  .form-progress {
+    text-align: right;
   }
 
   .form-container {
@@ -256,18 +333,11 @@
     border-radius: 4px;
   }
 
-  .form-container .input {
+  .form-container > :global(.input) {
     position: relative;
     width: 100%;
     min-height: 80px;
     height: auto;
-  }
-
-  .input input {
-    width: 100%;
-    border-radius: 5px;
-    margin-top: 4px;
-    background-color: rgba(255,255,255,0.6);
   }
 
   .input textarea {
@@ -275,9 +345,8 @@
     height: 100px;
     border-radius: 5px;
     margin-top: 4px;
-    background-color: rgba(255,255,255,0.6);
+    background-color: rgba(255, 255, 255, 0.6);
   }
-
 
   .create-project.button {
     width: 200px;
@@ -304,6 +373,28 @@
     opacity: 1;
   }
 
+  .create-project-progress {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 4px;
+    z-index: 2;
+    backdrop-filter: blur(3px);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s;
+    box-sizing: border-box;
+    padding: 10px 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .create-project-progress.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
 
   @media screen and (max-width: 700px) {
     .form-container .input {

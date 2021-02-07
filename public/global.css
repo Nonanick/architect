@@ -8,7 +8,8 @@ html, body {
 	--secondary-color: #2c1320;
 	--distress-color: #383d57;
 
-	--main-bg-color: #fafafa
+	--main-bg-color: #fafafa;
+	--error-color: #873D48;
 
 	min-width: 512px;
 	

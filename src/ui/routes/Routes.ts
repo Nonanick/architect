@@ -22,7 +22,7 @@ export default function GetAppPages() {
       component: HomePage,
     },
     {
-      title: "New Project",
+      title: "Architect - New Project",
       icon: "",
       pattern: "new-project",
       component: CreateProject,

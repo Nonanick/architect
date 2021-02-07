@@ -4,6 +4,7 @@
   import { fade } from "svelte/transition";
   import TextInput from "../components/form/TextInput.svelte";
   import { ProjectModule } from "./project.module";
+import CreateProjectItem from './CreateProjectItem.svelte';
 
   Architect.Server.get("project/default-workspace")
     .then((w) => {
@@ -30,7 +31,9 @@
       workspace,
       title,
       description,
-    }).then(async (answer) => {});
+    }).then(async (answer) => {
+
+    });
   }
 
   function syncTitle() {
@@ -90,6 +93,23 @@
     </div>
     <div class="form-container">
       <div class="create-project-progress {showProgress ? 'visible' : ''}">
+        <div class="create-project-title">
+          Creating new project entitled '{title}'
+        </div>
+        <div class="project-info">
+          <div class="info"> - name : {identifier}</div>
+          <div class="info"> - version : {identifier}</div>
+          <div class="info"> - stored in : {workspace}</div>
+          <div class="info"> - architect version : {identifier}</div>
+          <div class="info"> - author : {identifier}</div>
+          <div class="info"> - license : {identifier}</div>
+          <div class="info"> - creation time : {identifier}</div>
+          <div class="info"> - private : {identifier}</div>
+        </div>
+        <CreateProjectItem title="Create Project folder" status="processing"></CreateProjectItem>
+        <CreateProjectItem title="Create Project folder" status="pending"></CreateProjectItem>
+        <CreateProjectItem title="Create Project folder" status="done"></CreateProjectItem>
+        <CreateProjectItem title="Create Project folder" status="error"></CreateProjectItem>
         <pre>
 
 ========================== Architect New Project ===============================

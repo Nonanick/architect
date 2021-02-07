@@ -1,6 +1,5 @@
 import { AppRouter } from './router/AppRouter';
 import Viewport from './Viewport.svelte';
-import { setContext } from 'svelte';
 import { BrowserServices } from '../app/services/browser/browser.services';
 
 let app: Viewport;
@@ -15,6 +14,8 @@ app = new Viewport({
 if(window.Architect == undefined) {
 	window.Architect = BrowserServices as any;
 }
+
+console.log('Server ->', window.Architect.Server);
 
 window.Architect.Server.get("config/bootCount")
 	.then(resp => {

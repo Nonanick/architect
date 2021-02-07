@@ -1,5 +1,5 @@
 import type { Dir, Dirent } from 'fs';
-import fs from 'fs/promises';
+import { promises as fs}from 'fs';
 import path from 'path';
 
 async function folderInfo(path: string): Promise<Dirent[] | undefined> {
@@ -50,7 +50,6 @@ async function copyFolder(from: string, to: string) {
     }
   }
 }
-
 
 export const FileSystem = {
   folderInfo,

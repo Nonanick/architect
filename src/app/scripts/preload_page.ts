@@ -1,11 +1,12 @@
-import { ArchitectServices as Services, InjectServices } from "../services/inject_services";
+import { ArchitectServices, ArchitectServices as Services, InjectServices, MyWorld } from "../services/inject_services";
+
+console.log('Preload ->', ArchitectServices.Server, MyWorld);
 
 InjectServices(window);
 
-type ArchitectServicesType = ReturnType<typeof Services>;
+type ArchitectServicesType = typeof Services;
 
 declare global {
-  
 
   interface Window {
     Architect: typeof Services;
@@ -13,4 +14,3 @@ declare global {
 
   var Architect : ArchitectServicesType;
 }
-

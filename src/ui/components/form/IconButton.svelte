@@ -33,7 +33,7 @@
   .icon-button {
     cursor: pointer;
     opacity: 0.8;
-    padding: 2px 5px;
+    padding: 2px 7px;
     box-sizing: border-box;
     background-color: transparent;
     display: flex;

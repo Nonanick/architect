@@ -35,11 +35,12 @@ app.on("ready", () => {
       allowRunningInsecureContent: false,
       contextIsolation: false,
       enableWebSQL: true,
-      webSecurity: false,
+      webSecurity: true,
       preload: path.resolve(__dirname, "scripts", "preload_page.js"),
     },
   });
 
+  
   process.stdin.on("data", (msg) => {
     if (String(msg) === "SIGKILL") {
       process.stdout.write(

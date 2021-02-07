@@ -1,19 +1,26 @@
-import {  ipcMain } from "electron";
+import { ipcMain, WebContents } from "electron";
 import path from "path";
 import { Worker } from "worker_threads";
-import { ElectronIPCAdapter , WorkerIPCClient} from "maestro-electron";
+import { ElectronIPCAdapter, WorkerIPCClient } from "maestro-electron";
 import ArchitectServer from "../server/server.boot";
-import { ArchitectServices, SetServerService } from './services/inject_services';
+import {
+  ArchitectServices,
+  MyWorld,
+  SetArchitectServer,
+} from "./services/inject_services";
 import chokidar from "chokidar";
+import {
+  IPCAdapterNewRequestEvent,
+  IPCAdapterNewResponseEvent,
+} from "maestro-electron/dist/adapter/ElectronIPCAdapter";
+import type { IPCResponse } from 'maestro-electron/dist/response/IPCResponse';
 
-let currentWorker : Worker;
-
-export function bootServer(){
+export function bootServer() {
   // If in dev mode we will re-run a new Thread everytime
   if (process.argv.includes("--dev")) {
     let restartWorkerBroker;
 
-     currentWorker = new Worker(
+    let currentWorker = new Worker(
       path.resolve(
         __dirname,
         "..",
@@ -22,9 +29,9 @@ export function bootServer(){
       ),
     );
 
-    SetServerService(new WorkerIPCClient(currentWorker));
+    attachWorkerToIPC(currentWorker);
 
-    for (let dir of ["server", "modules"]) {
+    for (let dir of ["server", "lib"]) {
       chokidar.watch(
         path.join(__dirname, "..", dir),
         {
@@ -32,8 +39,10 @@ export function bootServer(){
         },
       ).on("all", (evName, file) => {
         if (restartWorkerBroker == null) {
+
           restartWorkerBroker = setTimeout(() => {
             console.log("File change detected! Restaring server worker!");
+            WorkerMap.delete(currentWorker);
             currentWorker.terminate()
               .catch((err) => {
                 console.error("Failed to kill old Server Worker Thread!", err);
@@ -47,8 +56,7 @@ export function bootServer(){
                     "server.worker.js",
                   ),
                 );
-
-                (ArchitectServices().Server as WorkerIPCClient).setWorker(currentWorker);
+                attachWorkerToIPC(currentWorker);
 
                 restartWorkerBroker = undefined;
               });
@@ -65,7 +73,35 @@ export function bootServer(){
     ArchitectServer.start();
   }
 }
+const WorkerMap : Map<Worker, WebContents> = new Map();
 
-export function getCurrentWorker() {
-  return currentWorker;
+function attachWorkerToIPC(worker: Worker) {
+
+  console.log("Removing all listeners from IPC");
+  ipcMain.removeAllListeners();
+
+  ipcMain.on(IPCAdapterNewRequestEvent, (ev, req) => {
+    if(!WorkerMap.has(worker)) {
+      WorkerMap.set(worker,ev.sender);
+    }
+    worker.postMessage(req);
+  });
+
+  worker.on("message", (response) => {
+    sendResponseToTarget(worker, response);
+  });
+}
+
+function sendResponseToTarget(worker : Worker, response : IPCResponse, count=0) {
+  if(WorkerMap.has(worker)) { 
+  let target = WorkerMap.get(worker);
+  target.send(IPCAdapterNewResponseEvent, response);
+  } else {
+    if(count > 10) {
+      console.error("Failed to deliver response to worker!", response);
+    }
+    setTimeout(() => {
+      sendResponseToTarget(worker, response)
+    }, 200);
+  }
 }

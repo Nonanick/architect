@@ -10,7 +10,7 @@ function OpenArchitectApp(url) {
 
   console.log("\n\u001b[34m[AppRunner]:\u001b[0m", "Electron App is launching!", "\u001b[0m");
   console.log("With URL? ", url);
-  const ElectronAppRunner = exec("electron ./src/app/app.boot.js " + (url != null ? "--url " + url : ""), (err, stdin, stdout) => {
+  const ElectronAppRunner = exec("electron ./src/app/app.boot.js --dev " + (url != null ? "--url " + url : ""), (err, stdin, stdout) => {
     if (err) console.error(err);
   });
 
@@ -20,6 +20,7 @@ function OpenArchitectApp(url) {
 
   ElectronAppRunner.on("exit", (code, signal) => {
     console.log("App Runner ended with code", code, signal);
+    OpenArchitectApp(url);
   });
 
   if (currentApp === undefined) {
@@ -44,11 +45,10 @@ function WatchForChanges() {
   let batchUpdate;
 
 
-  for (let subpath of ["app", "server", "modules"]) {
+  for (let subpath of ["app", "lib"]) {
     let p = path.resolve(
       __dirname, '..', 'src', subpath
     );
-    console.log("Binding to ", p);
     chokidar
       .watch(p, {
         ignoreInitial: true

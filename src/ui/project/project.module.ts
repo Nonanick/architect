@@ -4,13 +4,23 @@ import { ProjectModule as ProjectLib } from "../../lib/project/project.lib";
 export const ProjectModule = {
   ...ProjectLib,
   *createProject(info: NewProject): Generator<CreateProjectStep> {
-    let projectRoot;
+    let projectRoot = window.Architect.FileSystem.joinPath(
+      info.root,
+      info.folder_name,
+    );
     // # 1 - Create project folder
     yield {
       title: "Creating project root folder",
-      resolved: window.Architect.FileSystem.createFolder(
-        info.root + "/" + info.folder_name,
-      ).then((dir) => true).catch((err) => err.message),
+      resolved: window.Architect.Server.post(
+        "project/create-folder", { 
+          target : projectRoot
+        }
+      )
+        .then((msg) => 
+        `Sucessfully created project root folder!` +
+        `\nPath: <a>${projectRoot}</a>` + 
+        `\n${msg}`)
+        .catch((err) => Promise.reject(err.message)),
     };
 
     yield {
@@ -29,6 +39,25 @@ export const ProjectModule = {
       title: "Copying standart project template",
       resolved: window.Architect.Server
         .post("project/copy-template-project", { target: projectRoot }),
+    };
+
+    yield {
+      title: "Configuring project",
+      resolved: window.Architect.Server
+        .post(
+          "project/configure-project",
+          {
+            target: projectRoot,
+            ...info,
+            created_at: info.created_at.toString(),
+          },
+        ),
+    };
+
+    yield {
+      title: "Installing project dependencies",
+      resolved: window.Architect.Server
+        .post("project/install-project-dependencies", { target: projectRoot }),
     };
   },
 };

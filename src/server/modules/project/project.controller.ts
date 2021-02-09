@@ -4,7 +4,7 @@ import { Controller, Resolver, Route } from "maestro";
 import { storage } from "../../data/store/ElectronStore";
 import { ConfigStore } from "../configuration/configuration.controller";
 import { ProjectModule } from "./project.module";
-import { FileSystem } from '../../services/file-system/file-system.service';
+import { FileSystem } from "../../services/file-system/file-system.service";
 
 export const ProjectDefaultFolderName = "architect-workspace";
 
@@ -55,7 +55,7 @@ export class ProjectController extends Controller {
       currentDate,
     );
 
-   /* await ProjectModule.createProject({
+    /* await ProjectModule.createProject({
       name: projectIdentifier,
       icon: req.get("icon"),
       title: req.get("title"),
@@ -76,8 +76,9 @@ export class ProjectController extends Controller {
     schema: {
       body: {
         type: "object",
+        required : ["target"],
         properties: {
-          path: {
+          target: {
             type: "string",
             minLength: 3,
           },
@@ -86,22 +87,23 @@ export class ProjectController extends Controller {
     },
   })
   public createFolder: Resolver = async (req) => {
-    let folderPath = req.get("path");
+    let folderPath = req.get("target");
     let alreadyExists = await FileSystem.folderInfo(folderPath);
 
     if (alreadyExists != undefined) {
       if (alreadyExists.length > 0) {
         return new Error("Choosen directory already exists and its not empty!");
       } else {
-        return "OK! Directory already existed and it's empty! NOOP";
+        return "Sone! Directory already existed but it's empty! Using it as project root folder!";
       }
     }
 
     let creation = await FileSystem.createFolder(folderPath);
+    console.log('[ProjectController]', creation);
 
     return creation != null
       ? `OK! Directory '${folderPath}' was created successfully!`
-      : "Failed to create the folder!";
+      : new Error("Failed to create the folder!");
   };
 
   @Route({
@@ -130,6 +132,96 @@ export class ProjectController extends Controller {
     },
   })
   public currentUser() {
-    return os.userInfo().username + "!";
+    return os.userInfo().username;
   }
+
+  @Route({
+    url: "install-architect",
+    methods: "post",
+    schema: {
+      body: {
+        type: "object",
+        properties: {
+          target: {
+            type: "string",
+          },
+          folderName: {
+            type: "string",
+            default: ".architect",
+          },
+        },
+        required: ["target"],
+      },
+    },
+  })
+  public installArchitect: Resolver = async (req) => {
+    return "OK!";
+  };
+
+  @Route({
+    url: "install-database",
+    methods: "post",
+    schema: {
+      body: {
+        type: "object",
+        properties: {
+          target: {
+            type: "string",
+          },
+          filename: {
+            type: "string",
+            default: "@{folderName}.sqlite",
+          },
+        },
+        required: ["target"],
+      },
+    },
+  })
+  public installArchitectDatabase: Resolver = async (req) => {
+    return "OK!";
+  };
+
+  @Route({
+    url: "copy-template-project",
+    methods: "post",
+    schema: {
+      body: {
+        type: "object",
+        required: ["target"],
+        properties: {
+          target: {
+            type: "string",
+          },
+        },
+      },
+    },
+  })
+  public copyTemplateProject: Resolver = async (req) => {
+    return "OK!";
+  };
+
+  @Route({
+    url : "configure-project",
+    methods : ["post","patch"],
+    schema : {
+      body : {
+        type : 'object',
+        properties : {
+          target : { type : 'string' },
+          name : { type : 'string' },
+
+          icon : { type : 'string' },
+          title : { type : 'string' },
+          description : { type : 'string' },
+          
+          version : { type : 'string' },
+          author : { type : 'string' },
+          created_at : { type : 'string' },
+        }
+      }
+    }
+  })
+  public configureProject : Resolver = async (req) => {
+    return "OK!";
+  };
 }

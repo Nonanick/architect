@@ -1,19 +1,20 @@
 import { ipcMain, WebContents } from "electron";
 import path from "path";
 import { Worker } from "worker_threads";
-import { ElectronIPCAdapter, WorkerIPCClient } from "maestro-electron";
+import { ElectronIPCAdapter } from "maestro-electron";
 import ArchitectServer from "../server/server.boot";
 import chokidar from "chokidar";
 import {
   IPCAdapterNewRequestEvent,
   IPCAdapterNewResponseEvent,
 } from "maestro-electron/dist/adapter/ElectronIPCAdapter";
-import type { IPCResponse } from 'maestro-electron/dist/response/IPCResponse';
+import type { IPCResponse } from "maestro-electron/dist/response/IPCResponse";
+import type { IpcMainEvent } from 'electron/main';
+import type { IPCRequest } from 'maestro-electron/dist/request/IPCRequest';
 
 export function bootServer() {
   // If in dev mode we will re-run a new Thread everytime
   if (process.argv.includes("--dev")) {
-
     let restartWorkerBroker;
 
     let currentWorker = new Worker(
@@ -35,7 +36,6 @@ export function bootServer() {
         },
       ).on("all", (evName, file) => {
         if (restartWorkerBroker == null) {
-
           restartWorkerBroker = setTimeout(() => {
             console.log("File change detected! Restaring server worker!");
             WorkerMap.delete(currentWorker);
@@ -69,43 +69,53 @@ export function bootServer() {
     ArchitectServer.start();
   }
 }
-const WorkerMap : Map<Worker, WebContents> = new Map();
+const WorkerMap: Map<Worker, Function> = new Map();
 
 function attachWorkerToIPC(worker: Worker) {
-
-  process.on("beforeExit",() => {
-    try { 
+  process.on("beforeExit", () => {
+    try {
       worker.terminate();
-    } catch(err) {
+    } catch (err) {
       console.error("Failed to terminate worker", err);
     }
   });
-  
+
   console.log("Removing all listeners from IPC");
   ipcMain.removeAllListeners();
 
-  ipcMain.on(IPCAdapterNewRequestEvent, (ev, req) => {
-    if(!WorkerMap.has(worker)) {
-      WorkerMap.set(worker,ev.sender);
-    }
-    worker.postMessage(req);
-  });
+  let listener =  (ev : IpcMainEvent, req : IPCRequest) => {
+    let reqId = req._id;
 
-  worker.on("message", (response) => {
-    sendResponseToTarget(worker, response);
-  });
+    let workerResponseListener = (response : IPCResponse) => {
+      if(response._id === reqId) {
+        console.log("[AppWorker] Received response for request" + reqId);
+        ev.reply(IPCAdapterNewResponseEvent, response);
+        worker.off("message", workerResponseListener);
+      }
+    };
+    
+    worker.on("message", workerResponseListener);
+    worker.postMessage(req);
+  };
+
+  ipcMain.on(IPCAdapterNewRequestEvent, listener);
+
 }
 
-function sendResponseToTarget(worker : Worker, response : IPCResponse, count=0) {
-  if(WorkerMap.has(worker)) { 
-  let target = WorkerMap.get(worker);
-  target.send(IPCAdapterNewResponseEvent, response);
+function sendResponseToTarget(
+  worker: Worker,
+  response: IPCResponse,
+  count = 0,
+) {
+  if (WorkerMap.has(worker)) {
+    let sendFunction = WorkerMap.get(worker);
+    sendFunction(IPCAdapterNewResponseEvent, response);
   } else {
-    if(count > 10) {
+    if (count > 10) {
       console.error("Failed to deliver response to worker!", response);
     }
     setTimeout(() => {
-      sendResponseToTarget(worker, response)
+      sendResponseToTarget(worker, response);
     }, 200);
   }
 }

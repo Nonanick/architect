@@ -2,7 +2,7 @@ import type { ProtocolRequest, ProtocolResponse } from "electron";
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { ArchitectPublicPath } from "../app.boot";
+import { ArchitectPublicPath } from '../app.window.boot';
 
 export function InterceptAbsoluteFileResolution(req: ProtocolRequest, cb: (resp: ProtocolResponse) => void) {
   let hashPath = req.url.split('#')[1] ?? '';

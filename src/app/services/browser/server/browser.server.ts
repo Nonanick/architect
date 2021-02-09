@@ -1,4 +1,4 @@
-import type { Server } from '../interfaces/server/server.service';
+import type { Server } from '../../interfaces/server/server.service';
 
 export const BrowserServer : Server & {[name : string] : any} = {
   start() {},

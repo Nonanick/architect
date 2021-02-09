@@ -23,12 +23,20 @@
 
   let keepTitleInSync = true;
 
-  let onCreationProcess = false;
+  let onCreationProcess : "create" | "creating" | "done" | "failed" = "create";
 
-  function createProject() {
-    if (onCreationProcess) return;
+  type ProjectCreationStep = {
+    title: string;
+    status: "pending" | "processing" | "done" | "error";
+    output?: string;
+  };
 
-    onCreationProcess = true;
+  let createProjectSteps: ProjectCreationStep[] = [];
+
+  async function createProject() {
+    if (onCreationProcess !== "create") return;
+
+    onCreationProcess = "creating";
 
     let newProject: NewProject = {
       name: packageName,
@@ -41,7 +49,54 @@
       version,
     };
 
-    // # 1 - Create project folder
+    let createProjectGen = ProjectModule.createProject(newProject);
+    let createProjectStep;
+
+    while ((createProjectStep = createProjectGen.next())) {
+      if (createProjectStep.done) {
+        break;
+      }
+      let newStep: ProjectCreationStep = {
+        title: createProjectStep.value.title,
+        status: "processing",
+      };
+
+      createProjectSteps = [...createProjectSteps, newStep];
+
+      await sleep(700);
+
+      try {
+        await createProjectStep.value.resolved
+          .then((done: string) => {
+            newStep.status = "done";
+            newStep.output = done;
+          })
+          .catch((err) => {
+            console.log("Error while creating project!", err);
+            newStep.status = "error";
+            newStep.output = err;
+            return Promise.reject(err);
+          })
+          .finally(() => {
+            createProjectSteps = createProjectSteps;
+          });
+      } catch (err) {
+        onCreationProcess = "failed";
+        setTimeout(() => {
+          createProjectSteps = [];
+          onCreationProcess = "create";
+        }, 5000);
+        return;
+      }
+    }
+
+    onCreationProcess = "done";
+  }
+
+  function sleep(time: number) {
+    return new Promise((resolve) => {
+      setTimeout(() => resolve(true), time);
+    });
   }
 
   function syncTitle() {
@@ -99,7 +154,7 @@
         </div>
       </div>
     </div>
-    {#if onCreationProcess === false}
+    {#if onCreationProcess === "create"}
       <div class="form-container" transition:scale={{ duration: 0.4 }}>
         <TextInput
           class="input"
@@ -193,30 +248,20 @@
       </div>
     {/if}
     <div class="create-project button" on:click={() => createProject()}>
-      {onCreationProcess ? "Creating..." : "Create!"}
+      {onCreationProcess.charAt(0).toLocaleUpperCase() + onCreationProcess.substr(1)}
     </div>
-    {#if onCreationProcess}
+    {#if onCreationProcess !== "create"}
       <div
         class="create-project-progress"
         transition:scale={{ delay: 0.4, duration: 0.4 }}
       >
-        <div class="create-project-title">
-          Creating new project entitled '{title}'
-        </div>
-        <div class="project-info">
-          <div class="info">- name : {packageName}</div>
-          <div class="info">- version : {packageName}</div>
-          <div class="info">- stored in : {workspace}</div>
-          <div class="info">- architect version : {packageName}</div>
-          <div class="info">- author : {packageName}</div>
-          <div class="info">- license : {packageName}</div>
-          <div class="info">- creation time : {packageName}</div>
-          <div class="info">- private : {packageName}</div>
-        </div>
-        <CreateProjectItem title="Create Project folder" status="processing" />
-        <CreateProjectItem title="Create Project folder" status="pending" />
-        <CreateProjectItem title="Create Project folder" status="done" />
-        <CreateProjectItem title="Create Project folder" status="error" />
+        {#each createProjectSteps as step}
+          <CreateProjectItem
+            title={step.title}
+            status={step.status}
+            output={step.output}
+          />
+        {/each}
       </div>
     {/if}
   </sector>
@@ -392,6 +437,7 @@
     transition: height 0.4s;
     box-sizing: border-box;
     margin-top: 20px;
+    padding-bottom: 20px;
   }
 
   @media screen and (max-width: 700px) {

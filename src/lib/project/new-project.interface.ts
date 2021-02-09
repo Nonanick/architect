@@ -7,7 +7,7 @@ export interface NewProject {
   version? : string;
     
   author : string;
-  created_at : Date;
+  created_at : Date | number;
   
   root : string;
   folder_name : string;

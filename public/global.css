@@ -9,7 +9,11 @@ html, body {
 	--distress-color: #383d57;
 
 	--main-bg-color: #fafafa;
-	--error-color: #873D48;
+
+	--error-color: #A10702;
+	--success-color: #688E26 ;
+	--idle-color: #7F95D1;
+	--pending-color: #A5AE9E;
 
 	min-width: 512px;
 	

@@ -53,11 +53,11 @@ async function copyFolder(from: string, to: string) {
   }
 }
 
-async function joinPath(...pieces : string[]) {
+function joinPath(...pieces : string[]) {
   return path.join(...pieces);
 }
 
-async function resolvePath(...pieces : string[]) {
+function resolvePath(...pieces : string[]) {
   return path.resolve(...pieces);
 }
 
@@ -65,5 +65,7 @@ export const FileSystem = {
   folderInfo,
   createFolder,
   removeFolder,
-  copyFolder
+  copyFolder,
+  joinPath,
+  resolvePath,
 }

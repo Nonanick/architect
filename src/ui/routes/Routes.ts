@@ -1,5 +1,5 @@
 import HomePage from "../landing/LandingPage.svelte";
-import CreateProject from '../project/CreateProject.svelte';
+import CreateProject from "../project/CreateProject.svelte";
 import type { SvelteComponent } from "svelte";
 import type { GuardRoute } from '../router/Route';
 
@@ -7,7 +7,7 @@ export interface AppPageDefinition {
   title?: string;
   icon?: string;
   pattern: string;
-  component: typeof SvelteComponent;
+  component: typeof SvelteComponent ;
   guard?: GuardRoute | GuardRoute[];
   onActivation?: () => Promise<void>;
   onDeactivation?: () => Promise<true | string>;

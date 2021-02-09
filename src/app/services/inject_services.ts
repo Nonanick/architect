@@ -1,17 +1,27 @@
-import { nanoid } from 'nanoid';
+import { dialog, ipcRenderer } from 'electron';
 import { FileSystem } from '../../server/services/file-system/file-system.service';
-import type { Server } from './interfaces/server/server.service';
 import { NodeServer } from "./node/server/node_server.service";
 
 export let ArchitectServices = {
-  FileSystem,
+  FileSystem : {
+    ...FileSystem,
+    async pickFolder() {
+      return new Promise<String>((resolve, reject) => {
+        ipcRenderer.once("pick-folder-response",(ev, success, locationOrError) => {
+          console.log("Response!", success, locationOrError);
+           if(success === true && locationOrError.canceled === false) {
+             resolve(locationOrError.filePaths[0]);
+           } else {
+             reject(locationOrError);
+           } 
+        });
+        ipcRenderer.send("pick-folder");
+      });
+     
+
+    }
+  },
   Server: NodeServer
-}
-
-export const MyWorld = nanoid();
-
-export function SetArchitectServer(server : Server) {
-  ArchitectServices.Server = server;
 }
 
 export type WithServices<T> = T & {

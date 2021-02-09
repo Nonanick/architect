@@ -1,4 +1,5 @@
 import type { Dir, Dirent } from 'fs';
+
 import { promises as fs}from 'fs';
 import path from 'path';
 
@@ -19,6 +20,7 @@ async function createFolder(path: string): Promise<Dir | undefined> {
     return undefined;
   }
 }
+
 
 async function removeFolder(folderPath: string): Promise<boolean> {
   return true;
@@ -49,6 +51,14 @@ async function copyFolder(from: string, to: string) {
       fs.symlink(linkPath, path.join(to, subitem.name));
     }
   }
+}
+
+async function joinPath(...pieces : string[]) {
+  return path.join(...pieces);
+}
+
+async function resolvePath(...pieces : string[]) {
+  return path.resolve(...pieces);
 }
 
 export const FileSystem = {

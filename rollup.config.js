@@ -61,8 +61,9 @@ export default {
 		}),
 		commonjs(),
 		typescript({
-			sourceMap: !production,
-			inlineSources: !production
+			module : 'ESNext',
+			sourceMap: false,
+			inlineSources: false
 		}),
 
 		// In dev mode, call `npm run start` once

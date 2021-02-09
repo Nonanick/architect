@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount, SvelteComponent } from "svelte";
+  import { SvelteComponentDev } from "svelte/internal";
   import type { AppRouter } from "./router/AppRouter";
   import type { Route, RouteActivation } from "./router/Route";
   import GetAppPages from "./routes/Routes";
@@ -68,6 +69,7 @@
             }
             ApplyRouteTitle(appPage.title);
             ApplyRouteIcon(appPage.icon);
+
             SwitchCurrentlyVisiblePage(
               appPage.component,
               url,
@@ -113,6 +115,4 @@
     padding: 7px 10px;
     box-sizing: border-box;
   }
-
- 
 </style>

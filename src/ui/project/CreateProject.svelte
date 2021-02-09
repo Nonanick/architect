@@ -1,10 +1,11 @@
 <script lang="ts">
   import SvgImage from "../components/SVGImage.svelte";
   import { AppRouter } from "../router/AppRouter";
-  import { fade } from "svelte/transition";
+  import { fade, scale } from "svelte/transition";
   import TextInput from "../components/form/TextInput.svelte";
   import { ProjectModule } from "./project.module";
-import CreateProjectItem from './CreateProjectItem.svelte';
+  import CreateProjectItem from "./CreateProjectItem.svelte";
+  import type { NewProject } from "../../lib/project/new-project.interface";
 
   Architect.Server.get("project/default-workspace")
     .then((w) => {
@@ -14,36 +15,43 @@ import CreateProjectItem from './CreateProjectItem.svelte';
       console.error("Failed to fetch default workspace!", err);
     });
 
-  let identifier = "";
+  let packageName = "";
   let title = "";
   let description;
   let workspace = "";
+  let version = "0.0.1";
 
   let keepTitleInSync = true;
 
-  let showProgress = false;
+  let onCreationProcess = false;
 
   function createProject() {
-    showProgress = true;
+    if (onCreationProcess) return;
 
-    Architect.Server.post("project/create", {
-      identifier,
-      workspace,
+    onCreationProcess = true;
+
+    let newProject: NewProject = {
+      name: packageName,
+      author: "",
+      created_at: new Date(Date.now()),
+      folder_name: ProjectModule.convertPackageNameToFolderPath(packageName),
+      root: workspace,
       title,
       description,
-    }).then(async (answer) => {
+      version,
+    };
 
-    });
+    // # 1 - Create project folder
   }
 
   function syncTitle() {
     if (keepTitleInSync) {
-      title = ProjectModule.convertPackageNameToTitle(identifier);
+      title = ProjectModule.convertPackageNameToTitle(packageName);
     }
   }
 
   function verifyIdentifier() {
-    identifier = ProjectModule.sanitizePackageName(identifier);
+    packageName = ProjectModule.sanitizePackageName(packageName);
   }
 </script>
 
@@ -91,150 +99,126 @@ import CreateProjectItem from './CreateProjectItem.svelte';
         </div>
       </div>
     </div>
-    <div class="form-container">
-      <div class="create-project-progress {showProgress ? 'visible' : ''}">
+    {#if onCreationProcess === false}
+      <div class="form-container" transition:scale={{ duration: 0.4 }}>
+        <TextInput
+          class="input"
+          name="identifier"
+          required
+          bind:value={packageName}
+          on:keyup={() => {
+            packageName = packageName.toLocaleLowerCase();
+            verifyIdentifier();
+            syncTitle();
+          }}
+          inputButtons={[
+            {
+              label:
+                (keepTitleInSync ? "( ON )" : "( OFF )") +
+                " Synchronize title with package name",
+              icon: {
+                src: "/img/icons/sync.svg",
+                color: keepTitleInSync ? "green" : "var(--error-color)",
+              },
+              showLabel: false,
+              onClick: () => {
+                if (keepTitleInSync) {
+                  keepTitleInSync = false;
+                } else {
+                  keepTitleInSync = true;
+                  syncTitle();
+                }
+              },
+            },
+          ]}
+        >
+          Package Name:
+          <div slot="label-icon">
+            <SvgImage src="/img/icons/medal.svg" size="20px" />
+          </div>
+        </TextInput>
+
+        <TextInput
+          class="input"
+          name="title"
+          bind:value={title}
+          on:input={() => {
+            keepTitleInSync = false;
+          }}
+        >
+          Title:
+        </TextInput>
+
+        <div class="input description">
+          Description: <br />
+          <textarea
+            placeholder="Project description"
+            bind:value={description}
+            name="description"
+          />
+        </div>
+
+        <TextInput
+          class="input"
+          name="workspace"
+          bind:value={workspace}
+          inputButtons={[
+            {
+              label: "Pick Location",
+              icon: {
+                src: "/img/icons/pick.folder.svg",
+              },
+              showLabel: false,
+              onClick: () => {
+                console.log("Pick a folder!");
+                window.Architect.FileSystem.pickFolder()
+                  .then((newLocation) => {
+                    workspace = String(newLocation);
+                  })
+                  .catch((failed) => {
+                    console.error("Failed to open directory", failed);
+                  });
+              },
+            },
+          ]}
+          validate={async (value) => {
+            return value.length > 0 ? true : "Cannot be empty!";
+          }}
+        >
+          Location:
+          <div slot="label-icon">
+            <SvgImage src="/img/icons/folder.location.svg" size="25px" />
+          </div>
+        </TextInput>
+      </div>
+    {/if}
+    <div class="create-project button" on:click={() => createProject()}>
+      {onCreationProcess ? "Creating..." : "Create!"}
+    </div>
+    {#if onCreationProcess}
+      <div
+        class="create-project-progress"
+        transition:scale={{ delay: 0.4, duration: 0.4 }}
+      >
         <div class="create-project-title">
           Creating new project entitled '{title}'
         </div>
         <div class="project-info">
-          <div class="info"> - name : {identifier}</div>
-          <div class="info"> - version : {identifier}</div>
-          <div class="info"> - stored in : {workspace}</div>
-          <div class="info"> - architect version : {identifier}</div>
-          <div class="info"> - author : {identifier}</div>
-          <div class="info"> - license : {identifier}</div>
-          <div class="info"> - creation time : {identifier}</div>
-          <div class="info"> - private : {identifier}</div>
+          <div class="info">- name : {packageName}</div>
+          <div class="info">- version : {packageName}</div>
+          <div class="info">- stored in : {workspace}</div>
+          <div class="info">- architect version : {packageName}</div>
+          <div class="info">- author : {packageName}</div>
+          <div class="info">- license : {packageName}</div>
+          <div class="info">- creation time : {packageName}</div>
+          <div class="info">- private : {packageName}</div>
         </div>
-        <CreateProjectItem title="Create Project folder" status="processing"></CreateProjectItem>
-        <CreateProjectItem title="Create Project folder" status="pending"></CreateProjectItem>
-        <CreateProjectItem title="Create Project folder" status="done"></CreateProjectItem>
-        <CreateProjectItem title="Create Project folder" status="error"></CreateProjectItem>
-        <pre>
-
-========================== Architect New Project ===============================
---------------------------------------------------------------------------------
-
-[New Project]: Creating new project entitled 'New Project'!
-  - name : new-project
-  - versioned/version : yes - 0.0.1
-  - stored in : /path/to/project
-  - architect version : 0.0.1
-  - author : nicholas
-  - license : MIT
-  - creation time: now
-  - private : y/n
-        
-[#1] - Create folder
-  OK, Architect could create project folder on the desired Location
-
-[#2] - Install architect
-  1. OK, Architect metadata about the project was installed on folder '.architect'
-  2. Project's Architect control database was created succesfully!
-  3. Architect's dependencies were installed!
-
-[#3] - Create project template
-  1. Created common backed login
-  2. Created Svelte UI folder and scripts
-
-[#4] - Configure project
-  1. Changing project template to the desired configurations
-
-[#5] - Install project dependencies
-  Running script with 'pnpm'!
-    -- Pnpm output:
-    [...pnpm install dependecies output!]
-  OK, no errors while installing dependencies!
-
-[#6] - Openning project!
-  Preparing project to be editted on Architect!
-
-      </pre>
+        <CreateProjectItem title="Create Project folder" status="processing" />
+        <CreateProjectItem title="Create Project folder" status="pending" />
+        <CreateProjectItem title="Create Project folder" status="done" />
+        <CreateProjectItem title="Create Project folder" status="error" />
       </div>
-
-      <TextInput
-        class="input"
-        name="identifier"
-        bind:value={identifier}
-        on:keyup={() => {
-          identifier = identifier.toLocaleLowerCase();
-          verifyIdentifier();
-          syncTitle();
-        }}
-        inputButtons={[
-          {
-            label:
-              (keepTitleInSync ? "( ON )" : "( OFF )") +
-              " Synchronize title with package name",
-            icon: {
-              src: "/img/icons/sync.svg",
-              color: keepTitleInSync ? "green" : "var(--error-color)",
-            },
-            showLabel: false,
-            onClick: () => {
-              if (keepTitleInSync) {
-                keepTitleInSync = false;
-              } else {
-                keepTitleInSync = true;
-                syncTitle();
-              }
-            },
-          },
-        ]}
-      >
-        Package Name:
-        <div slot="label-icon">
-          <SvgImage src="/img/icons/medal.svg" size="20px" />
-        </div>
-      </TextInput>
-
-      <TextInput
-        class="input"
-        name="title"
-        bind:value={title}
-        on:input={() => {
-          keepTitleInSync = false;
-        }}
-      >
-        Title:
-      </TextInput>
-
-      <div class="input description">
-        Description: <br />
-        <textarea
-          placeholder="Project description"
-          bind:value={description}
-          name="description"
-        />
-      </div>
-
-      <TextInput
-        class="input"
-        name="workspace"
-        bind:value={workspace}
-        inputButtons={[
-          {
-            label: "Pick Location",
-            icon: {
-              src: "/img/icons/pick.folder.svg",
-            },
-            showLabel: false,
-          },
-        ]}
-        validate={async (value) => {
-          return value.length > 0 ? true : "Cannot be empty!";
-        }}
-      >
-        Location:
-        <div slot="label-icon">
-          <SvgImage src="/img/icons/folder.location.svg" size="25px" />
-        </div>
-      </TextInput>
-    </div>
-
-    <div class="create-project button" on:click={() => createProject()}>
-      Create!
-    </div>
+    {/if}
   </sector>
 </main>
 
@@ -247,7 +231,8 @@ import CreateProjectItem from './CreateProjectItem.svelte';
     height: 100%;
     top: 0px;
     left: 0px;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
     background-color: var(--main-bg-color);
   }
 
@@ -313,12 +298,10 @@ import CreateProjectItem from './CreateProjectItem.svelte';
     left: 0px;
     width: 100%;
     height: calc(100% - var(--body-top));
-    display: grid;
     padding: 5px 10px;
     width: 60vw;
     left: 20vw;
-    overflow: hidden;
-    height: auto;
+    box-sizing: border-box;
   }
 
   .form-header {
@@ -326,6 +309,7 @@ import CreateProjectItem from './CreateProjectItem.svelte';
     width: 100%;
     height: auto;
     display: grid;
+    grid-column: 1 / span 2;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto;
     font-size: 20pt;
@@ -344,6 +328,7 @@ import CreateProjectItem from './CreateProjectItem.svelte';
     width: 100%;
     height: auto;
     display: grid;
+    grid-column: 1 / span 1;
     column-gap: 20px;
     row-gap: 20px;
     background-color: white;
@@ -369,6 +354,8 @@ import CreateProjectItem from './CreateProjectItem.svelte';
   }
 
   .create-project.button {
+    position: relative;
+    grid-column: 1 / span 2;
     width: 200px;
     height: 40px;
     line-height: 40px;
@@ -394,26 +381,17 @@ import CreateProjectItem from './CreateProjectItem.svelte';
   }
 
   .create-project-progress {
-    position: absolute;
+    position: relative;
     top: 0px;
     width: 100%;
-    height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
+    height: auto;
     border-radius: 4px;
     z-index: 2;
     backdrop-filter: blur(3px);
     pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.4s;
+    transition: height 0.4s;
     box-sizing: border-box;
-    padding: 10px 20px;
-    overflow-x: hidden;
-    overflow-y: auto;
-  }
-
-  .create-project-progress.visible {
-    opacity: 1;
-    pointer-events: all;
+    margin-top: 20px;
   }
 
   @media screen and (max-width: 700px) {

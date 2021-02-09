@@ -1,5 +1,5 @@
-import 'v8-compile-cache';
-import { app, BrowserWindow, protocol } from "electron";
+import "v8-compile-cache";
+import { app, BrowserWindow, dialog, ipcMain, protocol } from "electron";
 import path from "path";
 import { InterceptAbsoluteFileResolution } from "./scripts/intercept_file_protocol";
 import { bootServer } from "./app.server.boot";
@@ -40,19 +40,29 @@ app.on("ready", () => {
     },
   });
 
-  
   process.stdin.on("data", (msg) => {
     if (String(msg) === "SIGKILL") {
       process.stdout.write(
-        'url: ' +
-        String(window.webContents.getURL()).split("#")[1] ?? "",
+        "url: " +
+            String(window.webContents.getURL()).split("#")[1] ?? "",
       );
       app.exit(0);
     }
   });
 
-  window.loadFile(path.resolve(ArchitectPublicPath, 'index.html'), {
-    //hash: url ?? ''
+  window.loadFile(path.resolve(ArchitectPublicPath, "index.html"), {
+    hash: url ?? "",
+  });
+
+  ipcMain.on("pick-folder", (ev) => {
+    dialog.showOpenDialog(window, {
+      properties: ["openDirectory"],
+      title: "Architect - Choose Folder",
+    }).then((location) => {
+      ev.reply("pick-folder-response", true, location);
+    }).catch((err) => {
+      ev.reply("pick-folder-response", false, err);
+    });
   });
 
   window.maximize();

@@ -3,11 +3,6 @@ import path from "path";
 import { Worker } from "worker_threads";
 import { ElectronIPCAdapter, WorkerIPCClient } from "maestro-electron";
 import ArchitectServer from "../server/server.boot";
-import {
-  ArchitectServices,
-  MyWorld,
-  SetArchitectServer,
-} from "./services/inject_services";
 import chokidar from "chokidar";
 import {
   IPCAdapterNewRequestEvent,
@@ -18,6 +13,7 @@ import type { IPCResponse } from 'maestro-electron/dist/response/IPCResponse';
 export function bootServer() {
   // If in dev mode we will re-run a new Thread everytime
   if (process.argv.includes("--dev")) {
+
     let restartWorkerBroker;
 
     let currentWorker = new Worker(
@@ -77,6 +73,14 @@ const WorkerMap : Map<Worker, WebContents> = new Map();
 
 function attachWorkerToIPC(worker: Worker) {
 
+  process.on("beforeExit",() => {
+    try { 
+      worker.terminate();
+    } catch(err) {
+      console.error("Failed to terminate worker", err);
+    }
+  });
+  
   console.log("Removing all listeners from IPC");
   ipcMain.removeAllListeners();
 

@@ -1,6 +1,4 @@
-import { ArchitectServices, ArchitectServices as Services, InjectServices, MyWorld } from "../services/inject_services";
-
-console.log('Preload ->', ArchitectServices.Server, MyWorld);
+import { ArchitectServices, ArchitectServices as Services, InjectServices } from "../services/inject_services";
 
 InjectServices(window);
 

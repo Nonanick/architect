@@ -6,4 +6,4 @@ package-lock.json
 yarn.lock
 
 src/**/*.js
-src/**/database/Architect.sqlite
+src/**/database/*.sqlite

@@ -1,10 +1,11 @@
-import type { Store } from 'clerk';
-import { ProjectEntity } from '../entities/ProjectEntity';
+import type { Store } from "clerk";
+import * as ServerEntities from "../entities";
 
-export function InjectServerEntities(store : Store) {
-  
+export function InjectServerEntities(store: Store) {
   store.add(
-    ProjectEntity
+    ...(
+      Object.entries(ServerEntities).map(([name, entity]) => entity)
+    ),
   );
 
   return store;

@@ -5,7 +5,7 @@
   import TextInput from "../components/form/TextInput.svelte";
   import { ProjectModule } from "./project.module";
   import CreateProjectItem from "./CreateProjectItem.svelte";
-  import type { NewProject } from "../../lib/project/new-project.interface";
+  import type { ProjectInterface } from "../../lib/project/new-project.interface";
 
   Architect.Server.get("project/default-workspace")
     .then((w) => {
@@ -23,7 +23,7 @@
 
   let keepTitleInSync = true;
 
-  let onCreationProcess : "create" | "creating" | "done" | "failed" = "create";
+  let onCreationProcess: "create" | "creating" | "done" | "failed" = "create";
 
   type ProjectCreationStep = {
     title: string;
@@ -38,12 +38,14 @@
 
     onCreationProcess = "creating";
 
-    let newProject: NewProject = {
+    let newProject: ProjectInterface = {
       name: packageName,
       author: "",
       created_at: new Date(Date.now()),
-      folder_name: ProjectModule.convertPackageNameToFolderPath(packageName),
-      root: workspace,
+      root: Architect.FileSystem.joinPath(
+        workspace,
+        ProjectModule.convertPackageNameToFolderPath(packageName)
+      ),
       title,
       description,
       version,
@@ -248,7 +250,8 @@
       </div>
     {/if}
     <div class="create-project button" on:click={() => createProject()}>
-      {onCreationProcess.charAt(0).toLocaleUpperCase() + onCreationProcess.substr(1)}
+      {onCreationProcess.charAt(0).toLocaleUpperCase() +
+        onCreationProcess.substr(1)}
     </div>
     {#if onCreationProcess !== "create"}
       <div

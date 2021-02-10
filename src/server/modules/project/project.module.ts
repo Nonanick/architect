@@ -5,7 +5,7 @@ import { CreateEntity, SQLite } from "clerk-sqlite";
 import * as NewProjectEntities from "./new-project-entities";
 import { NewProjectFactory } from "./NewProjectFactory";
 import { IEntityProcedureRequest, Store } from "clerk";
-import type { NewProject } from "../../../lib/project/new-project.interface";
+import type { ProjectInterface } from "../../../lib/project/new-project.interface";
 import { ProjectModule as ProjectLib } from "../../../lib/project/project.lib";
 import { FileSystem } from "../../services/file-system/file-system.service";
 
@@ -61,7 +61,7 @@ async function copyEmptyProjectTemplate(to: string) {
 
 async function updateProjectFolder(
   folder: string,
-  info: NewProject,
+  info: ProjectInterface,
 ) {
   // Update package.json
   let packageConfig = JSON.parse(

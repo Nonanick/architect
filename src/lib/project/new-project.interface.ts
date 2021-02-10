@@ -1,4 +1,4 @@
-export interface NewProject {
+export interface ProjectInterface {
   icon? : string;
   name : string;
   
@@ -10,5 +10,5 @@ export interface NewProject {
   created_at : Date | number;
   
   root : string;
-  folder_name : string;
+  metadata_root? : string;
 }

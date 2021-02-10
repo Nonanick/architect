@@ -12,9 +12,9 @@ async function folderInfo(path: string): Promise<Dirent[] | undefined> {
   }
 }
 
-async function createFolder(path: string): Promise<Dir | undefined> {
+async function createFolder(path: string): Promise<string | undefined> {
   try {
-    await fs.mkdir(path, { recursive: true});
+    return await fs.mkdir(path, { recursive: true});
   } catch (err) {
     console.error("Failed to create directory!", err);
     return undefined;
@@ -26,6 +26,16 @@ async function removeFolder(folderPath: string): Promise<boolean> {
   return true;
 }
 
+async function fileExists(path : string) : Promise<boolean> {
+  try {
+    let fInfo = await fs.stat(path);
+    if(fInfo.isFile()) return true;
+  } catch(err) {
+
+  } finally {
+    return false;
+  }
+}
 
 async function copyFolder(from: string, to: string) {
   let readDir = await fs.readdir(
@@ -68,4 +78,5 @@ export const FileSystem = {
   copyFolder,
   joinPath,
   resolvePath,
+  fileExists
 }

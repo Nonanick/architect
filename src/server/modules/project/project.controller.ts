@@ -5,6 +5,9 @@ import { storage } from "../../data/store/ElectronStore";
 import { ConfigStore } from "../configuration/configuration.controller";
 import { ProjectModule } from "./project.module";
 import { FileSystem } from "../../services/file-system/file-system.service";
+import { ServerStore } from "../../data/store/ServerStore";
+import { ProjectEntity } from "../../data/entities/ProjectEntity";
+import type { ProjectInterface as ProjectInterface } from "../../../lib/project/new-project.interface";
 
 export const ProjectDefaultFolderName = "architect-workspace";
 
@@ -76,7 +79,7 @@ export class ProjectController extends Controller {
     schema: {
       body: {
         type: "object",
-        required : ["target"],
+        required: ["target"],
         properties: {
           target: {
             type: "string",
@@ -99,7 +102,7 @@ export class ProjectController extends Controller {
     }
 
     let creation = await FileSystem.createFolder(folderPath);
-    console.log('[ProjectController]', creation);
+    console.log("[ProjectController]", creation);
 
     return creation != null
       ? `OK! Directory '${folderPath}' was created successfully!`
@@ -201,27 +204,70 @@ export class ProjectController extends Controller {
   };
 
   @Route({
-    url : "configure-project",
-    methods : ["post","patch"],
-    schema : {
-      body : {
-        type : 'object',
-        properties : {
-          target : { type : 'string' },
-          name : { type : 'string' },
+    url: "configure-project",
+    methods: ["post", "patch"],
+    schema: {
+      body: {
+        type: "object",
+        properties: {
+          target: { type: "string" },
+          name: { type: "string" },
 
-          icon : { type : 'string' },
-          title : { type : 'string' },
-          description : { type : 'string' },
-          
-          version : { type : 'string' },
-          author : { type : 'string' },
-          created_at : { type : 'string' },
-        }
-      }
-    }
+          icon: { type: "string" },
+          title: { type: "string" },
+          description: { type: "string" },
+
+          version: { type: "string" },
+          author: { type: "string" },
+          created_at: { type: "string" },
+        },
+      },
+    },
   })
-  public configureProject : Resolver = async (req) => {
+  public configureProject: Resolver = async (req) => {
     return "OK!";
+  };
+
+  @Route({
+    url : 'install-project-dependencies',
+    methods : 'post'
+  })
+  public installProjectDependencies : Resolver = async (req) => {
+
+  };
+
+  @Route({
+    url: "save-project",
+    methods: "post",
+    schema: {
+      body: {
+        type: "object",
+        required: ["name", "title", "root"],
+        properties: {
+          name: { type: "string" },
+          title: { type: "string" },
+          root: { type: "string" },
+          metadata_root: { type: "string" },
+          icon: { type: "string" },
+          version: { type: "string" },
+          author: { type: "string" },
+        },
+        additionalProperties : false
+      },
+    },
+  })
+  public saveProject: Resolver = async (req) => {
+    let model = ServerStore.entity(ProjectEntity.name).model<
+      ProjectInterface
+    >();
+    model.$set(
+      req.get(
+        ["name", "title", "root", "metadata_root", "icon", "version", "author"],
+      ),
+    );
+
+    let createResponse = await model.$execute('create');
+
+    return createResponse;
   };
 }

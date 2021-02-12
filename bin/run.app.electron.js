@@ -9,9 +9,10 @@ let currentApp = undefined;
 function OpenArchitectApp(url) {
 
   console.log("\n\u001b[34m[AppRunner]:\u001b[0m", "Electron App is launching!", "\u001b[0m");
-  console.log("With URL? ", url);
   const ElectronAppRunner = exec("electron ./src/app/app.boot.js --dev " + (url != null ? "--url " + url : ""), (err, stdin, stdout) => {
-    if (err) console.error(err);
+    if (err) { 
+      console.error("Failed to execute electron app!",err);
+    }
   });
 
   ElectronAppRunner.on("error", (err) => {
@@ -60,16 +61,17 @@ function WatchForChanges() {
           console.log("Scheduling app restart!");
           batchUpdate = setTimeout(() => {
             console.log("Restarting Electron app!");
-
-            if (currentApp !== undefined) {
-              currentApp.stdout.once("data", msg => {
-                console.log("Received data!", msg)
-                OpenArchitectApp(msg);
-              });
-              currentApp.stdin.write("SIGKILL");
-
-            } else {
-              OpenArchitectApp();
+            try {
+              if (currentApp !== undefined) {
+                currentApp.on("exit", () => {
+                  OpenArchitectApp();
+                });
+                currentApp.stdin.write("SIGKILL");
+              } else {
+                OpenArchitectApp();
+              }
+            } catch (err) {
+              console.error("Failed to launch Electron App!");
             }
 
             delete batchUpdate;

@@ -1,4 +1,4 @@
-import { ipcMain, WebContents } from "electron";
+import { ipcMain } from "electron";
 import path from "path";
 import { Worker } from "worker_threads";
 import { ElectronIPCAdapter } from "maestro-electron";

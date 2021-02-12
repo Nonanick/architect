@@ -12,6 +12,7 @@ import type { ProjectInterface as ProjectInterface } from "../../../lib/project/
 export const ProjectDefaultFolderName = "architect-workspace";
 
 export class ProjectController extends Controller {
+  
   get baseURL(): string {
     return "project";
   }
@@ -232,7 +233,7 @@ export class ProjectController extends Controller {
     url : 'install-project-dependencies',
     methods : 'post'
   })
-  public installProjectDependencies : Resolver = async (req) => {
+  public installProjectDependencies: Resolver = async (req) => {
 
   };
 

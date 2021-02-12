@@ -4,6 +4,7 @@
   import { fade, scale } from "svelte/transition";
   import TextInput from "../components/form/TextInput.svelte";
   import { ProjectModule } from "./project.module";
+  import type { CreateProjectStep } from "./project.module";
   import CreateProjectItem from "./CreateProjectItem.svelte";
   import type { ProjectInterface } from "../../lib/project/new-project.interface";
 
@@ -14,6 +15,7 @@
     .catch((err) => {
       console.error("Failed to fetch default workspace!", err);
     });
+
 
   let packageName = "";
   let title = "";
@@ -52,10 +54,11 @@
     };
 
     let createProjectGen = ProjectModule.createProject(newProject);
-    let createProjectStep;
+    let createProjectStep : IteratorResult<CreateProjectStep>;
 
     while ((createProjectStep = createProjectGen.next())) {
       if (createProjectStep.done) {
+        console.log(createProjectStep.value);
         break;
       }
       let newStep: ProjectCreationStep = {
@@ -65,11 +68,12 @@
 
       createProjectSteps = [...createProjectSteps, newStep];
 
-      await sleep(700);
+     // await sleep(700);
 
       try {
         await createProjectStep.value.resolved
           .then((done: string) => {
+            console.log('Its done!', done)
             newStep.status = "done";
             newStep.output = done;
           })

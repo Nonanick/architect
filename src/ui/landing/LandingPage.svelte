@@ -2,27 +2,13 @@
 	import { AppRouter } from "../router/AppRouter";
 	import SVGImage from "../components/SVGImage.svelte";
 	import RecentProject from "./components/RecentProject.svelte";
-	import type RecentProjectType from "./components/RecentProjectType";
 	import SvgImage from "../components/SVGImage.svelte";
-	import { fade, fly } from 'svelte/transition';
+	import { fade, fly } from "svelte/transition";
+	import type { ProjectInterface } from "../../lib/project/new-project.interface";
 
-	const recentProjects: RecentProjectType[] = [
-		{
-			title: "Testing Svelte Project",
-			author: "Nicholas Frai",
-			version: "0.0.1",
-			description: "very testy testing project",
-			project_root: "/architect/workspace/test-svelte-project",
-			created_at: new Date(Date.now() - 60 * 60 * 24 * 8),
-		},
-		{
-			title: "Another project",
-			author: "Nicholas Frai",
-			version: "0.0.1",
-			project_root: "/architect/workspace/another-project",
-			created_at: new Date(Date.now() - 60 * 60 * 24 * 60),
-		},
-	];
+	const recentProjects: Promise<
+		ProjectInterface[]
+	> = window.Architect.Server.get("project/tracked-projects");
 
 	let themeConfig = window.Architect.Server.get("config/theme");
 
@@ -35,7 +21,7 @@
 	}
 </script>
 
-<main class="page" transition:fade >
+<main class="page" transition:fade>
 	<section class="architect-header">
 		<div class="logo-container">
 			<div class="app-logo">
@@ -57,7 +43,10 @@
 		</div>
 		<div class="project-actions">
 			<div class="create-project" on:click={() => createArchitectProject()}>
-				<SvgImage src="/img/icons/create.project.svg" color="var(--main-color)" /> 
+				<SvgImage
+					src="/img/icons/create.project.svg"
+					color="var(--main-color)"
+				/>
 				New project
 			</div>
 			<div class="open-project" on:click={() => selectArchitectProject()}>
@@ -96,12 +85,15 @@
 			<div class="recently-open-title">
 				<h3>Recently open</h3>
 			</div>
-			{#if recentProjects.length === 0}
-				No recent project avaliable!
-			{/if}
-			{#each recentProjects as project}
-				<RecentProject {...project} />
-			{/each}
+			{#await recentProjects}
+				Locading projects
+			{:then projects}
+				{#if projects.length === 0}
+					No recent project avaliable!
+				{/if}{#each projects as project}
+					<RecentProject {...project} />
+				{/each}
+			{/await}
 		</div>
 		<div class="architect-tips">
 			<div class="tips-title">

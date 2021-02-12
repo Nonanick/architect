@@ -5,14 +5,13 @@ import { storage } from "../../data/store/ElectronStore";
 import { ConfigStore } from "../configuration/configuration.controller";
 import { ProjectModule } from "./project.module";
 import { FileSystem } from "../../services/file-system/file-system.service";
-import { ServerStore } from "../../data/store/ServerStore";
+import { ServerStore } from "../../data/store/server.store";
 import { ProjectEntity } from "../../data/entities/ProjectEntity";
 import type { ProjectInterface as ProjectInterface } from "../../../lib/project/new-project.interface";
 
 export const ProjectDefaultFolderName = "architect-workspace";
 
 export class ProjectController extends Controller {
-  
   get baseURL(): string {
     return "project";
   }
@@ -230,11 +229,10 @@ export class ProjectController extends Controller {
   };
 
   @Route({
-    url : 'install-project-dependencies',
-    methods : 'post'
+    url: "install-project-dependencies",
+    methods: "post",
   })
   public installProjectDependencies: Resolver = async (req) => {
-
   };
 
   @Route({
@@ -253,7 +251,7 @@ export class ProjectController extends Controller {
           version: { type: "string" },
           author: { type: "string" },
         },
-        additionalProperties : false
+        additionalProperties: false,
       },
     },
   })
@@ -267,8 +265,30 @@ export class ProjectController extends Controller {
       ),
     );
 
-    let createResponse = await model.$execute('create');
+    let values = await model.$commit(true);
+    if (values instanceof Error) {
+      return values;
+    }
 
-    return createResponse;
+    console.log("[Project-Controller]: Commited values", values);
+
+    let projects: any[] = storage("projects").get("tracked") as any[] ?? [];
+    projects.push(values);
+    storage("projects").set("tracked", projects);
+
+    console.log("[Project-Controller]: Tracked projects", projects);
+    return values;
   };
+
+  @Route({
+    url : 'tracked-projects'
+  })
+  public trackedProjects : Resolver = (req) => {
+    let allProjects : any[] =  storage("projects").get("tracked") as any[] ?? [];
+    if(allProjects.length > 10) {
+      allProjects = allProjects.slice(allProjects.length-10);
+      storage("projects").set("tracked", allProjects);
+    }
+    return allProjects.reverse();
+  }
 }

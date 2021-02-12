@@ -31,9 +31,7 @@
 
   {#if output != ""}
     <div class="output">
-      {#each (output ?? "").split("\n") as line}
-        <div>{@html line}</div>
-      {/each}
+      <pre>{@html output}</pre>
     </div>
   {/if}
 </div>
@@ -66,5 +64,8 @@
     padding-left: 40px;
     line-height: 25px;
     background-color: rgba(0, 0, 0, 0.1);
+  }
+  pre {
+    white-space: pre-wrap;
   }
 </style>

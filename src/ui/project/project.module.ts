@@ -70,7 +70,10 @@ export const ProjectModule = {
             ...info,
             created_at: info.created_at.toString(),
           },
-        ),
+        ).then(insertedValues => {
+          console.log(insertedValues);
+          return 'OK! New project created with values:\n<pre>' + JSON.stringify(insertedValues, null, 2) + "</pre>"
+        }),
     };
   },
 };

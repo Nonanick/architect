@@ -19,7 +19,7 @@ export const ProjectEntity : IEntity = {
       type : String,
       required : true,
     },
-    project_root : {
+    root : {
       type : String,
       required : true,
     },

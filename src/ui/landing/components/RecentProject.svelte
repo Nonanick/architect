@@ -15,7 +15,7 @@
         ? title
             .split(" ")
             .map((piece) => piece.charAt(0).toLocaleUpperCase())
-            .join("")
+            .join("").substr(0,3)
         : icon}
       <slot name="icon" />
     </div>

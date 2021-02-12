@@ -80,8 +80,7 @@ function attachWorkerToIPC(worker: Worker) {
     }
   });
 
-  console.log("Removing all listeners from IPC");
-  ipcMain.removeAllListeners();
+  //ipcMain.removeAllListeners();
 
   let listener =  (ev : IpcMainEvent, req : IPCRequest) => {
     let reqId = req._id;

@@ -1,15 +1,38 @@
-import { Entity, Factory, IArchive, IProperty, Maybe } from "clerk";
-import { CreateEntity, CreateProcedure, DeleteProcedure, UpdateProcedure } from 'clerk-sqlite';
+import {
+  Entity,
+  Factory,
+  IArchive,
+  IModelProcedure,
+  IProperty,
+  Maybe,
+} from "clerk";
+import {
+  CreateEntity,
+  CreateProcedure,
+  DeleteProcedure,
+  Synchronize,
+  UpdateProcedure,
+} from "clerk-sqlite";
 import { nanoid } from "nanoid";
-import { SQLiteArchive } from './SQLiteArchive';
+import { SQLiteArchive } from "./SQLiteArchive";
 
 export class ServerEntityFactory extends Factory {
-
-  get defaultIdentifier(): Pick<IProperty, "name" | "type" | "isDescriptive" | "private" | "unique" | "default" | "validate" | "sanitize" | "proxy"> {
+  get defaultIdentifier(): Pick<
+    IProperty,
+    | "name"
+    | "type"
+    | "isDescriptive"
+    | "private"
+    | "unique"
+    | "default"
+    | "validate"
+    | "sanitize"
+    | "proxy"
+  > {
     return {
-      name: '_id',
+      name: "_id",
       type: String,
-      default: nanoid()
+      default: nanoid(),
     };
   }
 
@@ -18,17 +41,18 @@ export class ServerEntityFactory extends Factory {
   }
 
   hydrateEntity(entity: Entity<{}>): Maybe<Entity<{}>> {
-    
-    entity.proceduresFor.entity['create-entity'] = CreateEntity;
-    
-    entity.proceduresFor.model = {
-      ...entity.proceduresFor.model,
-      'create' : CreateProcedure,
-      'update' : UpdateProcedure,
-      'delete' : DeleteProcedure
-    };
+
+    entity.addEntityProcedure(
+      CreateEntity,
+      Synchronize,
+    );
+
+    entity.addModelProcedure(
+      CreateProcedure,
+      UpdateProcedure,
+      DeleteProcedure,
+    );
 
     return entity;
   }
-
 }

@@ -8,7 +8,7 @@
   import CreateProjectItem from "./CreateProjectItem.svelte";
   import type { ProjectInterface } from "../../lib/project/new-project.interface";
 
-  Architect.Server.get("project/default-workspace")
+  architect.Server.get("project/default-workspace")
     .then((w) => {
       workspace = w;
     })
@@ -44,7 +44,7 @@
       name: packageName,
       author: "",
       created_at: new Date(Date.now()),
-      root: Architect.FileSystem.joinPath(
+      root: architect.FileSystem.joinPath(
         workspace,
         ProjectModule.convertPackageNameToFolderPath(packageName)
       ),
@@ -232,7 +232,7 @@
               showLabel: false,
               onClick: () => {
                 console.log("Pick a folder!");
-                window.Architect.FileSystem.pickFolder()
+                window.architect.FileSystem.pickFolder()
                   .then((newLocation) => {
                     workspace = String(newLocation);
                   })

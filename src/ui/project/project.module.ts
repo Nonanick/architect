@@ -4,13 +4,13 @@ import { ProjectModule as ProjectLib } from "../../lib/project/project.lib";
 export const ProjectModule = {
   ...ProjectLib,
   *createProject(info: ProjectInterface): Generator<CreateProjectStep> {
-    let projectRoot = window.Architect.FileSystem.joinPath(
+    let projectRoot = architect.FileSystem.joinPath(
       info.root,
     );
     // # 1 - Create project folder
     yield {
       title: "Creating project root folder",
-      resolved: window.Architect.Server.post(
+      resolved: architect.Server.post(
         "project/create-folder",
         {
           target: projectRoot,
@@ -26,25 +26,25 @@ export const ProjectModule = {
 
     yield {
       title: "Installing architect metadata",
-      resolved: window.Architect.Server
+      resolved: architect.Server
         .post("project/install-architect", { target: projectRoot }),
     };
 
     yield {
       title: "Running architect migrations",
-      resolved: window.Architect.Server
+      resolved: architect.Server
         .post("project/install-database", { target: projectRoot }),
     };
 
     yield {
       title: "Copying standart project template",
-      resolved: window.Architect.Server
+      resolved: architect.Server
         .post("project/copy-template-project", { target: projectRoot }),
     };
 
     yield {
       title: "Configuring project",
-      resolved: window.Architect.Server
+      resolved: architect.Server
         .post(
           "project/configure-project",
           {
@@ -57,13 +57,13 @@ export const ProjectModule = {
 
     yield {
       title: "Installing project dependencies",
-      resolved: window.Architect.Server
+      resolved: architect.Server
         .post("project/install-project-dependencies", { target: projectRoot }),
     };
 
     yield {
       title: "Saving new project in Architect",
-      resolved: window.Architect.Server
+      resolved: architect.Server
         .post(
           "project/save-project",
           {

@@ -6,7 +6,7 @@ import { ConfigStore } from "../configuration/configuration.controller";
 import { ProjectModule } from "./project.module";
 import { FileSystem } from "../../services/file-system/file-system.service";
 import { ProjectEntity } from "../../data/entities/ProjectEntity";
-import type { ProjectInterface as ProjectInterface } from "../../../lib/project/new-project.interface";
+import type { ProjectInterface } from "../../../lib/project/new-project.interface";
 import { Entity } from 'clerk';
 
 export const ProjectDefaultFolderName = "architect-workspace";
@@ -266,6 +266,7 @@ export class ProjectController extends Controller {
     );
 
     let values = await model.$commit(true);
+
     if (values instanceof Error) {
       return values;
     }
@@ -283,12 +284,21 @@ export class ProjectController extends Controller {
   @Route({
     url : 'tracked-projects'
   })
-  public trackedProjects : Resolver = (req) => {
+  public trackedProjects : Resolver = () => {
     let allProjects : any[] =  storage("projects").get("tracked") as any[] ?? [];
     if(allProjects.length > 10) {
       allProjects = allProjects.slice(allProjects.length-10);
       storage("projects").set("tracked", allProjects);
     }
     return allProjects.reverse();
+  }
+
+  @Route({
+    url : 'tracked-projects',
+    methods : 'delete'
+  })
+  public emptyTrackedProjects : Resolver = () => {
+    storage("projects").set("tracked", []);
+    return 'Ok! Erased all tracked projects';
   }
 }

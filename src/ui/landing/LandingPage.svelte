@@ -3,21 +3,49 @@
 	import SVGImage from "../components/SVGImage.svelte";
 	import RecentProject from "./components/RecentProject.svelte";
 	import SvgImage from "../components/SVGImage.svelte";
-	import { fade, fly } from "svelte/transition";
+	import { fade } from "svelte/transition";
 	import type { ProjectInterface } from "../../lib/project/new-project.interface";
+	import IconButton from "../components/form/IconButton.svelte";
 
-	const recentProjects: Promise<
-		ProjectInterface[]
-	> = window.Architect.Server.get("project/tracked-projects");
+	let recentProjects: Promise<ProjectInterface[]> = architect.Server.get(
+		"project/tracked-projects"
+	);
 
-	let themeConfig = window.Architect.Server.get("config/theme");
+	recentProjects.then((vs) => console.log(vs));
+
+	let themeConfig = architect.Server.get("config/theme");
+
+	let workspaceConfig = architect.Server.get("config/workspace").then(
+		(dW: string) => {
+			if (typeof dW === "string") {
+				return dW;
+			} else {
+				return architect.Server.get("project/default-workspace");
+			}
+		}
+	);
+
+	workspaceConfig.then((v) => (defaultWorkspace = v));
+
+	let defaultWorkspace: string;
 
 	function selectArchitectProject(initialDir?: string) {
 		alert("Ok! Select Project!");
 	}
 
-	function createArchitectProject(initialDir?: string) {
+	function createArchitectProject() {
 		AppRouter.navigateTo("new-project");
+	}
+
+	function reloadTrackedProjects() {
+		recentProjects = window.architect.Server.get("project/tracked-projects");
+	}
+
+	function updateWorkspace() {
+		architect.Server.post("config/workspace", {
+			value: defaultWorkspace,
+		});
+		workspaceConfig = Promise.resolve(defaultWorkspace);
 	}
 </script>
 
@@ -26,12 +54,7 @@
 		<div class="logo-container">
 			<div class="app-logo">
 				<div class="logo-background">
-					<SVGImage
-						src="/img/architect.logo.svg"
-						color="white"
-						size="90%"
-						ratio={1}
-					/>
+					<SVGImage src="/img/architect.logo.svg" color="white" size="90%" />
 				</div>
 			</div>
 		</div>
@@ -61,29 +84,84 @@
 				<h3>Properties</h3>
 			</div>
 			<div class="item">
-				Theme :
-				{#await themeConfig}
-					...
-				{:then theme}
-					<span
-						on:click={async () => {
-							let currentTheme = await themeConfig;
-							themeConfig = Promise.resolve(
-								currentTheme === "light" ? "dark" : "light"
-							);
-							window.Architect.Server.patch("config/theme/" + currentTheme);
-						}}
-					>
-						{theme ?? "light"}
-					</span>
-				{/await}
+				<div class="title">Theme</div>
+				<div class="setter">
+					{#await themeConfig}
+						... loading theme
+					{:then theme}
+						<div
+							style="cursor:pointer"
+							on:click={async () => {
+								let currentTheme = theme ?? "light";
+
+								themeConfig = Promise.resolve(
+									currentTheme === "light" ? "dark" : "light"
+								);
+								architect.Server.patch(
+									"config/theme/" +
+										(currentTheme === "light" ? "dark" : "light")
+								);
+							}}
+						>
+							<IconButton
+								icon={{
+									src: "/img/icons/theme." + (theme ?? "light") + ".svg",
+								}}
+							/>
+							{theme ?? "Light"}
+						</div>
+					{/await}
+				</div>
 			</div>
-			<div class="item">Workspace</div>
+			<div class="item">
+				<div class="title">Workspace</div>
+				<div class="setter">
+					{#await workspaceConfig}
+						... loading workspace
+					{:then workspace}
+						<input
+							type="text"
+							name="default-workspace"
+							bind:value={defaultWorkspace}
+							on:change={() => updateWorkspace()}
+						/>
+					{/await}
+				</div>
+			</div>
 			<div class="item" />
 		</div>
 		<div class="recently-open">
 			<div class="recently-open-title">
 				<h3>Recently open</h3>
+				<IconButton
+					showLabel={false}
+					icon={{
+						src: "/img/icons/reload.svg",
+						color: "var(--idle-color)",
+					}}
+					label="Reload recent projects"
+					onClick={async () => {
+						reloadTrackedProjects();
+					}}
+				/>
+				<IconButton
+					showLabel={false}
+					icon={{
+						src: "/img/icons/trash.svg",
+						color: "var(--error-color)",
+					}}
+					label="Empty recent projects"
+					onClick={async () => {
+						if (
+							confirm(
+								"Are you sure you want to delete all recently tracked projects?"
+							)
+						) {
+							await window.architect.Server.delete("project/tracked-projects");
+							reloadTrackedProjects();
+						}
+					}}
+				/>
 			</div>
 			{#await recentProjects}
 				Locading projects
@@ -120,7 +198,7 @@
 		display: grid;
 		column-gap: 20px;
 		grid-template-columns: minmax(80px, var(--header-size)) 1fr minmax(
-				250px,
+				280px,
 				25vw
 			);
 		grid-template-rows:
@@ -174,6 +252,13 @@
 		font-weight: 300;
 	}
 
+	.recently-open-title {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		grid-auto-columns: auto;
+		grid-auto-flow: column;
+	}
+
 	.architect-body {
 		box-sizing: border-box;
 		display: grid;
@@ -185,7 +270,7 @@
 
 	.architect-body h3 {
 		font-weight: 600;
-		font-size: 1.3vw;
+		font-size: max(11pt, 1.6vw);
 	}
 
 	.project-actions {
@@ -216,6 +301,22 @@
 	}
 	.project-actions div:active {
 		background-color: rgba(0, 0, 0, 0.2);
+	}
+
+	.customize-properties .item {
+		margin-bottom: 5px;
+		border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+		padding: 5px 8px;
+		box-sizing: border-box;
+	}
+
+	.item .title {
+		font-size: 10pt;
+		font-weight: bold;
+		border-left: 3px solid var(--main-color);
+		border-top-left-radius: 3px;
+		border-bottom-left-radius: 3px;
+		padding-left: 10px;
 	}
 	@media only screen and (min-width: 768px) and (max-width: 1024px) {
 		.architect-body {

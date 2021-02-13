@@ -8,15 +8,16 @@ export let ArchitectServices = {
 
 export type WithServices<T> = T & {
   ArchitectServices: typeof ArchitectServices;
+  architect : typeof ArchitectServices;
 };
 
 export function InjectServices(
   target: { [name: string]: any } & {},
 ): WithServices<typeof target> {
   target.ArchitectServices = ArchitectServices;
-  target.Architect = ArchitectServices;
+  target.architect = ArchitectServices;
 
-  ArchitectServices.Server.start();
+  architect.Server.start();
 
   return target as WithServices<typeof target>;
 }

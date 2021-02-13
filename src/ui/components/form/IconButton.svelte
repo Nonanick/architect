@@ -9,7 +9,7 @@
 
   export let showLabel: boolean = true;
 
-  export let onClick: IconButtonProps["onClick"];
+  export let onClick: IconButtonProps["onClick"] = () => {};
 </script>
 
 <div
@@ -36,7 +36,8 @@
     padding: 2px 7px;
     box-sizing: border-box;
     background-color: transparent;
-    display: flex;
+    display: inline-flex;
+    position: relative;
     align-items: center;
     justify-content: center;
   }

@@ -12,7 +12,7 @@
   },
   "include": [
     "src/**/*"
-  ],
+, "src/templates/.architect"  ],
   "exclude": [
     "node_modules/*",
     "__sapper__/*",

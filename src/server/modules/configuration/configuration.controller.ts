@@ -12,7 +12,7 @@ export class ConfigurationController extends Controller {
   @Route({
     url: 'list',
   })
-  public list: Resolver = (req) => {
+  public list: Resolver = () => {
     return storage(ConfigStore).store;
   };
 
@@ -39,6 +39,26 @@ export class ConfigurationController extends Controller {
       newValue
     };
   };
+
+  @Route({
+    url : ':name',
+    methods : 'post',
+    schema : {
+      body : {
+        type : 'object',
+        properties : {
+          value : {}
+        },
+        required : ['value']
+      }
+    }
+  })
+  public setWithBody : Resolver = (req) => {
+    storage(ConfigStore).set(req.get('name'), req.get('value'));
+
+    return req.get('value');
+  };
+
 
 
 }

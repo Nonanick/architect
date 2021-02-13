@@ -1,34 +1,24 @@
-import { WorkerAdapter } from 'maestro-electron';
-import ArchitectServer from './server.boot';
-import { isMainThread, parentPort } from 'worker_threads';
-import { BootServerStore } from './data/store/store.boot';
-import dotenv from 'dotenv';
+import { WorkerAdapter } from "maestro-electron";
+import ArchitectServer from "./server.boot";
+import { isMainThread, parentPort } from "worker_threads";
+import dotenv from "dotenv";
 
 dotenv.config();
 
-if(isMainThread) {
+if (isMainThread) {
   throw new Error("Server Worker cannot be run on the main thread!");
 }
 
 const Server = ArchitectServer;
 
-if(parentPort == null) {
+if (parentPort == null) {
   throw new Error("Server Worker cannot be run, ParentPort is not defined!");
 }
 
 Server.addAdapter(
-  new WorkerAdapter(parentPort!)
+  new WorkerAdapter(parentPort!),
 );
 
-BootServerStore().then(_ => {
+Server.start();
 
-  console.log("[ServerWorker] Finished loading server store!");
-
-  Server.start();
-
-  console.log("[ServerWorker] Architect Server worker is running!");
-}).catch(err => {
-  console.error("[ServerWorker] Failed to initiate server store! Aborting...");
-  process.exit();
-});
-
+console.log("[ServerWorker] Architect Server worker is running!");

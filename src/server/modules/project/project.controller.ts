@@ -5,9 +5,9 @@ import { storage } from "../../data/store/ElectronStore";
 import { ConfigStore } from "../configuration/configuration.controller";
 import { ProjectModule } from "./project.module";
 import { FileSystem } from "../../services/file-system/file-system.service";
-import { ServerStore } from "../../data/store/server.store";
 import { ProjectEntity } from "../../data/entities/ProjectEntity";
 import type { ProjectInterface as ProjectInterface } from "../../../lib/project/new-project.interface";
+import { Entity } from 'clerk';
 
 export const ProjectDefaultFolderName = "architect-workspace";
 
@@ -256,7 +256,7 @@ export class ProjectController extends Controller {
     },
   })
   public saveProject: Resolver = async (req) => {
-    let model = ServerStore.entity(ProjectEntity.name).model<
+    let model = Entity.instance(ProjectEntity).model<
       ProjectInterface
     >();
     model.$set(

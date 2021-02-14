@@ -67,9 +67,6 @@ function WatchForChanges() {
             console.log("Restarting Electron app!");
             try {
               if (currentApp !== undefined) {
-                currentApp.on("exit", () => {
-                  OpenArchitectApp();
-                });
                 currentApp.stdin.write("SIGKILL");
               } else {
                 OpenArchitectApp();

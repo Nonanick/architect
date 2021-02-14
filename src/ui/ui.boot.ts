@@ -1,6 +1,7 @@
 import { AppRouter } from './router/AppRouter';
 import Viewport from './Viewport.svelte';
 import { BrowserServices } from '../app/services/browser/browser.services';
+import type { ArchitectServices } from '../app/services/inject_services';
 
 let app: Viewport;
 
@@ -29,3 +30,16 @@ window.architect.Server.get("config/bootCount")
 
 
 export default app; 
+
+declare global {
+
+  interface Window {
+    architect: typeof ArchitectServices;
+  }
+
+  interface globalThis {
+    architect: typeof ArchitectServices;
+  }
+
+  var architect: typeof ArchitectServices;
+}

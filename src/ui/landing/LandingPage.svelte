@@ -13,17 +13,21 @@
 
 	recentProjects.then((vs) => console.log(vs));
 
-	let themeConfig = architect.Server.get("config/theme");
+	let themeConfig = architect.Server.get("config/theme").then(v => String(v)).catch(err => {
+		console.error(err);
+	});;
 
 	let workspaceConfig = architect.Server.get("config/workspace").then(
-		(dW: string) => {
+		async (dW: string) => {
 			if (typeof dW === "string") {
 				return dW;
 			} else {
-				return architect.Server.get("project/default-workspace");
+				return await architect.Server.get("project/default-workspace");
 			}
 		}
-	);
+	).catch(err => {
+		console.error(err);
+	});
 
 	workspaceConfig.then((v) => (defaultWorkspace = v));
 

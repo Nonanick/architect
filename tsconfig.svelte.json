@@ -7,19 +7,17 @@
       "DOM"
     ],
     "sourceMap": false,
-    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": false,
     "experimentalDecorators": true
   },
   "include": [
-    "src/server",
-    "src/ui",
-    "src/templates/architect"
+    "src/ui/**/*",
   ],
   "exclude": [
     "node_modules/*",
     "__sapper__/*",
     "public/*",
-    "src/templates",
-    "src/app",
+    "src/templates/*"
   ]
 }

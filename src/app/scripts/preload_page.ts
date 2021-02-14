@@ -5,15 +5,16 @@ InjectServices(window);
 type ArchitectServicesType = typeof Services;
 
 var architect = Services;
+
 declare global {
 
   interface Window {
     architect: typeof Services;
   }
-  
+
   interface globalThis {
     architect: typeof Services;
   }
 
-  var architect : ArchitectServicesType;
+  var architect: ArchitectServicesType;
 }

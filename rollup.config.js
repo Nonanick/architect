@@ -41,9 +41,6 @@ export default {
 	plugins: [
 		svelte({
 			preprocess: sveltePreprocess({
-				defaults : {
-					script : "ts"
-				}
 			}),
 			compilerOptions: {
 				// enable run-time checks when not in production
@@ -65,7 +62,7 @@ export default {
 		}),
 		commonjs(),
 		typescript({
-			module : 'ESNext',
+			module: 'ESNext',
 			sourceMap: false,
 			inlineSources: false
 		}),

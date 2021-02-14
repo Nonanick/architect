@@ -4,7 +4,7 @@ module.exports = function SvelteUIBundler() {
 
   console.log("[Bundler]:\u001b[35m", "\nSvelte UI Bundler is launching!", "\u001b[0m");
   const BundleSvelteUI = exec(
-    "yarn rollup -c -w",
+    "npx rollup -c -w",
     {
       windowsHide: true
     },

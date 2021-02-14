@@ -12,7 +12,7 @@ BundleSvelteUI.stdout.on("data", (data) => {
 
 // ------- # Typescript App Transpiler
 console.log("");
-TranspileAppProccess = TranspileApp();
+const TranspileAppProccess = TranspileApp();
 TranspileAppProccess.stdout.on("data", (data) => {
   if (String(data).match(/Found [0-9]+ errors. Watching for file changes./i)) {
     console.log("");
@@ -27,8 +27,21 @@ TranspileAppProccess.stdout.on("data", (data) => {
 });
 
 let alreadyLaunched = false;
+/**
+ * @type import('child_process').ChildProcess
+ */
+let electron;
+
 // -------- # Electron App runner
 function launchElectronApp() {
   alreadyLaunched = true;
-  ElectronApp();
+  electron = ElectronApp();
 }
+
+process.on("beforeExit", () => {
+  BundleSvelteUI.kill();
+  TranspileAppProccess.kill();
+  if (alreadyLaunched) {
+    electron.kill();
+  }
+});

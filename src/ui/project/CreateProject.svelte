@@ -362,9 +362,9 @@
     height: auto;
     display: grid;
     grid-column: 1 / span 2;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 80px;
     grid-template-rows: auto;
-    font-size: 20pt;
+    font-size: max(16pt, 3vw);
     height: 80px;
     line-height: 80px;
     box-sizing: border-box;

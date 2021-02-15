@@ -3,15 +3,16 @@ import path from "path";
 import { Controller, Resolver, Route } from "maestro";
 import { storage } from "../../data/store/ElectronStore";
 import { ConfigStore } from "../configuration/configuration.controller";
-import { ProjectModule } from "./project.module";
+import { ProjectModule, ArchitectProjectTemplatePath } from "./project.module";
 import { FileSystem } from "../../services/file-system/file-system.service";
-import { ProjectEntity } from "../../data/entities/ProjectEntity";
-import type { ProjectInterface } from "../../../lib/project/new-project.interface";
+import { ProjectEntity } from "../../../lib/entity/ProjectEntity";
+import type { ProjectDTO } from "../../../lib/project/new-project.interface";
 import { Entity } from 'clerk';
 
 export const ProjectDefaultFolderName = "architect-workspace";
 
 export class ProjectController extends Controller {
+
   get baseURL(): string {
     return "project";
   }
@@ -158,30 +159,12 @@ export class ProjectController extends Controller {
     },
   })
   public installArchitect: Resolver = async (req) => {
-    return "OK!";
-  };
-
-  @Route({
-    url: "install-database",
-    methods: "post",
-    schema: {
-      body: {
-        type: "object",
-        properties: {
-          target: {
-            type: "string",
-          },
-          filename: {
-            type: "string",
-            default: "@{folderName}.sqlite",
-          },
-        },
-        required: ["target"],
-      },
-    },
-  })
-  public installArchitectDatabase: Resolver = async (req) => {
-    return "OK!";
+    return ProjectModule.copyArchitectMetadata( path.join( req.get("target"), '.architect' ) )
+      .then(_ => {
+        return `Sucesfully architect metadata of '${ArchitectProjectTemplatePath}' into '${req.get('target')}'!`;
+      }).catch(err => {
+        return new Error(`Failed to copy architect metadata into '${req.get('target')}'!\n${err.message}`);
+      });
   };
 
   @Route({
@@ -200,7 +183,12 @@ export class ProjectController extends Controller {
     },
   })
   public copyTemplateProject: Resolver = async (req) => {
-    return "OK!";
+    return ProjectModule.copyEmptyProjectTemplate(req.get("target"))
+      .then(_ => {
+        return `Sucesfully copied '${ArchitectProjectTemplatePath}' into '${req.get('target')}'!`;
+      }).catch(err => {
+        return new Error(`Failed to copy template project into '${req.get('target')}'!\n${err.message}`);
+      });
   };
 
   @Route({
@@ -225,6 +213,7 @@ export class ProjectController extends Controller {
     },
   })
   public configureProject: Resolver = async (req) => {
+    //return ProjectModule.updateProjectFolder
     return "OK!";
   };
 
@@ -257,7 +246,7 @@ export class ProjectController extends Controller {
   })
   public saveProject: Resolver = async (req) => {
     let model = Entity.instance(ProjectEntity).model<
-      ProjectInterface
+      ProjectDTO
     >();
     model.$set(
       req.get(
@@ -271,34 +260,78 @@ export class ProjectController extends Controller {
       return values;
     }
 
-    console.log("[Project-Controller]: Commited values", values);
 
     let projects: any[] = storage("projects").get("tracked") as any[] ?? [];
     projects.push(values);
     storage("projects").set("tracked", projects);
 
-    console.log("[Project-Controller]: Tracked projects", projects);
     return values;
   };
 
   @Route({
-    url : 'tracked-projects'
+    url: 'tracked'
   })
-  public trackedProjects : Resolver = () => {
-    let allProjects : any[] =  storage("projects").get("tracked") as any[] ?? [];
-    if(allProjects.length > 10) {
-      allProjects = allProjects.slice(allProjects.length-10);
-      storage("projects").set("tracked", allProjects);
+  public trackedProjects: Resolver = () => {
+    let allProjects: any[] = storage("projects").get("tracked") as any[] ?? [];
+    if (allProjects.length > 10) {
+      allProjects = allProjects.slice(allProjects.length - 10);
     }
     return allProjects.reverse();
   }
 
   @Route({
-    url : 'tracked-projects',
-    methods : 'delete'
+    url: 'tracked/:name'
   })
-  public emptyTrackedProjects : Resolver = () => {
+  public getTrackedProject: Resolver = (req) => {
+    let allProjects = storage('projects').get('tracked') as any[];
+    let project = allProjects.filter(project => project.name === req.get('name'));
+    if (project.length > 0) {
+      return project[0];
+    } else {
+      return new Error(`Could not find project with name '${req.get('name')}' on the tracked projects`);
+    }
+  };
+
+
+  @Route({
+    url: 'tracked',
+    methods: 'delete'
+  })
+  public emptyTrackedProjects: Resolver = () => {
     storage("projects").set("tracked", []);
     return 'Ok! Erased all tracked projects';
   }
+
+  @Route({
+    url: 'tracked/:name',
+    methods: 'delete'
+  })
+  public removeFromTrackedProjects: Resolver = (req) => {
+    let allProjects = storage('projects').get('tracked') as any[];
+    let oldLength = allProjects.length;
+    allProjects = allProjects.filter(project => project.name != req.get('name'));
+    storage('projects').set('tracked', allProjects);
+    return `Removed ${oldLength - allProjects.length} projects with name '${req.get('name')}'`;
+  }
+
+  @Route({
+    url : 'analyze',
+    methods : 'post',
+    schema : {
+      body : {
+        type : 'object',
+        required : ['target'],
+        properties : {
+          target : { type : 'string' }
+        }
+      }
+    }
+  })
+  public analyzeProjectFolder : Resolver = (req) => {
+    let manifest = ProjectModule.loadManifest(
+      path.join( req.get('target'), '.architect','manifest.json')
+    );
+
+    return manifest;
+  };
 }

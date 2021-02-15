@@ -4,12 +4,12 @@ import { ipcRenderer, IpcRendererEvent, OpenDialogReturnValue, shell } from "ele
 import { nanoid } from "nanoid";
 
 export const NodeFileSystem: FSInterface & {
-  pickFolder(): Promise<String>;
+  pickFolder(): Promise<string>;
   displayFolder(path : string) : Promise<void>;
 } = {
   ...FileSystem,
-  async pickFolder() : Promise<String> {
-    return new Promise<String>((resolve, reject) => {
+  async pickFolder() : Promise<string> {
+    return new Promise<string>((resolve, reject) => {
       let requestId = nanoid();
 
       let listener = (

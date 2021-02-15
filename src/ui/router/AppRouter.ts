@@ -88,7 +88,7 @@ class Router {
     let helper = new URLSearchParams(params);
     let returnObject: any = {};
     helper.forEach((value, key) => {
-      returnObject[value] = key;
+      returnObject[key] = value;
     });
     console.log(returnObject);
     return returnObject;

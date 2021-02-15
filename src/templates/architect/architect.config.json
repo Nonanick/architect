@@ -1,0 +1,23 @@
+{
+  "project": {
+    "name": "architect-project",
+    "title": "Architect's Project",
+    "description": "Template for an empty architect project, it contains the structure to hold metadata about the project analysys",
+    "auto-versioning": false,
+    "version": "0.0.1",
+    "author": "architect",
+    "contributors": [
+      ""
+    ],
+    "license": "MIT",
+    "private": false,
+    "created_at": "now",
+    "scripts": {}
+  },
+  "architect": {
+    "version": "0.0.1",
+    "entities_root": "./entities",
+    "root": "./",
+    "scripts": {}
+  }
+}

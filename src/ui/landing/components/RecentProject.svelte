@@ -1,14 +1,21 @@
 <script lang="ts">
-  import type { SvelteComponent } from "svelte/internal";
+import { createEventDispatcher } from 'svelte';
 
+import IconButton from '../../components/form/IconButton.svelte';
+import { AppRouter } from '../../router/AppRouter';
+
+  export let name : string = "";
   export let icon: string = "";
   export let title: string;
   export let description: string = "";
   export let version: string = "";
   export let author: string = "";
+
+  let dispatcher = createEventDispatcher();
+
 </script>
 
-<div class="recent-project">
+<div class="recent-project" on:dblclick >
   <div class="icon">
     <div class="icon-bg">
       {icon.length === 0
@@ -27,12 +34,27 @@
     <div class="description">
       {description}
     </div>
-    <div class="version">
-      {version}
+    <div class="options">
+      <IconButton 
+      icon={{ src : '/img/icons/trash.svg', color : 'var(--error-color)'}}
+      onClick={async () => {
+        if(name != "") { 
+         await architect.Server.delete('project/tracked/' + name);
+         dispatcher("deleted", name);
+        }
+      }}
+      ></IconButton>
+      <IconButton 
+      icon={{ src : '/img/icons/open.project.svg', color : 'var(--main-color)'}}
+      onClick={() => {
+        if(name != "") AppRouter.navigateTo('open-project?name=' + name);
+      }}
+      ></IconButton>
     </div>
-    <div class="author">
-      {author}
+    <div class="author-version">
+      {author} -  {version}
     </div>
+   
   </div>
 </div>
 
@@ -100,19 +122,14 @@
     user-select: text;
   }
 
-  .version {
-    font-weight: 300;
-    font-size: 8pt;
-    color: rgba(0, 0, 0, 0.7);
-    text-align: right;
-    user-select: text;
-  }
-
-  .author {
+  .author-version {
     font-weight: 300;
     font-size: 8pt;
     color: rgba(0, 0, 0, 0.9);
     text-align: right;
     user-select: text;
+  }
+  .options {
+    direction: rtl;
   }
 </style>

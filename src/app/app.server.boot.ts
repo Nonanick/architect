@@ -15,7 +15,7 @@ import type { IPCRequest } from 'maestro-electron/dist/request/IPCRequest';
 export function bootServer() {
   // If in dev mode we will re-run a new Thread everytime
   if (process.argv.includes("--dev")) {
-    let restartWorkerBroker;
+    let restartWorkerBroker : NodeJS.Timeout;
 
     let currentWorker = new Worker(
       path.resolve(
@@ -35,10 +35,9 @@ export function bootServer() {
           ignoreInitial: true,
         },
       ).on("all", (evName, file) => {
-        if (restartWorkerBroker == null) {
+        if (restartWorkerBroker == null && file.match(/\.js$/)) {
           restartWorkerBroker = setTimeout(() => {
-            console.log("File change detected! Restaring server worker!");
-            WorkerMap.delete(currentWorker);
+            console.log(`[AppServerController]: JS file change detected!\n'${file}'\n-> Restaring server worker!`);
             currentWorker.terminate()
               .catch((err) => {
                 console.error("Failed to kill old Server Worker Thread!", err);
@@ -52,6 +51,12 @@ export function bootServer() {
                     "server.worker.js",
                   ),
                 );
+                console.log(`[AppServerController] Removing all request listeners from main!\n`, workerRequestListeners);
+                workerRequestListeners.forEach((requestListener) => {
+                  ipcMain.off(IPCAdapterNewRequestEvent, requestListener);
+                });
+                workerRequestListeners = [];
+
                 attachWorkerToIPC(currentWorker);
 
                 restartWorkerBroker = undefined;
@@ -62,6 +67,7 @@ export function bootServer() {
     }
   } else {
     let adapter = new ElectronIPCAdapter(ipcMain);
+
     ArchitectServer.addAdapter(
       adapter,
     );
@@ -69,16 +75,10 @@ export function bootServer() {
     ArchitectServer.start();
   }
 }
-const WorkerMap: Map<Worker, Function> = new Map();
+
+let workerRequestListeners : any[] = [];
 
 function attachWorkerToIPC(worker: Worker) {
-  process.on("beforeExit", () => {
-    try {
-      worker.terminate();
-    } catch (err) {
-      console.error("Failed to terminate worker", err);
-    }
-  });
 
   //ipcMain.removeAllListeners();
 
@@ -97,24 +97,8 @@ function attachWorkerToIPC(worker: Worker) {
     worker.postMessage(req);
   };
 
+  workerRequestListeners.push(listener);
+
   ipcMain.on(IPCAdapterNewRequestEvent, listener);
 
-}
-
-function sendResponseToTarget(
-  worker: Worker,
-  response: IPCResponse,
-  count = 0,
-) {
-  if (WorkerMap.has(worker)) {
-    let sendFunction = WorkerMap.get(worker);
-    sendFunction(IPCAdapterNewResponseEvent, response);
-  } else {
-    if (count > 10) {
-      console.error("Failed to deliver response to worker!", response);
-    }
-    setTimeout(() => {
-      sendResponseToTarget(worker, response);
-    }, 200);
-  }
 }

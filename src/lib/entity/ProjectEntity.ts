@@ -1,4 +1,5 @@
 import type { IEntity } from 'clerk';
+import type { IModelProcedureRequest } from 'clerk/dist/procedure/model/IModelProcedureRequest';
 import { nanoid } from 'nanoid';
 
 export const ProjectEntity : IEntity = {
@@ -6,7 +7,6 @@ export const ProjectEntity : IEntity = {
   identifier : {
     name : '_id',
     type : String,
-    default : () => nanoid(),
     unique : true,
   },
   properties : {
@@ -32,5 +32,17 @@ export const ProjectEntity : IEntity = {
       default : () => new Date(),
     },
     metadata_root : String,
+  },
+  proxy : {
+    "generate-unique-id-when-inserting" : {
+      procedure : 'create',
+      appliesTo : 'model',
+      proxies:"request",
+      async apply(req : IModelProcedureRequest) {
+        req.model.set('_id', nanoid());
+        return req;
+
+      }, 
+    }
   }
 }

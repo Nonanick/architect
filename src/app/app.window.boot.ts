@@ -41,6 +41,10 @@ export function bootWindow() : BrowserWindow {
     });
   });
 
+  ipcMain.on("clear-listeners", () => {
+    ipcMain.removeAllListeners();
+  });
+  
   window.maximize();
   window.show();
 

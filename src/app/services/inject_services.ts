@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { NodeFileSystem } from './node/file_system/node.file_system';
 import { NodeServer } from "./node/server/node.server";
 
@@ -16,7 +17,7 @@ export function InjectServices(
 ): WithServices<typeof target> {
   target.ArchitectServices = ArchitectServices;
   target.architect = ArchitectServices;
-
+  target.Buffer = Buffer;
   architect.Server.start();
 
   return target as WithServices<typeof target>;

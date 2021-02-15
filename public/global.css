@@ -88,3 +88,18 @@ button:focus {
 	padding: 7px 15px;
 	box-sizing: border-box;
 }
+
+.align-center {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+}
+.inline-align-center {
+	height: 100%;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	vertical-align: text-top;
+}

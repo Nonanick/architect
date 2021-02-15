@@ -58,11 +58,15 @@ export default {
 		// https://github.com/rollup/plugins/tree/master/packages/commonjs
 		resolve({
 			browser: true,
-			dedupe: ['svelte']
+			preferBuiltins: false,
+			dedupe: ['svelte'],
 		}),
-		commonjs(),
+		commonjs({
+			exclude : ["crypto"]
+		}),
 		typescript({
-			module: 'ESNext',
+			module: 'ES6',
+			target : "ESNext",
 			sourceMap: false,
 			inlineSources: false
 		}),
@@ -73,7 +77,10 @@ export default {
 
 		// Watch the `public` directory and refresh the
 		// browser on changes when not in production
-		!production && livereload('public'),
+		!production && livereload({
+			watch : 'public',
+			clientUrl : 'http://localhost:35729/livereload.js?snipver=1'
+		}),
 
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify

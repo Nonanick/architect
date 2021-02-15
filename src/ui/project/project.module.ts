@@ -1,9 +1,9 @@
-import type { ProjectInterface } from "../../lib/project/new-project.interface";
+import type { ProjectDTO } from "../../lib/project/new-project.interface";
 import { ProjectModule as ProjectLib } from "../../lib/project/project.lib";
 
 export const ProjectModule = {
   ...ProjectLib,
-  *createProject(info: ProjectInterface): Generator<CreateProjectStep> {
+  *createProject(info: ProjectDTO): Generator<CreateProjectStep> {
     let projectRoot = architect.FileSystem.joinPath(
       info.root,
     );
@@ -25,21 +25,15 @@ export const ProjectModule = {
     };
 
     yield {
-      title: "Installing architect metadata",
-      resolved: architect.Server
-        .post("project/install-architect", { target: projectRoot }),
-    };
-
-    yield {
-      title: "Running architect migrations",
-      resolved: architect.Server
-        .post("project/install-database", { target: projectRoot }),
-    };
-
-    yield {
       title: "Copying standart project template",
       resolved: architect.Server
         .post("project/copy-template-project", { target: projectRoot }),
+    };
+
+    yield {
+      title: "Installing architect metadata",
+      resolved: architect.Server
+        .post("project/install-architect", { target: projectRoot }),
     };
 
     yield {

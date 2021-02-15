@@ -1,27 +1,37 @@
 <script lang="ts">
+  import { Entity } from "clerk";
+  import { fade, scale } from "svelte/transition";
+  import { ProjectEntity } from "../../lib/entity/ProjectEntity";
+  import type { ProjectDTO } from "../../lib/project/new-project.interface";
+  import TextInput from "../components/form/TextInput.svelte";
   import SvgImage from "../components/SVGImage.svelte";
   import { AppRouter } from "../router/AppRouter";
-  import { fade, scale } from "svelte/transition";
-  import TextInput from "../components/form/TextInput.svelte";
-  import { ProjectModule } from "./project.module";
-  import type { CreateProjectStep } from "./project.module";
   import CreateProjectItem from "./CreateProjectItem.svelte";
-  import type { ProjectInterface } from "../../lib/project/new-project.interface";
+  import type { CreateProjectStep } from "./project.module";
+  import { ProjectModule } from "./project.module";
 
-  architect.Server.get("project/default-workspace")
+  architect.Server.get("config/workspace")
     .then((w) => {
       workspace = w;
     })
     .catch((err) => {
-      console.error("Failed to fetch default workspace!", err);
+      console.error("Failed to fetch workspace!", err);
     });
 
+  export let packageName = "";
+  export let title = "";
+  export let description: string;
+  export let workspace = "";
+  export let version = "0.0.1";
+  export let author = "";
 
-  let packageName = "";
-  let title = "";
-  let description;
-  let workspace = "";
-  let version = "0.0.1";
+  architect.Server.get("config/username")
+    .then((user) => {
+      if (author === "" || author == null) author = user;
+    })
+    .catch((err) => {
+      console.error("Failed to get default user!", err);
+    });
 
   let keepTitleInSync = true;
 
@@ -39,10 +49,13 @@
     if (onCreationProcess !== "create") return;
 
     onCreationProcess = "creating";
+    let projectEntity = new Entity<ProjectDTO>(ProjectEntity);
 
-    let newProject: ProjectInterface = {
+    let newProject = projectEntity.model();
+
+    newProject.$set({
       name: packageName,
-      author: "",
+      author,
       created_at: new Date(Date.now()),
       root: architect.FileSystem.joinPath(
         workspace,
@@ -51,10 +64,22 @@
       title,
       description,
       version,
-    };
+    });
 
-    let createProjectGen = ProjectModule.createProject(newProject);
-    let createProjectStep : IteratorResult<CreateProjectStep>;
+    let validValues = await newProject.$commit();
+
+    if (validValues instanceof Error) {
+      alert("Failed to validate project information!");
+      onCreationProcess = "failed";
+      setTimeout(() => {
+        createProjectSteps = [];
+        onCreationProcess = "create";
+      }, 5000);
+      return;
+    }
+
+    let createProjectGen = ProjectModule.createProject(validValues);
+    let createProjectStep: IteratorResult<CreateProjectStep>;
 
     while ((createProjectStep = createProjectGen.next())) {
       if (createProjectStep.done) {
@@ -68,16 +93,14 @@
 
       createProjectSteps = [...createProjectSteps, newStep];
 
-     // await sleep(700);
-
       try {
         await createProjectStep.value.resolved
           .then((done: string) => {
-            console.log('Its done!', done)
+            console.log("Its done!", done);
             newStep.status = "done";
             newStep.output = done;
           })
-          .catch((err) => {
+          .catch((err: string) => {
             console.log("Error while creating project!", err);
             newStep.status = "error";
             newStep.output = err;
@@ -97,6 +120,20 @@
     }
 
     onCreationProcess = "done";
+
+    promptToOpenProject(newProject);
+  }
+
+  function promptToOpenProject(project: ProjectDTO) {
+    if (
+      confirm(
+        `Would you like to open the project ${project.title ?? project.name}?`
+      )
+    ) {
+      AppRouter.navigateTo("open-project?name=" + encodeURI(project.name));
+    } else {
+      AppRouter.navigateTo("/");
+    }
   }
 
   function sleep(time: number) {
@@ -209,6 +246,15 @@
         >
           Title:
         </TextInput>
+        <div class="col-2">
+        <TextInput class="input" name="author" bind:value={author}>
+          Author:
+        </TextInput>
+
+        <TextInput class="input" name="version" bind:value={version}>
+          Version:
+        </TextInput>
+      </div>
 
         <div class="input description">
           Description: <br />
@@ -447,6 +493,11 @@
     padding-bottom: 20px;
   }
 
+  .col-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 10px;
+  }
   @media screen and (max-width: 700px) {
     .form-container .input {
       flex: 100%;

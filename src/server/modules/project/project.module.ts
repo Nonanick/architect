@@ -1,13 +1,12 @@
 import path from "path";
 import { promises as fs } from "fs";
-import type { ProjectManifest } from "./ProjectManifest";
-import type { ProjectInterface } from "../../../lib/project/new-project.interface";
+import type { ProjectDTO } from "../../../lib/project/new-project.interface";
 import { ProjectModule as ProjectLib } from "../../../lib/project/project.lib";
 import { FileSystem } from "../../services/file-system/file-system.service";
 
 async function createProjectManifest(
   manifestPath: string,
-  info: ProjectManifest,
+  info: ProjectDTO,
 ) {
   await fs.writeFile(
     manifestPath,
@@ -18,7 +17,7 @@ async function createProjectManifest(
   );
 }
 
-const ArchitectTemplatePath = path.resolve(
+export const ArchitectProjectTemplatePath = path.resolve(
   __dirname,
   "..",
   "..",
@@ -27,14 +26,26 @@ const ArchitectTemplatePath = path.resolve(
   "project",
 );
 
+export const ArchitectMetadataTemplatePath = path.resolve(
+  __dirname,
+  "..",
+  "..",
+  "..",
+  "templates",
+  "architect",
+);
+
 async function copyEmptyProjectTemplate(to: string) {
-  console.log("Will now copy project template: ", ArchitectTemplatePath);
-  return FileSystem.copyFolder(ArchitectTemplatePath, to);
+  return FileSystem.copyFolder(ArchitectProjectTemplatePath, to);
+}
+
+async function copyArchitectMetadata(to : string) {
+  return FileSystem.copyFolder(ArchitectMetadataTemplatePath, to);
 }
 
 async function updateProjectFolder(
   folder: string,
-  info: ProjectInterface,
+  info: ProjectDTO,
 ) {
   // Update package.json
   let packageConfig = JSON.parse(
@@ -48,10 +59,22 @@ async function updateProjectFolder(
   packageConfig.version = info.version;
 }
 
+async function loadManifest( path : string) {
+  let data = await fs.readFile(path, { encoding : 'utf-8'});
+  try {
+    let manifestData = JSON.parse(data);
+    return manifestData;
+  } catch(err) {
+    throw new Error("Failed to load manifest file!");
+  }
+}
+
 export const ProjectModule = {
   ...ProjectLib,
   createProjectManifest,
   copyEmptyProjectTemplate,
-  ArchitectTemplatePath,
+  copyArchitectMetadata,
+  ArchitectProjectTemplatePath,
   updateProjectFolder,
+  loadManifest
 };

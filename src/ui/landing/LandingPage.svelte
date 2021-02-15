@@ -4,37 +4,37 @@
 	import RecentProject from "./components/RecentProject.svelte";
 	import SvgImage from "../components/SVGImage.svelte";
 	import { fade } from "svelte/transition";
-	import type { ProjectInterface } from "../../lib/project/new-project.interface";
 	import IconButton from "../components/form/IconButton.svelte";
+	import type { ProjectDTO } from "../../lib/project/new-project.interface";
 
-	let recentProjects: Promise<ProjectInterface[]> = architect.Server.get(
-		"project/tracked-projects"
+	let recentProjects: Promise<ProjectDTO[]> = architect.Server.get(
+		"project/tracked"
 	);
 
 	recentProjects.then((vs) => console.log(vs));
 
-	let themeConfig = architect.Server.get("config/theme").then(v => String(v)).catch(err => {
-		console.error(err);
-	});;
+	let themeConfig = architect.Server.get("config/theme")
+		.then((v) => String(v))
+		.catch((err) => {
+			console.error(err);
+		});
 
-	let workspaceConfig = architect.Server.get("config/workspace").then(
-		async (dW: string) => {
-			if (typeof dW === "string") {
-				return dW;
-			} else {
-				return await architect.Server.get("project/default-workspace");
-			}
-		}
-	).catch(err => {
-		console.error(err);
-	});
+	let workspaceConfig = architect.Server.get("config/workspace")
+		.then(async (dW: string) => {
+			return dW;
+		})
+		.catch((err) => {
+			console.error(err);
+			return "";
+		});
 
 	workspaceConfig.then((v) => (defaultWorkspace = v));
 
 	let defaultWorkspace: string;
 
-	function selectArchitectProject(initialDir?: string) {
-		alert("Ok! Select Project!");
+	async function selectArchitectProject(initialDir?: string) {
+		let folderPath = await architect.FileSystem.pickFolder();
+		AppRouter.navigateTo("open-project?path=" + encodeURI(folderPath));
 	}
 
 	function createArchitectProject() {
@@ -42,7 +42,7 @@
 	}
 
 	function reloadTrackedProjects() {
-		recentProjects = window.architect.Server.get("project/tracked-projects");
+		recentProjects = window.architect.Server.get("project/tracked");
 	}
 
 	function updateWorkspace() {
@@ -50,6 +50,14 @@
 			value: defaultWorkspace,
 		});
 		workspaceConfig = Promise.resolve(defaultWorkspace);
+	}
+
+	async function toggleCurrentTheme(theme: string = "light") {
+		let currentTheme = theme ?? "light";
+		themeConfig = Promise.resolve(currentTheme === "light" ? "dark" : "light");
+		architect.Server.patch(
+			"config/theme/" + (currentTheme === "light" ? "dark" : "light")
+		);
 	}
 </script>
 
@@ -95,17 +103,7 @@
 					{:then theme}
 						<div
 							style="cursor:pointer"
-							on:click={async () => {
-								let currentTheme = theme ?? "light";
-
-								themeConfig = Promise.resolve(
-									currentTheme === "light" ? "dark" : "light"
-								);
-								architect.Server.patch(
-									"config/theme/" +
-										(currentTheme === "light" ? "dark" : "light")
-								);
-							}}
+							on:click={() => toggleCurrentTheme(String(theme) ?? "light")}
 						>
 							<IconButton
 								icon={{
@@ -161,19 +159,27 @@
 								"Are you sure you want to delete all recently tracked projects?"
 							)
 						) {
-							await window.architect.Server.delete("project/tracked-projects");
+							await window.architect.Server.delete("project/tracked");
 							reloadTrackedProjects();
 						}
 					}}
 				/>
 			</div>
 			{#await recentProjects}
-				Locading projects
+				Loading projects ...
 			{:then projects}
 				{#if projects.length === 0}
 					No recent project avaliable!
 				{/if}{#each projects as project}
-					<RecentProject {...project} />
+					<RecentProject
+						on:deleted={() => {
+							reloadTrackedProjects();
+						}}
+						on:dblclick={() => {
+							AppRouter.navigateTo("open-project?name=" + project.name);
+						}}
+						{...project}
+					/>
 				{/each}
 			{/await}
 		</div>

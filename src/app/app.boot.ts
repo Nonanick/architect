@@ -20,6 +20,13 @@ app.on("window-all-closed", () => {
   app.exit(0);
 });
 
+process.stdin.on("data", (msg) => {
+  if (String(msg).match(/^SIGKILL/)) {
+    app.exit(0);
+    process.exit(0);
+  }
+});
+
 process.on("SIGINT", () => {
   app.exit(0);
   process.exit();

@@ -1,4 +1,4 @@
-export interface ProjectInterface {
+export interface ProjectDTO {
   icon? : string;
   name : string;
   

@@ -1,1 +1,1 @@
-export { ProjectEntity} from './ProjectEntity';
+export { ProjectEntity} from '../../../lib/entity/ProjectEntity';

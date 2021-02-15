@@ -12,7 +12,7 @@ function OpenArchitectApp(url) {
   const ElectronAppRunner = exec(
     "electron ./src/app/app.boot.js --dev "
     + (url != null ? "--url " + url : ""),
-    (err, stdin, stdout) => {
+    (err) => {
       if (err) {
         console.error("Failed to execute electron app!", err);
       }

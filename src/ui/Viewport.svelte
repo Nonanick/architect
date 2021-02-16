@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, SvelteComponent } from "svelte";
   import { SvelteComponentDev } from "svelte/internal";
+  import RouteNotFound from "./notFound/RouteNotFound.svelte";
   import type { AppRouter } from "./router/AppRouter";
   import type { Route, RouteActivation } from "./router/Route";
   import GetAppPages from "./routes/Routes";
@@ -97,7 +98,14 @@
 
       router.addRoute(route);
     });
+    
+    router.routeNotFound = (urlNotFound) => {
+      SwitchCurrentlyVisiblePage(RouteNotFound, urlNotFound, {}, {});
+    };
+
     router.start();
+
+  
   });
 </script>
 

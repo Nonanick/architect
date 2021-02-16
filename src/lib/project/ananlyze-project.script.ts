@@ -1,7 +1,7 @@
-import type { ProjectInterface } from './new-project.interface';
+import type { ProjectDTO } from './new-project.interface';
 
 export async function AnalyzeWorkspace(
   workspaceFolder : string
-) : Promise<ProjectInterface> {
+) : Promise<ProjectDTO> {
   throw new Error("not implemented yet");
 }

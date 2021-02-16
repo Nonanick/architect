@@ -7,7 +7,8 @@ import { ProjectModule, ArchitectProjectTemplatePath } from "./project.module";
 import { FileSystem } from "../../services/file-system/file-system.service";
 import { ProjectEntity } from "../../../lib/entity/ProjectEntity";
 import type { ProjectDTO } from "../../../lib/project/new-project.interface";
-import { Entity } from 'clerk';
+import { Entity, ModelOf } from 'clerk';
+import { CastObjectToEntityModel, SchemaFromEntity } from 'maestro-clerk';
 
 export const ProjectDefaultFolderName = "architect-workspace";
 
@@ -16,63 +17,6 @@ export class ProjectController extends Controller {
   get baseURL(): string {
     return "project";
   }
-
-  @Route({
-    url: "create",
-    methods: "post",
-    schema: {
-      body: {
-        type: "object",
-        required: ["identifier"],
-        properties: {
-          "identifier": {
-            type: "string",
-          },
-          "workspace": {
-            type: "string",
-          },
-        },
-      },
-    },
-  })
-  public create: Resolver = async (req) => {
-    const currentDate = new Date(Date.now());
-    const projectIdentifier = req.get("identifier");
-
-    const projectTitle = req.get("title") ??
-      ProjectModule.convertPackageNameToTitle(String(projectIdentifier));
-
-    const projectWorkspace = req.get("workspace") ??
-      storage(ConfigStore).get("workspace") ??
-      path.join(os.homedir(), ProjectDefaultFolderName);
-
-    console.log(
-      "Will create project a",
-      projectIdentifier,
-      "with title",
-      projectTitle,
-      "on folder",
-      projectWorkspace,
-      "with author - ",
-      this.currentUser(),
-      "on date",
-      currentDate,
-    );
-
-    /* await ProjectModule.createProject({
-      name: projectIdentifier,
-      icon: req.get("icon"),
-      title: req.get("title"),
-      description: req.get("description") ?? "",
-      version: req.get("version", "0.0.1"),
-      author: this.currentUser(),
-      created_at: new Date(Date.now()),
-      folder_name: ProjectModule.convertPackageNameToFolderPath(projectIdentifier),
-      root: projectWorkspace,
-    });*/
-
-    return `Will create project ${projectIdentifier} with title ${projectTitle} on folder ${projectWorkspace} with author - ${this.currentUser()} on date ${currentDate}`;
-  };
 
   @Route({
     url: "create-folder",
@@ -159,7 +103,7 @@ export class ProjectController extends Controller {
     },
   })
   public installArchitect: Resolver = async (req) => {
-    return ProjectModule.copyArchitectMetadata( path.join( req.get("target"), '.architect' ) )
+    return ProjectModule.copyArchitectMetadata(path.join(req.get("target"), '.architect'))
       .then(_ => {
         return `Sucesfully architect metadata of '${ArchitectProjectTemplatePath}' into '${req.get('target')}'!`;
       }).catch(err => {
@@ -195,25 +139,17 @@ export class ProjectController extends Controller {
     url: "configure-project",
     methods: ["post", "patch"],
     schema: {
-      body: {
-        type: "object",
-        properties: {
-          target: { type: "string" },
-          name: { type: "string" },
-
-          icon: { type: "string" },
-          title: { type: "string" },
-          description: { type: "string" },
-
-          version: { type: "string" },
-          author: { type: "string" },
-          created_at: { type: "string" },
-        },
-      },
+      body: SchemaFromEntity(Entity.instance(ProjectEntity)),
     },
+    cast : CastObjectToEntityModel(Entity.instance(ProjectEntity))
   })
   public configureProject: Resolver = async (req) => {
-    //return ProjectModule.updateProjectFolder
+    let projectModel = <ModelOf<ProjectDTO>> req.byOrigin?.body;
+    
+    if(projectModel != null) {
+      console.log("Received and casted body props to model of entity!\n", projectModel);
+    }
+
     return "OK!";
   };
 
@@ -225,7 +161,7 @@ export class ProjectController extends Controller {
   };
 
   @Route({
-    url: "save-project",
+    url: "tracked",
     methods: "post",
     schema: {
       body: {
@@ -244,7 +180,7 @@ export class ProjectController extends Controller {
       },
     },
   })
-  public saveProject: Resolver = async (req) => {
+  public addTrackedProject: Resolver = async (req) => {
     let model = Entity.instance(ProjectEntity).model<
       ProjectDTO
     >();
@@ -271,7 +207,7 @@ export class ProjectController extends Controller {
   @Route({
     url: 'tracked'
   })
-  public trackedProjects: Resolver = () => {
+  public listAllTrackedProjects: Resolver = () => {
     let allProjects: any[] = storage("projects").get("tracked") as any[] ?? [];
     if (allProjects.length > 10) {
       allProjects = allProjects.slice(allProjects.length - 10);
@@ -291,7 +227,6 @@ export class ProjectController extends Controller {
       return new Error(`Could not find project with name '${req.get('name')}' on the tracked projects`);
     }
   };
-
 
   @Route({
     url: 'tracked',
@@ -315,23 +250,30 @@ export class ProjectController extends Controller {
   }
 
   @Route({
-    url : 'analyze',
-    methods : 'post',
-    schema : {
-      body : {
-        type : 'object',
-        required : ['target'],
-        properties : {
-          target : { type : 'string' }
+    url: 'analyze',
+    methods: 'post',
+    schema: {
+      body: {
+        type: 'object',
+        required: ['target'],
+        properties: {
+          target: { type: 'string' }
         }
       }
     }
   })
-  public analyzeProjectFolder : Resolver = (req) => {
-    let manifest = ProjectModule.loadManifest(
-      path.join( req.get('target'), '.architect','manifest.json')
-    );
+  public analyzeProjectFolder: Resolver = async (req) => {
+    try {
+      let manifest = await ProjectModule.loadManifest(
+        path.join(req.get('target'), '.architect', 'manifest.json')
+      );
 
-    return manifest;
+      console.log('Project Manifest file: ', manifest);
+
+      return manifest;
+    } catch (err) {
+      console.error("[ProjectController] Faile to reach projects manifest!", err);
+      return new Error("Failed to reach project's manifest!")
+    }
   };
 }

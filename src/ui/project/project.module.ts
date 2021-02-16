@@ -59,7 +59,7 @@ export const ProjectModule = {
       title: "Saving new project in Architect",
       resolved: architect.Server
         .post(
-          "project/save-project",
+          "project/tracked",
           {
             ...info,
             created_at: info.created_at.toString(),

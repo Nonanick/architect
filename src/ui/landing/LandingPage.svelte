@@ -5,13 +5,8 @@
 	import SvgImage from "../components/SVGImage.svelte";
 	import { fade } from "svelte/transition";
 	import IconButton from "../components/form/IconButton.svelte";
-	import type { ProjectDTO } from "../../lib/project/new-project.interface";
-
-	let recentProjects: Promise<ProjectDTO[]> = architect.Server.get(
-		"project/tracked"
-	);
-
-	recentProjects.then((vs) => console.log(vs));
+import { TrackedProjects } from '../storage/TrackedProjects';
+import { OpenProject } from '../storage/OpenProject';
 
 	let themeConfig = architect.Server.get("config/theme")
 		.then((v) => String(v))
@@ -42,7 +37,7 @@
 	}
 
 	function reloadTrackedProjects() {
-		recentProjects = window.architect.Server.get("project/tracked");
+		TrackedProjects.truncate();
 	}
 
 	function updateWorkspace() {
@@ -135,17 +130,7 @@
 		<div class="recently-open">
 			<div class="recently-open-title">
 				<h3>Recently open</h3>
-				<IconButton
-					showLabel={false}
-					icon={{
-						src: "/img/icons/reload.svg",
-						color: "var(--idle-color)",
-					}}
-					label="Reload recent projects"
-					onClick={async () => {
-						reloadTrackedProjects();
-					}}
-				/>
+			
 				<IconButton
 					showLabel={false}
 					icon={{
@@ -159,29 +144,23 @@
 								"Are you sure you want to delete all recently tracked projects?"
 							)
 						) {
-							await window.architect.Server.delete("project/tracked");
-							reloadTrackedProjects();
+							TrackedProjects.truncate();
 						}
 					}}
 				/>
 			</div>
-			{#await recentProjects}
-				Loading projects ...
-			{:then projects}
-				{#if projects.length === 0}
+				{#if $TrackedProjects.length === 0}
 					No recent project avaliable!
-				{/if}{#each projects as project}
+				{/if}
+				{#each $TrackedProjects as project}
 					<RecentProject
-						on:deleted={() => {
-							reloadTrackedProjects();
-						}}
 						on:dblclick={() => {
-							AppRouter.navigateTo("open-project?name=" + project.name);
+						 	$OpenProject = project;
+							AppRouter.navigateTo("open-project");
 						}}
-						{...project}
+						projectInfo={project}
 					/>
 				{/each}
-			{/await}
 		</div>
 		<div class="architect-tips">
 			<div class="tips-title">

@@ -62,13 +62,13 @@ export default {
 			dedupe: ['svelte'],
 		}),
 		commonjs({
-			exclude : ["crypto"]
 		}),
 		typescript({
 			module: 'ES6',
 			target : "ESNext",
 			sourceMap: false,
-			inlineSources: false
+			inlineSources: false,
+			
 		}),
 
 		// In dev mode, call `npm run start` once

@@ -1,5 +1,4 @@
 {
-  "extends": "@tsconfig/svelte/tsconfig.json",
   "compilerOptions": {
     "module": "ESNext",
     "lib": [
@@ -9,10 +8,11 @@
     "sourceMap": false,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": false,
+    "moduleResolution": "node",
     "experimentalDecorators": true
   },
   "include": [
-    "src/ui/**/*",
+    "src/server",
   ],
   "exclude": [
     "node_modules/*",

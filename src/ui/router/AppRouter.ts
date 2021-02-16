@@ -126,6 +126,7 @@ class Router {
   }
 
   routeNotFound(url?: string) {
+    
   }
 
   routeGuarded(route?: Route) {

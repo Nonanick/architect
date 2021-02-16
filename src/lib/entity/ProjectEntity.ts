@@ -1,23 +1,22 @@
 import type { IEntity } from 'clerk';
 import type { IModelProcedureRequest } from 'clerk/dist/procedure/model/IModelProcedureRequest';
 import { nanoid } from 'nanoid';
+import { DefaultIdentifier } from './default.identifier';
 
 export const ProjectEntity : IEntity = {
   name : 'project',
-  identifier : {
-    name : '_id',
-    type : String,
-    unique : true,
-  },
+  identifier :DefaultIdentifier,
   properties : {
     name : {
       type : String,
       unique : true,
       required : true,
+      isIdentifier : true,
     },
     title : {
       type : String,
       required : true,
+      isDescriptive : true,
     },
     root : {
       type : String,

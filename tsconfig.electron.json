@@ -11,16 +11,16 @@
     "sourceMap": false,
     "esModuleInterop": true,
     "moduleResolution": "Node",
-    "baseUrl": "./src",
+    "baseUrl": "src",
     "experimentalDecorators": true
   },
   "include": [
-    "./src"
+    "src"
   ],
   "exclude": [
     "dev",
-    "./src/ui",
-    "./src/templates",
+    "src/ui",
+    "src/templates",
     "node_modules",
     "public",
     ".vscode"

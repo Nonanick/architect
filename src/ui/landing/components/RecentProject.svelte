@@ -1,60 +1,61 @@
 <script lang="ts">
-import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher } from "svelte";
+  import type { ProjectDTO } from "../../../lib/project/new-project.interface";
 
-import IconButton from '../../components/form/IconButton.svelte';
-import { AppRouter } from '../../router/AppRouter';
+  import IconButton from "../../components/form/IconButton.svelte";
+  import { AppRouter } from "../../router/AppRouter";
+  import { OpenProject } from "../../storage/OpenProject";
+  import { TrackedProjects } from "../../storage/TrackedProjects";
 
-  export let name : string = "";
-  export let icon: string = "";
-  export let title: string;
-  export let description: string = "";
-  export let version: string = "";
-  export let author: string = "";
+  export let projectInfo: ProjectDTO;
 
   let dispatcher = createEventDispatcher();
-
 </script>
 
-<div class="recent-project" on:dblclick >
+<div class="recent-project" on:dblclick>
   <div class="icon">
     <div class="icon-bg">
-      {icon.length === 0
-        ? title
+      {projectInfo.icon == null
+        ? projectInfo.title
             .split(" ")
             .map((piece) => piece.charAt(0).toLocaleUpperCase())
-            .join("").substr(0,3)
-        : icon}
+            .join("")
+            .substr(0, 3)
+        : projectInfo.icon}
       <slot name="icon" />
     </div>
   </div>
   <div class="project-info">
     <div class="title">
-      {title}
+      {projectInfo.title}
     </div>
     <div class="description">
-      {description}
+      {projectInfo.description}
     </div>
     <div class="options">
-      <IconButton 
-      icon={{ src : '/img/icons/trash.svg', color : 'var(--error-color)'}}
-      onClick={async () => {
-        if(name != "") { 
-         await architect.Server.delete('project/tracked/' + name);
-         dispatcher("deleted", name);
-        }
-      }}
-      ></IconButton>
-      <IconButton 
-      icon={{ src : '/img/icons/open.project.svg', color : 'var(--main-color)'}}
-      onClick={() => {
-        if(name != "") AppRouter.navigateTo('open-project?name=' + name);
-      }}
-      ></IconButton>
+      <IconButton
+        icon={{ src: "/img/icons/trash.svg", color: "var(--error-color)" }}
+        onClick={async () => {
+          if (projectInfo.name != "") {
+            TrackedProjects.remove(projectInfo.name);
+            dispatcher("deleted", projectInfo.name);
+          }
+        }}
+      />
+      <IconButton
+        icon={{
+          src: "/img/icons/open.project.svg",
+          color: "var(--main-color)",
+        }}
+        onClick={() => {
+          $OpenProject = projectInfo;
+          if (projectInfo.name != "") AppRouter.navigateTo("open-project");
+        }}
+      />
     </div>
     <div class="author-version">
-      {author} -  {version}
+      {projectInfo.author} - {projectInfo.version}
     </div>
-   
   </div>
 </div>
 

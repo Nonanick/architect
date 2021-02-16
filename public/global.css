@@ -2,10 +2,13 @@ html, body {
 	position: relative;
 	width: 100%;
 	height: 100%;
-	background-color: #fafafa;
-
+	background: rgb(239,255,246);
+	background: linear-gradient(180deg, rgba(241,248,244,1) 0%, rgba(240,240,240,1) 24%, rgba(250,250,250,1) 100%);
+	
+	
 	--main-color: #008081;
 	--secondary-color: #2c1320;
+	--text-on-secondary-color: white;
 	--distress-color: #383d57;
 
 	--main-bg-color: #fafafa;
@@ -102,4 +105,17 @@ button:focus {
 	justify-content: center;
 	box-sizing: border-box;
 	vertical-align: text-top;
+}
+
+.clickable {
+	cursor: pointer;
+	transition: filter 0.4s;
+	filter: brightness(100%);
+}
+
+.clickable:hover {
+	filter: brightness(90%);
+}
+.clickable:active {
+	filter: brightness(80%);
 }

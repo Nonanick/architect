@@ -15,6 +15,9 @@ module.exports = function SvelteUIBundler() {
   BundleSvelteUI.on("error", (err) => {
     console.log("Svelte UI Bundler error!\n", err);
   });
+  BundleSvelteUI.stderr.on("data", (errData) => {
+    console.log("Svelte UI Bundler error!\n", errData);
+  });
   BundleSvelteUI.on("exit", (code, signal) => {
     console.log("Bundler ended with code", code, signal);
   });

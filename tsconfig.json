@@ -7,14 +7,16 @@
       "DOM"
     ],
     "sourceMap": false,
+    "moduleResolution": "Node",
+    "baseUrl": "./src",
     "esModuleInterop": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
   },
   "include": [
-    "src/server",
     "src/ui",
     "src/lib",
-    "src/templates/architect"
+    "src/templates/architect",
+    "src/server"
   ],
   "exclude": [
     "node_modules/*",

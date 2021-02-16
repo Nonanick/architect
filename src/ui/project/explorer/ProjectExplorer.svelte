@@ -1,23 +1,17 @@
 <script lang="ts">
-  import type { ProjectDTO } from "../../lib/project/new-project.interface";
-  import SvgImage from "../components/SVGImage.svelte";
-  import { AppRouter } from "../router/AppRouter";
+  import SvgImage from "../../components/SVGImage.svelte";
+  import { AppRouter } from "../../router/AppRouter";
+  import { OpenProject } from "../../storage/OpenProject";
+  import NavigationItem from "./NavigationItem.svelte";
 
   export let projectPath: string;
-  export let projectName : string;
+  export let projectName: string;
 
   export let queryParams: any = {};
 
-  let projectInfo: ProjectDTO;
-
   $: {
-    if ((projectPath == null || projectPath == "") && projectInfo != null) {
-      projectPath = projectInfo.root;
-    }
-
-    if((projectName == null || projectName == "") && projectInfo != null) {
-      projectName = projectInfo.name;
-    }
+    projectPath = $OpenProject?.root;
+    projectName = $OpenProject?.name;
   }
 
   if (queryParams.name != null) {
@@ -26,7 +20,7 @@
       .then((info) => {
         console.log("Project info:", info);
         projectPath = info.root;
-        projectInfo = info;
+        $OpenProject = info;
       })
       .catch((err) => {
         console.error(
@@ -38,17 +32,15 @@
     projectPath = queryParams.path;
     architect.Server.post(`project/analyze`, { target: projectPath })
       .then((info) => {
-        projectInfo = info;
+        $OpenProject = info;
       })
       .catch((err) => {
         console.error("Error while loading project: ", err);
         alert("Failed to load project!\nIs it an Architect project?");
       });
   }
-
 </script>
 
-<div class="">Exploring a new project!</div>
 <main class="page project-explorer-page">
   <sector class="header">
     <div
@@ -59,28 +51,32 @@
     >
       <SvgImage
         src="/img/architect.logo.svg"
-        color="var(--secondary-color)"
+        color="var(--text-on-secondary-color)"
         size="30px"
       />
     </div>
     <div class="title">
-      <div class="inline-align-center"> 
-      <SvgImage
-        src="/img/icons/project.svg"
-        color="var(--main-color)"
-        size="24pt"
-      />
+      <div class="inline-align-center">
+        <SvgImage
+          src="/img/icons/project.svg"
+          color="var(--main-color)"
+          size="24pt"
+        />
       </div>
-      {projectInfo?.title ?? "Loading project..."}
+      {$OpenProject?.title ?? "Loading project..."}
     </div>
   </sector>
   <sector class="body">
     <nav class="side-menu">
-      
+      <div class="title" />
+      <div class="search" />
+      <div class="project-items">
+        <NavigationItem />
+      </div>
     </nav>
     <sector class="content-viewport">
-    Project explorer! <br />
-    Will now explore project located at: {projectPath}
+      Project explorer! <br />
+      Will now explore project located at: {projectPath}
     </sector>
   </sector>
 </main>
@@ -96,7 +92,6 @@
     left: 0px;
     overflow-x: hidden;
     overflow-y: auto;
-    background-color: var(--main-bg-color);
   }
 
   .header {
@@ -118,7 +113,7 @@
   }
 
   .go-back {
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: var(--secondary-color);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -128,11 +123,11 @@
   }
 
   .go-back:hover {
-    background-color: rgba(0, 0, 0, 0.2);
+    filter: brightness(95%);
   }
 
   .go-back:active {
-    background-color: rgba(0, 0, 0, 0.3);
+    filter: brightness(80%);
   }
 
   .body {

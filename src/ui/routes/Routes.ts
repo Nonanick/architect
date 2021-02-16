@@ -1,6 +1,6 @@
 import HomePage from "../landing/LandingPage.svelte";
 import CreateProject from "../project/CreateProject.svelte";
-import ProjectExplorer from "../project/ProjectExplorer.svelte";
+import ProjectExplorer from "../project/explorer/ProjectExplorer.svelte";
 import type { SvelteComponent } from "svelte";
 import type { GuardRoute } from '../router/Route';
 

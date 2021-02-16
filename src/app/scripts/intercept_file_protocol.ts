@@ -8,7 +8,7 @@ export function InterceptAbsoluteFileResolution(req: ProtocolRequest, cb: (resp:
 
   let filePath = req.url.split('#')[0].replace(/^file:\/\//, '').replace(/\\/g, '/');
   if(filePath.indexOf('?') >= 0) {
-    filePath.substr(0,filePath.indexOf('?'));
+    filePath = filePath.substr(0,filePath.indexOf('?'));
   }
   let absolutePath: string = "";
   const publicPathRegExp = new RegExp('^' + ArchitectPublicPath.replace(/\\/g, '/'));

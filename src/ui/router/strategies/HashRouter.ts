@@ -11,7 +11,7 @@ export class HashRouter implements RouterStrategy {
   private _preppendToURL: string;
 
   private _hashSanitizer = (hash: string) => {
-    return hash.trim().replace(
+    return hash.trim().substr(1).replace(
       new RegExp("^" + this._preppendToURL, "gi"),
       "",
     );
@@ -19,7 +19,7 @@ export class HashRouter implements RouterStrategy {
 
   private _changeListeners: ((url: string) => void)[] = [];
 
-  constructor(preppendToURL = "#/") {
+  constructor(preppendToURL = "/") {
     this._preppendToURL = preppendToURL.trim();
 
     this._currentURL = this._hashSanitizer(window.location.hash);

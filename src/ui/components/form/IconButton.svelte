@@ -13,7 +13,7 @@
 </script>
 
 <div
-  class="icon-button"
+  class="icon-button clickable"
   on:click={(ev) => {
     if (onClick != null) onClick(ev);
   }}

@@ -5,10 +5,13 @@ module.exports = function TranspileApp() {
   const TranspileAppProccess = exec(
     // Transpile using Typescript Compiler
     "tsc -p ./tsconfig.electron.json -w",
-    (err, stdout, stdin) => {
+    (Error) => {
       if (err) { console.error(err); }
     }
   );
+  TranspileAppProccess.stderr.on("data", (err) => {
+    console.log("App transpiler error!", err);
+  });
   TranspileAppProccess.on("error", (err) => {
     console.log("App Transpilation Error! ", err);
   });

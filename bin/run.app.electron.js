@@ -10,7 +10,7 @@ function OpenArchitectApp(url) {
 
   console.log("\n\u001b[34m[AppRunner]:\u001b[0m", "Electron App is launching!", "\u001b[0m");
   const ElectronAppRunner = exec(
-    "electron ./src/app/app.boot.js --dev "
+    "electron ./src/app/esm.boot.js --dev "
     + (url != null ? "--url " + url : ""),
     (err) => {
       if (err) {

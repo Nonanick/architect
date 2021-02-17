@@ -15,14 +15,14 @@ import type { IPCRequest } from 'maestro-electron/dist/request/IPCRequest';
 export function bootServer() {
   // If in dev mode we will re-run a new Thread everytime
   if (process.argv.includes("--dev")) {
-    let restartWorkerBroker : NodeJS.Timeout;
+    let restartWorkerBroker: NodeJS.Timeout;
 
     let currentWorker = new Worker(
       path.resolve(
         __dirname,
         "..",
         "server",
-        "server.worker.js",
+        "server.esm.worker.js",
       ),
     );
 
@@ -48,7 +48,7 @@ export function bootServer() {
                     __dirname,
                     "..",
                     "server",
-                    "server.worker.js",
+                    "server.esm.worker.js",
                   ),
                 );
                 console.log(`[AppServerController] Removing all request listeners from main!\n`, workerRequestListeners);
@@ -76,23 +76,23 @@ export function bootServer() {
   }
 }
 
-let workerRequestListeners : any[] = [];
+let workerRequestListeners: any[] = [];
 
 function attachWorkerToIPC(worker: Worker) {
 
   //ipcMain.removeAllListeners();
 
-  let listener =  (ev : IpcMainEvent, req : IPCRequest) => {
+  let listener = (ev: IpcMainEvent, req: IPCRequest) => {
     let reqId = req._id;
 
-    let workerResponseListener = (response : IPCResponse) => {
-      if(response._id === reqId) {
+    let workerResponseListener = (response: IPCResponse) => {
+      if (response._id === reqId) {
         console.log("[AppWorker] Received response for request" + reqId);
         ev.reply(IPCAdapterNewResponseEvent, response);
         worker.off("message", workerResponseListener);
       }
     };
-    
+
     worker.on("message", workerResponseListener);
     worker.postMessage(req);
   };

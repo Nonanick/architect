@@ -1,4 +1,4 @@
-import  { BrowserWindow, ipcMain, dialog } from 'electron';
+import { BrowserWindow, ipcMain, dialog } from 'electron';
 import path from 'path';
 
 export const ArchitectPublicPath = path.resolve(
@@ -8,8 +8,8 @@ export const ArchitectPublicPath = path.resolve(
   "public",
 );
 
-export function bootWindow() : BrowserWindow {
-  
+export function bootWindow(): BrowserWindow {
+
   let window = new BrowserWindow({
     width: 800,
     height: 400,
@@ -23,7 +23,7 @@ export function bootWindow() : BrowserWindow {
       contextIsolation: false,
       enableWebSQL: true,
       webSecurity: true,
-      preload: path.resolve(__dirname, "scripts", "preload_page.js"),
+      preload: path.resolve(__dirname, "scripts", "preload_page.esm.js"),
     },
   });
 
@@ -44,7 +44,7 @@ export function bootWindow() : BrowserWindow {
   ipcMain.on("clear-listeners", () => {
     ipcMain.removeAllListeners();
   });
-  
+
   window.maximize();
   window.show();
 

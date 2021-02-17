@@ -64,11 +64,11 @@ export default {
 		commonjs({
 		}),
 		typescript({
-			module: 'ES6',
-			target : "ESNext",
+			module: 'esnext',
+			target: "ESNext",
 			sourceMap: false,
 			inlineSources: false,
-			
+
 		}),
 
 		// In dev mode, call `npm run start` once
@@ -78,8 +78,8 @@ export default {
 		// Watch the `public` directory and refresh the
 		// browser on changes when not in production
 		!production && livereload({
-			watch : 'public',
-			clientUrl : 'http://localhost:35729/livereload.js?snipver=1'
+			watch: 'public',
+			clientUrl: 'http://localhost:35729/livereload.js?snipver=1'
 		}),
 
 		// If we're building for production (npm run build

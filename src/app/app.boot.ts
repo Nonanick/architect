@@ -1,3 +1,4 @@
+require = require('esm')(module);
 import "v8-compile-cache";
 import { app, protocol } from "electron";
 import { bootServer } from "./app.server.boot";

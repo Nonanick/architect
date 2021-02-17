@@ -5,5 +5,12 @@
 package-lock.json
 yarn.lock
 
+
+# Electron required 'esm' entry points
+!src/**/*esm*.js
+
+# All other files inside src folder are just built files
 src/**/*.js
-src/**/database/*.sqlite
+
+# SQLite databases are generated on first run
+src/**/*.sqlite

@@ -1,24 +1,28 @@
-import { Buffer as NodeBuffer} from 'buffer';
+import { Buffer as NodeBuffer } from 'buffer';
 import { ArchitectServices as Services, InjectServices } from "../services/inject_services";
 
-if(window.exports == null)
+if (window.exports == null)
   window.exports = {};
-  
-window.Buffler = NodeBuffer;
+
 InjectServices(window);
 
 type ArchitectServicesType = typeof Services;
 
 var architect = Services;
 var Buffler = NodeBuffer;
-console.log('Buffer =>', Buffer);
+var process = {
+  env: {}
+};
+
+window.Buffer = NodeBuffer;
+window.process = process;
 
 declare global {
 
   interface Window {
     architect: typeof Services;
-    Buffler : typeof NodeBuffer;
-    Buffer : typeof NodeBuffer;
+    Buffer: typeof NodeBuffer;
+    process: any;
   }
 
   interface globalThis {

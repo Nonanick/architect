@@ -3,6 +3,7 @@
   import { AppRouter } from "../../router/AppRouter";
   import { OpenProject } from "../../storage/OpenProject";
   import NavigationItem from "./NavigationItem.svelte";
+import SideMenu from "./SideMenu.svelte";
 
   export let projectPath: string;
   export let projectName: string;
@@ -50,9 +51,9 @@
       }}
     >
       <SvgImage
-        src="/img/architect.logo.svg"
+        src="/img/icons/back.svg"
         color="var(--text-on-secondary-color)"
-        size="30px"
+        size="36px"
       />
     </div>
     <div class="title">
@@ -67,13 +68,7 @@
     </div>
   </sector>
   <sector class="body">
-    <nav class="side-menu">
-      <div class="title" />
-      <div class="search" />
-      <div class="project-items">
-        <NavigationItem />
-      </div>
-    </nav>
+    <SideMenu />
     <sector class="content-viewport">
       Project explorer! <br />
       Will now explore project located at: {projectPath}
@@ -84,31 +79,32 @@
 <style>
   .project-explorer-page {
     --header-height: 40px;
-    --top-paddding: 5px;
+    --top-paddding: 10px;
     position: absolute;
+    display: grid;
+    grid-template-rows: 40px 1fr;
+    row-gap: 10px;
     width: 100%;
     height: 100%;
     top: 0px;
     left: 0px;
-    overflow-x: hidden;
-    overflow-y: auto;
+    padding: 15px 20px;
+    box-sizing: border-box;
   }
 
   .header {
-    position: absolute;
     top: 0px;
     left: 0px;
     width: 100%;
     display: grid;
     grid-template-columns: 40px auto 1fr 120px;
-    column-gap: 20px;
+    column-gap: 10px;
     height: 40px;
-    padding: 5px 10px;
   }
 
   .header .title {
     font-size: 18pt;
-    font-weight: bold;
+    font-weight: 400;
     line-height: 40px;
   }
 
@@ -131,15 +127,15 @@
   }
 
   .body {
-    --body-top: calc(var(--header-height) + (var(--top-paddding) * 2));
-    position: absolute;
-    top: var(--body-top);
+    top: 0px;
     width: 100%;
-    height: calc(100% - var(--body-top));
-    padding: 5px 10px;
-    width: 100%;
+    height: 100%;
     left: 0;
     box-sizing: border-box;
     overflow: hidden;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: 1fr;
+    column-gap: 30px;
   }
 </style>

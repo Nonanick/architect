@@ -1,5 +1,6 @@
 <script lang="ts">
   import SvgImage from "../../components/SVGImage.svelte";
+import { OpenProject } from '../../storage/OpenProject';
 
   import NavigationItem from "./NavigationItem.svelte";
 
@@ -7,7 +8,9 @@
 </script>
 
 <nav class="side-menu">
-  <div class="title">project explorer</div>
+  <div class="title">
+    {$OpenProject?.title ?? "pick a project!"}
+  </div>
   <div
     class="search"
     on:click={() => {
@@ -19,7 +22,7 @@
   </div>
   <div class="project-items">
     <NavigationItem
-      iconSource="/img/icons/document.svg"
+      iconSource="/img/icons/sphere.geometry.svg"
       title="entities"
       collapsed={true}
       children={[
@@ -46,7 +49,7 @@
 
     <NavigationItem
       iconSource="/img/icons/store.svg"
-      title="stores"
+      title="data stores"
       collapsed={true}
       children={[
         {

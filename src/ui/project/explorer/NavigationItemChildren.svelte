@@ -5,7 +5,7 @@
   export let info: NavigationChildrenProps;
 </script>
 
-<div class="item-child clickable" on:click={() => info.onClick()}>
+<div class="item-child clickable" on:click={(ev) => info.onClick(ev)}>
   <div class="icon">
     <SvgImage src={info.icon} color="var(--main-color)" size="18px" />
   </div>
@@ -24,6 +24,10 @@
     border-radius: 3px;
     padding: 3px 0px;
     column-gap: 5px;
+    background-color: transparent;
+  }
+  .item-child:hover {
+    background-color: rgba(0,0,0,0.02);
   }
   .icon {
     position: relative;

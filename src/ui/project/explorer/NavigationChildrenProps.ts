@@ -1,5 +1,5 @@
 export interface NavigationChildrenProps {
   icon: string;
   title: string;
-  onClick: () => void;
+  onClick: (ev : MouseEvent) => void;
 }

@@ -57,14 +57,14 @@ import SideMenu from "./SideMenu.svelte";
       />
     </div>
     <div class="title">
-      <div class="inline-align-center">
+      project explorer
+      <div class="inline-align-center" style="margin-left: 10px;display: inline;">
         <SvgImage
           src="/img/icons/project.svg"
           color="var(--main-color)"
           size="24pt"
         />
       </div>
-      {$OpenProject?.title ?? "Loading project..."}
     </div>
   </sector>
   <sector class="body">
@@ -97,15 +97,14 @@ import SideMenu from "./SideMenu.svelte";
     left: 0px;
     width: 100%;
     display: grid;
-    grid-template-columns: 40px auto 1fr 120px;
+    grid-template-columns: 40px 230px 1fr 120px;
     column-gap: 10px;
     height: 40px;
   }
 
   .header .title {
-    font-size: 18pt;
-    font-weight: 400;
-    line-height: 40px;
+    font-size: 20pt;
+    font-weight: 700;
   }
 
   .go-back {
@@ -134,7 +133,7 @@ import SideMenu from "./SideMenu.svelte";
     box-sizing: border-box;
     overflow: hidden;
     display: grid;
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: calc(40px + 10px + 230px) 1fr;
     grid-template-rows: 1fr;
     column-gap: 30px;
   }

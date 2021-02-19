@@ -13,10 +13,10 @@
   export let children: NavigationChildrenProps[] = [];
 </script>
 
-<div class="project-navigation-item">
+<div class="project-navigation-item" on:click|stopPropagation={() => (collapsed = !collapsed)}>
   <div
     class="collapse clickable"
-    on:click={() => (collapsed = !collapsed)}
+    on:click|stopPropagation={() => (collapsed = !collapsed)}
     style={collapsed === true ? "" : "transform: rotateX(180deg);"}
   >
     <SvgImage
@@ -31,13 +31,16 @@
   <div class="title">
     {title}
   </div>
-  <div class="options">
+  <div 
+    class="options"  
+    on:click|stopPropagation 
+    >
     {#each options as option}
       <IconButton {...option} />
     {/each}
   </div>
   {#if !collapsed}
-    <div class="expanded" transition:slide >
+    <div class="expanded"  on:click|stopPropagation transition:slide >
       <img
         src="/img/fx/shadow.png"
         class="fx upper-shadow"
@@ -66,10 +69,16 @@
      column-gap: 5px;
     grid-template-rows: 40px auto;
     align-items: center;
+    cursor: pointer;
   }
   .icon {
     grid-column: 1 / 2;
     grid-row: 1 / 2;
+    filter: brightness(0);
+    transition: filter 0.4s;
+  }
+  .project-navigation-item:hover .icon {
+    filter: brightness(100%);
   }
   .title {
     grid-column: 2 / 3;

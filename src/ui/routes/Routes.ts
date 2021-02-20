@@ -8,7 +8,7 @@ export interface AppPageDefinition {
   title?: string;
   icon?: string;
   pattern: string;
-  component: typeof SvelteComponent ;
+  component: typeof SvelteComponent;
   guard?: GuardRoute | GuardRoute[];
   onActivation?: () => Promise<void>;
   onDeactivation?: () => Promise<true | string>;
@@ -32,10 +32,10 @@ export default function GetAppPages() {
       }
     },
     {
-      title : "Architect - Project",
-      icon : "",
-      pattern : "project-explorer/:activity?/:target*",
-      component : ProjectExplorer,
+      title: "Architect - Project",
+      icon: "",
+      pattern: "project-explorer/:activity?/:target*",
+      component: ProjectExplorer,
     }
   ];
 

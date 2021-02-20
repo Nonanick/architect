@@ -47,52 +47,6 @@
   export const knownActivities = ProjectExplorerActivities;
 </script>
 
-<main class="page project-explorer-page">
-  <sector class="header">
-    <div
-      class="go-back"
-      on:click={() => {
-        AppRouter.navigateTo("/");
-      }}
-    >
-      <SvgImage
-        src="/img/icons/back.svg"
-        color="var(--text-on-secondary-color)"
-        size="36px"
-      />
-    </div>
-    <div class="title">
-      project explorer
-      <div
-        class="inline-align-center"
-        style="margin-left: 10px;display: inline;"
-      >
-        <SvgImage
-          src="/img/icons/project.svg"
-          color="var(--main-color)"
-          size="24pt"
-        />
-      </div>
-    </div>
-  </sector>
-  <sector class="side-menu">
-    <SideMenu />
-  </sector>
-  <img
-    src="/img/fx/shadow.png"
-    class="side-menu-separator"
-    alt="shadow dividing the side menu and the main content"
-  />
-  <sector class="body">
-    <svelte:component
-      this={knownActivities[urlParams.activity] ??
-        knownActivities[defaultActivity]}
-      {queryParams}
-      {urlParams}
-    />
-  </sector>
-</main>
-
 <style>
   .project-explorer-page {
     --header-height: 40px;
@@ -184,3 +138,49 @@
     opacity: 0.6;
   }
 </style>
+
+<main class="page project-explorer-page">
+  <sector class="header">
+    <div
+      class="go-back"
+      on:click={() => {
+        AppRouter.navigateTo("/");
+      }}
+    >
+      <SvgImage
+        src="/img/icons/back.svg"
+        color="var(--text-on-secondary-color)"
+        size="36px"
+      />
+    </div>
+    <div class="title">
+      project explorer
+      <div
+        class="inline-align-center"
+        style="margin-left: 10px;display: inline;"
+      >
+        <SvgImage
+          src="/img/icons/project.svg"
+          color="var(--main-color)"
+          size="24pt"
+        />
+      </div>
+    </div>
+  </sector>
+  <sector class="side-menu">
+    <SideMenu />
+  </sector>
+  <img
+    src="/img/fx/shadow.png"
+    class="side-menu-separator"
+    alt="shadow dividing the side menu and the main content"
+  />
+  <sector class="body">
+    <svelte:component
+      this={knownActivities[urlParams.activity] ??
+        knownActivities[defaultActivity]}
+      {queryParams}
+      {urlParams}
+    />
+  </sector>
+</main>

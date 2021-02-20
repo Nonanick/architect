@@ -7,27 +7,13 @@
   export let ratio: number = 1;
 </script>
 
-<div
-  class="icon"
-  style="
-  --size : {size}; 
-  --source: url({src}); 
-  --icon-color: {color}; 
-  --radius: {radius}; 
-  --bg-color : {bgColor}; 
-  --aspect-ratio: {ratio}
-  "
->
-  <div class="fix-ratio" />
-</div>
-
 <style>
   .icon {
     position: relative;
     display: inline-block;
     width: var(--size);
     height: var(--size);
-    
+
     background-color: var(--bg-color);
     overflow: hidden;
     vertical-align: middle;
@@ -51,6 +37,19 @@
 
     mask-size: 100%;
     -webkit-mask-size: 100%;
-
   }
 </style>
+
+<div
+  class="icon"
+  style="
+  --size : {size}; 
+  --source: url({src}); 
+  --icon-color: {color}; 
+  --radius: {radius}; 
+  --bg-color : {bgColor}; 
+  --aspect-ratio: {ratio}
+  "
+>
+  <div class="fix-ratio" />
+</div>

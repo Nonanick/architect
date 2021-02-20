@@ -141,12 +141,12 @@ export class ProjectController extends Controller {
     schema: {
       body: SchemaFromEntity(Entity.instance(ProjectEntity)),
     },
-    cast : CastObjectToEntityModel(Entity.instance(ProjectEntity))
+    cast: CastObjectToEntityModel(Entity.instance(ProjectEntity))
   })
   public configureProject: Resolver = async (req) => {
-    let projectModel = <ModelOf<ProjectDTO>> req.byOrigin?.body;
-    
-    if(projectModel != null) {
+    let projectModel = <ModelOf<ProjectDTO>>req.byOrigin?.body;
+
+    if (projectModel != null) {
       console.log("Received and casted body props to model of entity!\n", projectModel);
     }
 
@@ -160,94 +160,6 @@ export class ProjectController extends Controller {
   public installProjectDependencies: Resolver = async (req) => {
   };
 
-  @Route({
-    url: "tracked",
-    methods: "post",
-    schema: {
-      body: {
-        type: "object",
-        required: ["name", "title", "root"],
-        properties: {
-          name: { type: "string" },
-          title: { type: "string" },
-          root: { type: "string" },
-          metadata_root: { type: "string" },
-          icon: { type: "string" },
-          version: { type: "string" },
-          author: { type: "string" },
-        },
-        additionalProperties: false,
-      },
-    },
-  })
-  public addTrackedProject: Resolver = async (req) => {
-    let model = Entity.instance(ProjectEntity).model<
-      ProjectDTO
-    >();
-    model.$set(
-      req.get(
-        ["name", "title", "root", "metadata_root", "icon", "version", "author"],
-      ),
-    );
-
-    let values = await model.$commit(true);
-
-    if (values instanceof Error) {
-      return values;
-    }
-
-
-    let projects: any[] = storage("projects").get("tracked") as any[] ?? [];
-    projects.push(values);
-    storage("projects").set("tracked", projects);
-
-    return values;
-  };
-
-  @Route({
-    url: 'tracked'
-  })
-  public listAllTrackedProjects: Resolver = () => {
-    let allProjects: any[] = storage("projects").get("tracked") as any[] ?? [];
-    if (allProjects.length > 10) {
-      allProjects = allProjects.slice(allProjects.length - 10);
-    }
-    return allProjects.reverse();
-  }
-
-  @Route({
-    url: 'tracked/:name'
-  })
-  public getTrackedProject: Resolver = (req) => {
-    let allProjects = storage('projects').get('tracked') as any[];
-    let project = allProjects.filter(project => project.name === req.get('name'));
-    if (project.length > 0) {
-      return project[0];
-    } else {
-      return new Error(`Could not find project with name '${req.get('name')}' on the tracked projects`);
-    }
-  };
-
-  @Route({
-    url: 'tracked',
-    methods: 'delete'
-  })
-  public emptyTrackedProjects: Resolver = () => {
-    storage("projects").set("tracked", []);
-    return 'Ok! Erased all tracked projects';
-  }
-
-  @Route({
-    url: 'tracked/:name',
-    methods: 'delete'
-  })
-  public removeFromTrackedProjects: Resolver = (req) => {
-    let allProjects = storage('projects').get('tracked') as any[];
-    let oldLength = allProjects.length;
-    allProjects = allProjects.filter(project => project.name != req.get('name'));
-    storage('projects').set('tracked', allProjects);
-    return `Removed ${oldLength - allProjects.length} projects with name '${req.get('name')}'`;
-  }
 
   @Route({
     url: 'analyze',
@@ -273,7 +185,7 @@ export class ProjectController extends Controller {
       return manifest;
     } catch (err) {
       console.error("[ProjectController] Faile to reach projects manifest!", err);
-      return new Error("Failed to reach project's manifest!")
+      return new Error("Failed to reach project's manifest!");
     }
   };
 }

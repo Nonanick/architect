@@ -2,7 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import type { ProjectDTO } from "../../../lib/project/new-project.interface";
 
-  import IconButton from "../../components/form/IconButton.svelte";
+  import IconButton from "../../components/form/icon-button/IconButton.svelte";
   import { AppRouter } from "../../router/AppRouter";
   import { OpenProject } from "../../storage/OpenProject";
   import { TrackedProjects } from "../../storage/TrackedProjects";

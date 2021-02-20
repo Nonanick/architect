@@ -2,13 +2,15 @@
   import SvgImage from "../../components/SVGImage.svelte";
   import { AppRouter } from "../../router/AppRouter";
   import { OpenProject } from "../../storage/OpenProject";
-  import NavigationItem from "./NavigationItem.svelte";
-import SideMenu from "./SideMenu.svelte";
+  import { ProjectExplorerActivities } from "./ExplorerActivities";
+  import SideMenu from "./side-menu/SideMenu.svelte";
 
   export let projectPath: string;
   export let projectName: string;
 
   export let queryParams: any = {};
+
+  export let urlParams: any = {};
 
   $: {
     projectPath = $OpenProject?.root;
@@ -40,6 +42,9 @@ import SideMenu from "./SideMenu.svelte";
         alert("Failed to load project!\nIs it an Architect project?");
       });
   }
+
+  export let defaultActivity: keyof typeof knownActivities = "project-analysis";
+  export const knownActivities = ProjectExplorerActivities;
 </script>
 
 <main class="page project-explorer-page">
@@ -58,7 +63,10 @@ import SideMenu from "./SideMenu.svelte";
     </div>
     <div class="title">
       project explorer
-      <div class="inline-align-center" style="margin-left: 10px;display: inline;">
+      <div
+        class="inline-align-center"
+        style="margin-left: 10px;display: inline;"
+      >
         <SvgImage
           src="/img/icons/project.svg"
           color="var(--main-color)"
@@ -67,12 +75,21 @@ import SideMenu from "./SideMenu.svelte";
       </div>
     </div>
   </sector>
-  <sector class="body">
+  <sector class="side-menu">
     <SideMenu />
-    <sector class="content-viewport">
-      Project explorer! <br />
-      Will now explore project located at: {projectPath}
-    </sector>
+  </sector>
+  <img
+    src="/img/fx/shadow.png"
+    class="side-menu-separator"
+    alt="shadow dividing the side menu and the main content"
+  />
+  <sector class="body">
+    <svelte:component
+      this={knownActivities[urlParams.activity] ??
+        knownActivities[defaultActivity]}
+      {queryParams}
+      {urlParams}
+    />
   </sector>
 </main>
 
@@ -83,7 +100,9 @@ import SideMenu from "./SideMenu.svelte";
     position: absolute;
     display: grid;
     grid-template-rows: 40px 1fr;
-    row-gap: 10px;
+    grid-template-columns: 280px 1fr;
+    column-gap: 30px;
+    row-gap: 20px;
     width: 100%;
     height: 100%;
     top: 0px;
@@ -93,11 +112,13 @@ import SideMenu from "./SideMenu.svelte";
   }
 
   .header {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
     top: 0px;
     left: 0px;
     width: 100%;
     display: grid;
-    grid-template-columns: 40px 230px 1fr 120px;
+    grid-template-columns: 40px 230px;
     column-gap: 10px;
     height: 40px;
   }
@@ -126,6 +147,9 @@ import SideMenu from "./SideMenu.svelte";
   }
 
   .body {
+    grid-column: 2 / 3;
+    grid-row: 1 / 3;
+    position: relative;
     top: 0px;
     width: 100%;
     height: 100%;
@@ -136,5 +160,27 @@ import SideMenu from "./SideMenu.svelte";
     grid-template-columns: calc(40px + 10px + 230px) 1fr;
     grid-template-rows: 1fr;
     column-gap: 30px;
+    box-shadow: inset 2px 2px 5px 1px rgba(0, 0, 0, 0, 0.05);
+  }
+
+  .side-menu {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    position: relative;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    left: 0;
+  }
+  .side-menu-separator {
+    position: absolute;
+    transform: rotate(-90deg);
+    width: calc(100vh - 10px);
+    height: 5px;
+    top: 50vh;
+    left: calc(20px + 280px + 30px - 50vh);
+    user-select: none;
+    pointer-events: none;
+    opacity: 0.6;
   }
 </style>

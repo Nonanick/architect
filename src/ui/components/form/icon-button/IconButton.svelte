@@ -1,6 +1,6 @@
 <script lang="ts">
-  import SvgImage from "../SVGImage.svelte";
-  import type { SVGImageProps } from "../SVGImageProps";
+  import SvgImage from "../../SVGImage.svelte";
+  import type { SVGImageProps } from "../../SVGImageProps";
   import type { IconButtonProps } from "./IconButtonProps";
 
   export let icon: SVGImageProps;

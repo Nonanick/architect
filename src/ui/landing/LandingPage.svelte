@@ -4,9 +4,9 @@
 	import RecentProject from "./components/RecentProject.svelte";
 	import SvgImage from "../components/SVGImage.svelte";
 	import { fade } from "svelte/transition";
-	import IconButton from "../components/form/IconButton.svelte";
-import { TrackedProjects } from '../storage/TrackedProjects';
-import { OpenProject } from '../storage/OpenProject';
+	import IconButton from "../components/form/icon-button/IconButton.svelte";
+	import { TrackedProjects } from "../storage/TrackedProjects";
+	import { OpenProject } from "../storage/OpenProject";
 
 	let themeConfig = architect.Server.get("config/theme")
 		.then((v) => String(v))
@@ -29,7 +29,7 @@ import { OpenProject } from '../storage/OpenProject';
 
 	async function selectArchitectProject(initialDir?: string) {
 		let folderPath = await architect.FileSystem.pickFolder();
-		AppRouter.navigateTo("open-project?path=" + encodeURI(folderPath));
+		AppRouter.navigateTo("project-explorer?path=" + encodeURI(folderPath));
 	}
 
 	function createArchitectProject() {
@@ -130,7 +130,7 @@ import { OpenProject } from '../storage/OpenProject';
 		<div class="recently-open">
 			<div class="recently-open-title">
 				<h3>Recently open</h3>
-			
+
 				<IconButton
 					showLabel={false}
 					icon={{
@@ -149,18 +149,18 @@ import { OpenProject } from '../storage/OpenProject';
 					}}
 				/>
 			</div>
-				{#if $TrackedProjects.length === 0}
-					No recent project avaliable!
-				{/if}
-				{#each $TrackedProjects as project}
-					<RecentProject
-						on:dblclick={() => {
-						 	$OpenProject = project;
-							AppRouter.navigateTo("open-project");
-						}}
-						projectInfo={project}
-					/>
-				{/each}
+			{#if $TrackedProjects.length === 0}
+				No recent project avaliable!
+			{/if}
+			{#each $TrackedProjects as project}
+				<RecentProject
+					on:dblclick={() => {
+						$OpenProject = project;
+						AppRouter.navigateTo("project-explorer");
+					}}
+					projectInfo={project}
+				/>
+			{/each}
 		</div>
 		<div class="architect-tips">
 			<div class="tips-title">

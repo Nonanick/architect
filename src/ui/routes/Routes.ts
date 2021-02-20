@@ -34,7 +34,7 @@ export default function GetAppPages() {
     {
       title : "Architect - Project",
       icon : "",
-      pattern : "open-project",
+      pattern : "project-explorer/:activity?/:target*",
       component : ProjectExplorer,
     }
   ];

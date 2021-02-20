@@ -1,7 +1,7 @@
 <script lang="ts">
-  import IconButton from "../../components/form/IconButton.svelte";
-  import type { IconButtonProps } from "../../components/form/IconButtonProps";
-  import SvgImage from "../../components/SVGImage.svelte";
+  import IconButton from "../../../components/form/icon-button/IconButton.svelte";
+  import type { IconButtonProps } from "../../../components/form/icon-button/IconButtonProps";
+  import SvgImage from "../../../components/SVGImage.svelte";
   import type { NavigationChildrenProps } from "./NavigationChildrenProps";
   import NavigationItemChildren from "./NavigationItemChildren.svelte";
   import { slide } from 'svelte/transition';

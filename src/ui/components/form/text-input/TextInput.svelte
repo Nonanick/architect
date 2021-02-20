@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { createEventDispatcher, each } from "svelte/internal";
-  import IconButton from "./IconButton.svelte";
-  import type { IconButtonProps } from "./IconButtonProps";
+  import { createEventDispatcher } from "svelte/internal";
+  import IconButton from "../icon-button/IconButton.svelte";
+  import type { IconButtonProps } from "../icon-button/IconButtonProps";
 
   type InputValidationFn = (value: string) => Promise<true | string | string[]>;
   export let name: string;

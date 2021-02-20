@@ -1,6 +1,7 @@
 <script lang="ts">
-  import SvgImage from "../../components/SVGImage.svelte";
-import { OpenProject } from '../../storage/OpenProject';
+  import SvgImage from "../../../components/SVGImage.svelte";
+import { AppRouter } from '../../../router/AppRouter';
+  import { OpenProject } from "../../../storage/OpenProject";
 
   import NavigationItem from "./NavigationItem.svelte";
 
@@ -8,7 +9,9 @@ import { OpenProject } from '../../storage/OpenProject';
 </script>
 
 <nav class="side-menu">
-  <div class="title">
+  <div class="title" on:click={() => {
+     AppRouter.navigateTo('project-explorer');
+  }}>
     {$OpenProject?.title ?? "pick a project!"}
   </div>
   <div
@@ -29,7 +32,9 @@ import { OpenProject } from '../../storage/OpenProject';
         {
           icon: "/img/icons/add.svg",
           title: "add entity",
-          onClick: () => {},
+          onClick: () => {
+            AppRouter.navigateTo('project-explorer/new-entity');
+          },
         },
       ]}
     />

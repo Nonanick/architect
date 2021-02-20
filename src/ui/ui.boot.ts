@@ -21,17 +21,6 @@ if(window.architect == undefined) {
 
 console.log('Server ->', window.architect);
 
-window.architect.Server.get("config/bootCount")
-	.then(resp => {
-		console.log("Response: ", resp);
-		let count = resp ?? 0;
-		window.architect.Server.patch("config/bootCount/" + ++count);
-	})
-	.catch(err => {
-		console.error("Failed to get from architect!", err);
-	});
-
-
 export default app; 
 
 declare global {

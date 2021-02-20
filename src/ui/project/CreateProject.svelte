@@ -3,7 +3,7 @@
   import { fade, scale } from "svelte/transition";
   import { ProjectEntity } from "../../lib/entity/ProjectEntity";
   import type { ProjectDTO } from "../../lib/project/new-project.interface";
-  import TextInput from "../components/form/TextInput.svelte";
+  import TextInput from "../components/form/text-input/TextInput.svelte";
   import SvgImage from "../components/SVGImage.svelte";
   import { AppRouter } from "../router/AppRouter";
   import CreateProjectItem from "./CreateProjectItem.svelte";
@@ -130,7 +130,7 @@
         `Would you like to open the project ${project.title ?? project.name}?`
       )
     ) {
-      AppRouter.navigateTo("open-project?name=" + encodeURI(project.name));
+      AppRouter.navigateTo("project-explorer?name=" + encodeURI(project.name));
     } else {
       AppRouter.navigateTo("/");
     }

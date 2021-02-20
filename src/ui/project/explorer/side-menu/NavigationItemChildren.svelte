@@ -1,5 +1,5 @@
 <script lang="ts">
-  import SvgImage from "../../components/SVGImage.svelte";
+  import SvgImage from "../../../components/SVGImage.svelte";
   import type { NavigationChildrenProps } from "./NavigationChildrenProps";
 
   export let info: NavigationChildrenProps;

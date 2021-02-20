@@ -1,4 +1,4 @@
-import type { SVGImageProps } from '../SVGImageProps';
+import type { SVGImageProps } from '../../SVGImageProps';
 
 export interface IconButtonProps {
   label? : string;

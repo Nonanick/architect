@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, SvelteComponent } from "svelte";
+import { onMount, SvelteComponent } from "svelte";
   import RouteNotFound from "./notFound/RouteNotFound.svelte";
   import type { AppRouter } from "./router/AppRouter";
   import type { Route, RouteActivation } from "./router/Route";
@@ -7,35 +7,32 @@
 
   export let router: typeof AppRouter;
 
-  let visiblePage: typeof SvelteComponent;
   let viewportContainer: HTMLDivElement;
-
-  let currentURL: string;
-
   let currentRoute: Route;
-
+  let visiblePage: typeof SvelteComponent;
+  let currentURL: string;
   let urlParams: {
     [key: string]: any;
   } = {};
 
   let queryParams: {
     [key: string]: any;
-  } = {};
+  };
 
-  async function ApplyRouteTitle(title?: string) {
+  function ApplyRouteTitle(title?: string) {
     document.title = title ?? "Architect";
   }
 
-  async function ApplyRouteIcon(icon?: string) {}
+  function ApplyRouteIcon(icon?: string) {}
 
-  async function SwitchCurrentlyVisiblePage(
+  function SwitchCurrentlyVisiblePage(
     newPage: typeof SvelteComponent,
     url: string,
-    urlParams: any,
+    uParams: any,
     params: any
   ) {
     currentURL = url;
-    urlParams = urlParams;
+    urlParams = uParams;
     queryParams = params;
     visiblePage = newPage;
   }
@@ -67,6 +64,7 @@
                 }
               }
             }
+
             ApplyRouteTitle(appPage.title);
             ApplyRouteIcon(appPage.icon);
 
@@ -76,6 +74,7 @@
               urlParams,
               queryParams
             );
+
             currentRoute = route;
           },
         ],
@@ -97,19 +96,24 @@
 
       router.addRoute(route);
     });
-    
+
     router.routeNotFound = (urlNotFound) => {
       SwitchCurrentlyVisiblePage(RouteNotFound, urlNotFound, {}, {});
     };
 
     router.start();
-
-  
   });
 </script>
 
 <div id="app-viewport" bind:this={viewportContainer}>
-  <svelte:component this={visiblePage} {currentURL} {urlParams} {queryParams} />
+  <svelte:component
+    this={visiblePage}
+    {...{
+      currentURL,
+      urlParams,
+      queryParams,
+    }}
+  />
 </div>
 
 <style>

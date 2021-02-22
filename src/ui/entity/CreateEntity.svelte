@@ -1,18 +1,28 @@
 <script lang="ts">
   import type { IArchitectEntity } from "@architect/entity/IArchitectEntity";
+  import hljs from "highlight.js/lib/core";
+  import typescript from "highlight.js/lib/languages/typescript";
+  import "highlight.js/styles/atom-one-dark.css";
   import ColoredButton from "../components/colored-button/ColoredButton.svelte";
   import TextInput from "../components/form/text-input/TextInput.svelte";
   import SvgImage from "../components/SVGImage.svelte";
   import { OpenProject } from "../storage/OpenProject";
+  import EntityModule from "./entity.module";
+
+  hljs.registerLanguage("typescript", typescript);
 
   let entity_name: string;
   let title: string;
-
+  let fileContentPreview: string;
   let entityDefinition: Partial<IArchitectEntity> = {};
 
   $: {
-    entity_name = entityDefinition.name;
-    title = entityDefinition.title;
+    entityDefinition.name = entity_name;
+    entityDefinition.title = title;
+    fileContentPreview = hljs.highlight(
+      "typescript",
+      EntityModule.GenerateEntityFileContents(entityDefinition)
+    ).value;
   }
 </script>
 
@@ -57,7 +67,7 @@
           architect.Editor.Launch($OpenProject.root);
         }}
       >
-        Code Editor
+        Open in Code Editor <SvgImage src="/img/icons/forward.svg" color="rgba(0,0,0,0.7)" />
       </div>
     </div>
     <div class="editor-viewport">
@@ -65,7 +75,14 @@
         <TextInput name="name" title="Name" bind:value={entity_name} required>
           Name:
         </TextInput>
+        <TextInput name="title"  bind:value={title} required>
+          Title:
+        </TextInput>
       </form>
+      <div class="file-content-preview">
+        File preview
+        <pre><code class="language-typescript hljs">{@html fileContentPreview}</code></pre>
+      </div>
     </div></sector
   >
 </div>
@@ -100,6 +117,10 @@
     line-height: 40px;
   }
 
+  .body {
+    position: relative;
+    height: calc(100% - 60px);
+  }
   .select-editor-style {
     width: 100%;
     display: flex;
@@ -131,6 +152,14 @@
     left: 0px;
     width: 100%;
     height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 450px;
+    column-gap: 30px;
   }
-
+  .file-content-preview code {
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-size: 9pt;
+    font-family: "JetBrains Mono", monospace;
+  }
 </style>

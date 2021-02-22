@@ -134,3 +134,26 @@ button:focus {
 	user-select: none;
 	transform: rotateX(180deg);
 }
+
+.input-container {
+	position: relative;
+	display: flex;
+	border: 1px solid rgba(0, 0, 0, 0.2);
+	border-radius: 4px;
+	height: 40px;
+	padding: 0;
+}
+
+.input-container > label > *:not(:last-child) {
+	border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.input-container input {
+	position: relative;
+	width: 100%;
+	height: 40px;
+	line-height: 40px;
+	border: 0;
+	background: 0;
+	outline: 0;
+}

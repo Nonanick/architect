@@ -15,9 +15,16 @@
   .colored-button {
     width: auto;
     display: inline-flex;
-    flex-direction: column;
+    flex-direction: row;
     position: relative;
-    padding: 0px 10px;
+    padding: 0px 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-size: var(--font-size);
+    border-radius: var(--border-radius);
+  }
+  .button-icon {
+    margin: 0 8px;
   }
 </style>
 
@@ -41,12 +48,15 @@
   --border-radius: {borderRadius};
   "
 >
+
   {#if icon != null}
+  <div class="button-icon">
     {#if typeof icon === "string"}
       <img src={icon} alt="button icon for {label}" />
     {:else}
       <SvgImage {...icon} />
     {/if}
+  </div>
   {/if}
   <div class="label">{label}</div>
 </div>

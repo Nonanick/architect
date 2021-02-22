@@ -5,6 +5,11 @@ import { NodeServer } from "./node/server/node.server";
 export let ArchitectServices = {
   FileSystem: NodeFileSystem,
   Server: NodeServer,
+  Editor : {
+    Launch : (projectPath : string, options?: { openFile? : string}) => {
+      console.log("Will now launch preferred editor!");
+    }
+  }
 };
 
 export type WithServices<T> = T & {
@@ -15,9 +20,11 @@ export type WithServices<T> = T & {
 export function InjectServices(
   target: { [name: string]: any } & {},
 ): WithServices<typeof target> {
+  
   target.ArchitectServices = ArchitectServices;
   target.architect = ArchitectServices;
   target.Buffer = Buffer;
+
   architect.Server.start();
 
   return target as WithServices<typeof target>;

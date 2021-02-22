@@ -3,6 +3,7 @@
   import { fade, scale } from "svelte/transition";
   import { ProjectEntity } from "../../lib/entity/ProjectEntity";
   import type { ProjectDTO } from "../../lib/project/new-project.interface";
+  import IconButton from "../components/form/icon-button/IconButton.svelte";
   import TextInput from "../components/form/text-input/TextInput.svelte";
   import SvgImage from "../components/SVGImage.svelte";
   import { AppRouter } from "../router/AppRouter";
@@ -209,31 +210,30 @@
             verifyIdentifier();
             syncTitle();
           }}
-          inputButtons={[
-            {
-              label:
-                (keepTitleInSync ? "( ON )" : "( OFF )") +
-                " Synchronize title with package name",
-              icon: {
+        >
+          Package Name:
+          <div slot="label-icon">
+            <SvgImage src="/img/icons/medal.svg" size="20px" />
+          </div>
+          <slot slot="input-button">
+            <IconButton
+              label={(keepTitleInSync ? "( ON )" : "( OFF )") +
+                " Synchronize title with package name"}
+              icon={{
                 src: "/img/icons/sync.svg",
                 color: keepTitleInSync ? "green" : "var(--error-color)",
-              },
-              showLabel: false,
-              onClick: () => {
+              }}
+              showLabel={false}
+              on:click={() => {
                 if (keepTitleInSync) {
                   keepTitleInSync = false;
                 } else {
                   keepTitleInSync = true;
                   syncTitle();
                 }
-              },
-            },
-          ]}
-        >
-          Package Name:
-          <div slot="label-icon">
-            <SvgImage src="/img/icons/medal.svg" size="20px" />
-          </div>
+              }}
+            />
+          </slot>
         </TextInput>
 
         <TextInput
@@ -247,14 +247,14 @@
           Title:
         </TextInput>
         <div class="col-2">
-        <TextInput class="input" name="author" bind:value={author}>
-          Author:
-        </TextInput>
+          <TextInput class="input" name="author" bind:value={author}>
+            Author:
+          </TextInput>
 
-        <TextInput class="input" name="version" bind:value={version}>
-          Version:
-        </TextInput>
-      </div>
+          <TextInput class="input" name="version" bind:value={version}>
+            Version:
+          </TextInput>
+        </div>
 
         <div class="input description">
           Description: <br />
@@ -269,25 +269,6 @@
           class="input"
           name="workspace"
           bind:value={workspace}
-          inputButtons={[
-            {
-              label: "Pick Location",
-              icon: {
-                src: "/img/icons/pick.folder.svg",
-              },
-              showLabel: false,
-              onClick: () => {
-                console.log("Pick a folder!");
-                window.architect.FileSystem.pickFolder()
-                  .then((newLocation) => {
-                    workspace = String(newLocation);
-                  })
-                  .catch((failed) => {
-                    console.error("Failed to open directory", failed);
-                  });
-              },
-            },
-          ]}
           validate={async (value) => {
             return value.length > 0 ? true : "Cannot be empty!";
           }}
@@ -296,6 +277,22 @@
           <div slot="label-icon">
             <SvgImage src="/img/icons/folder.location.svg" size="25px" />
           </div>
+          <slot slot="input-button">
+            <IconButton
+              label="Pick Location"
+              icon={{ src: "/img/icons/pick.folder.svg" }}
+              showLabel={false}
+              on:click={() => {
+                window.architect.FileSystem.pickFolder()
+                  .then((newLocation) => {
+                    workspace = String(newLocation);
+                  })
+                  .catch((failed) => {
+                    console.error("Failed to open directory", failed);
+                  });
+              }}
+            />
+          </slot>
         </TextInput>
       </div>
     {/if}

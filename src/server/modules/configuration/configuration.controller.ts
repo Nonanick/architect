@@ -14,7 +14,7 @@ export class ConfigurationController extends Controller {
         this.defaultConfig = await import('./default.config').then(imported => imported.default);
       } catch (err) {
         console.error('[ConfigurationController] Failed to read default config file!' + err.message);
-      } 
+      }
     }
 
     return this.defaultConfig ?? {};
@@ -38,6 +38,19 @@ export class ConfigurationController extends Controller {
     return storage(ConfigStore).get(req.get('name')) ?? (await this.getDefaultConfig())[req.get('name')];
   };
 
+  @Route({
+    methods: 'patch',
+    url: ':name'
+  })
+  public reset: Resolver = async (req) => {
+    let resettedValue = (await this.getDefaultConfig())[req.get('name')];
+    if (resettedValue !== undefined) {
+      storage(ConfigStore).set(req.get('name'), resettedValue);
+      return resettedValue;
+    } else {
+      return storage(ConfigStore).get(req.get('name'));
+    }
+  };
   @Route({
     url: ':name/:value',
     methods: ['patch', 'put'],

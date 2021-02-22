@@ -7,11 +7,14 @@
       "ESNext",
       "DOM"
     ],
-    "sourceMap": false,
+    "sourceMap": true,
     "moduleResolution": "Node",
-    "baseUrl": "./src",
+    "baseUrl": "./",
     "esModuleInterop": true,
     "experimentalDecorators": true,
+    "paths": {
+      "@architect/*" : ["./src/lib/typings/*"]
+    }
   },
   "include": [
     "src/ui",

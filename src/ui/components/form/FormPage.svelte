@@ -28,5 +28,11 @@
     </div>
     <div class="options" />
   </div>
-  <div class="body" />
+  <div class="body">
+    <div class="editor-style">
+      <div class="code-editor">Code Editor</div>
+      <div class="form-editor">Form Editor</div>
+    </div>
+    <div class="editor-viewport">Editor Viewport</div>
+  </div>
 </div>

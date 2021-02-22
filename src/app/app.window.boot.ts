@@ -30,10 +30,11 @@ export function bootWindow(): BrowserWindow {
   window.loadFile(path.resolve(ArchitectPublicPath, "index.html"), {
   });
 
-  ipcMain.on("pick-folder", (ev, id) => {
+  ipcMain.on("pick-folder", (ev, id, initialDir? : string) => {
     dialog.showOpenDialog(window, {
       properties: ["openDirectory"],
       title: "Architect - Choose Folder",
+      defaultPath: initialDir
     }).then((location) => {
       ev.reply("pick-folder-response", true, id, location);
     }).catch((err) => {

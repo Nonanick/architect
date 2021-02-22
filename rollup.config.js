@@ -4,6 +4,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
+import svelteConfig from './svelte.config'; 
 import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
 
@@ -30,7 +31,7 @@ function serve() {
 	};
 }
 
-export default {
+export default [{ 
 	input: 'src/ui/ui.boot.ts',
 	output: {
 		sourcemap: false,
@@ -41,6 +42,8 @@ export default {
 	plugins: [
 		svelte({
 			preprocess: sveltePreprocess({
+				...svelteConfig,
+				sourceMap: !production,
 			}),
 			compilerOptions: {
 				// enable run-time checks when not in production
@@ -89,4 +92,4 @@ export default {
 	watch: {
 		clearScreen: false
 	}
-};
+}];

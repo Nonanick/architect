@@ -39,6 +39,7 @@
     "dotenv": "^8.2.0",
     "electron-store": "^7.0.2",
     "esm": "^3.2.25",
+    "monaco-editor": "^0.22.3",
     "nanoid": "^3.1.20",
     "path-to-regexp": "^6.2.0",
     "v8-compile-cache": "^2.2.0"

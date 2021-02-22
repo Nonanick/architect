@@ -4,11 +4,11 @@ import { ipcRenderer, IpcRendererEvent, OpenDialogReturnValue, shell } from "ele
 import { nanoid } from "nanoid";
 
 export const NodeFileSystem: FSInterface & {
-  pickFolder(): Promise<string>;
+  pickFolder(initialDir?: string): Promise<string>;
   displayFolder(path : string) : Promise<void>;
 } = {
   ...FileSystem,
-  async pickFolder() : Promise<string> {
+  async pickFolder(initialDir? : string) : Promise<string> {
     return new Promise<string>((resolve, reject) => {
       let requestId = nanoid();
 
@@ -21,8 +21,8 @@ export const NodeFileSystem: FSInterface & {
         if (id !== requestId) return;
 
         console.log(
-          `[FileSystem]: Response for dialog request ${requestId} was ${success &&
-            locationOrError.canceled} - path: ${locationOrError.filePaths[0]}`,
+          `[FileSystem]: Response for dialog request ${requestId} was ${success} &&
+            ${locationOrError.canceled} - path: ${locationOrError.filePaths[0]}`,
         );
 
         if (success === true && locationOrError.canceled === false) {
@@ -36,7 +36,7 @@ export const NodeFileSystem: FSInterface & {
 
       ipcRenderer.on("pick-folder-response", listener);
 
-      ipcRenderer.send("pick-folder", requestId);
+      ipcRenderer.send("pick-folder", requestId, initialDir);
     });
   },
 

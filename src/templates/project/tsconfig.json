@@ -11,6 +11,9 @@
 
     "strict": true,
     "moduleResolution": "node",
-    "baseUrl": "./src"
+    "baseUrl": "./",
+    "paths": {
+      "@architect/*" : ["./.architect/typings/*"], 
+    }
   }
 }

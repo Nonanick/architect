@@ -9,14 +9,15 @@
 
   export let showLabel: boolean = true;
 
-  export let onClick: IconButtonProps["onClick"] = () => {};
 </script>
 
 <div
   class="icon-button clickable"
-  on:click={(ev) => {
-    if (onClick != null) onClick(ev);
-  }}
+  on:click
+  on:dblclick
+  on:mouseout
+  on:mouseover
+  on:mousedown
   title={label}
 >
   <div class="icon-container">

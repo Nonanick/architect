@@ -1,7 +1,5 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte/internal";
-  import IconButton from "../icon-button/IconButton.svelte";
-  import type { IconButtonProps } from "../icon-button/IconButtonProps";
 
   type InputValidationFn = (value: string) => Promise<true | string | string[]>;
   export let name: string;
@@ -10,8 +8,6 @@
   export let value: string;
 
   export let title: string = "";
-
-  export let inputButtons: IconButtonProps[] = [];
 
   export let errors: string[] = [];
 
@@ -38,17 +34,16 @@
       ).then((validationResults) => {
         let trueOrError = validationResults.flat();
         let errors = [];
-        for(let result of trueOrError) {
-          if(result !== true) errors.push(result);
+        for (let result of trueOrError) {
+          if (result !== true) errors.push(result);
         }
         return errors;
       });
     }
 
-    return validate(inputEl.value).then(r => {
+    return validate(inputEl.value).then((r) => {
       return r === true ? [] : typeof r === "string" ? [r] : r;
     });
-
   }
 </script>
 
@@ -74,17 +69,25 @@
         {pattern}
         bind:value
         on:change={async (ev) => {
-          dispatch("change", ev );
+          dispatch("change", ev);
           errors = await getValidationErrors();
         }}
-        on:keyup={(ev) => {dispatch("keyup", ev)}}
-        on:keydown={(ev) => {dispatch("keydown", ev)}}
-        on:keypress={(ev) => {dispatch("keypress", ev)}}
-        on:input={(ev) => {dispatch("input", ev)}}
+        on:keyup={(ev) => {
+          dispatch("keyup", ev);
+        }}
+        on:keydown={(ev) => {
+          dispatch("keydown", ev);
+        }}
+        on:keypress={(ev) => {
+          dispatch("keypress", ev);
+        }}
+        on:input={(ev) => {
+          dispatch("input", ev);
+        }}
       />
-      {#each inputButtons as button}
-        <IconButton {...button} />
-      {/each}
+      <slot name="input-button">
+
+      </slot>
     </label>
   </div>
   <div class="validation-container">
@@ -114,7 +117,7 @@
     height: 40px;
     padding: 0;
   }
-  
+
   .input-container > label > *:not(:last-child) {
     border-right: 1px solid rgba(0, 0, 0, 0.2);
   }

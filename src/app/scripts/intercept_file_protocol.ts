@@ -7,8 +7,19 @@ import { ArchitectPublicPath } from '../app.window.boot';
 export function InterceptAbsoluteFileResolution(req: ProtocolRequest, cb: (resp: ProtocolResponse) => void) {
 
   let filePath = req.url.split('#')[0].replace(/^file:\/\//, '').replace(/\\/g, '/');
-  if(filePath.indexOf('?') >= 0) {
-    filePath = filePath.substr(0,filePath.indexOf('?'));
+
+  if (filePath.indexOf('?') >= 0) {
+    filePath = filePath.substr(0, filePath.indexOf('?'));
+  }
+
+  if (
+    filePath.split('/')[1] === 'libs'
+  ) {
+    let split = filePath.split('.');
+    if (!['js', 'css'].includes(split[split.length - 1])) {
+      filePath += '.js';
+      console.log("ES fix -> add .js to files required from libs folder", filePath);
+    }
   }
   let absolutePath: string = "";
   const publicPathRegExp = new RegExp('^' + ArchitectPublicPath.replace(/\\/g, '/'));

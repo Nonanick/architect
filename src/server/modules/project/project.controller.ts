@@ -103,7 +103,13 @@ export class ProjectController extends Controller {
     },
   })
   public installArchitect: Resolver = async (req) => {
-    return ProjectModule.copyArchitectMetadata(path.join(req.get("target"), '.architect'))
+    return Promise.all([
+      ProjectModule.copyArchitectMetadata(path.join(req.get("target"), '.architect')),
+      FileSystem.copyFolder(
+        path.resolve(__dirname, '..', '..', '..', 'lib', 'typings'),
+        path.join(req.get("target"), '.architect', 'typings')
+      )
+    ])
       .then(_ => {
         return `Sucesfully architect metadata of '${ArchitectProjectTemplatePath}' into '${req.get('target')}'!`;
       }).catch(err => {

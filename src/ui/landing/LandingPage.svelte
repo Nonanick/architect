@@ -116,12 +116,47 @@
 					{#await workspaceConfig}
 						... loading workspace
 					{:then workspace}
-						<input
-							type="text"
-							name="default-workspace"
-							bind:value={defaultWorkspace}
-							on:change={() => updateWorkspace()}
-						/>
+						<div class="input-container">
+							<input
+								type="text"
+								class="text-input"
+								name="default-workspace"
+								bind:value={defaultWorkspace}
+								on:change={() => updateWorkspace()}
+							/>
+							<IconButton
+								label="Pick Location"
+								icon={{ src: "/img/icons/pick.folder.svg" }}
+								showLabel={false}
+								on:click={() => {
+									window.architect.FileSystem.pickFolder(defaultWorkspace)
+										.then((newLocation) => {
+											defaultWorkspace = String(newLocation);
+										})
+										.catch((failed) => {
+											console.error("Failed to open directory", failed);
+										});
+								}}
+							/>
+							<IconButton
+								icon={{ src: "/img/icons/reload.svg" }}
+								on:click={() => {
+									architect.Server.patch("config/workspace")
+										.then((resettedValue) => {
+											defaultWorkspace = String(resettedValue);
+											workspaceConfig = Promise.resolve(resettedValue);
+										})
+										.catch((err) => {
+											console.error(
+												"Failed to reset workspace default value!",
+												err
+											);
+										});
+								}}
+								label="reset value"
+								showLabel={false}
+							/>
+						</div>
 					{/await}
 				</div>
 			</div>
@@ -138,7 +173,7 @@
 						color: "var(--error-color)",
 					}}
 					label="Empty recent projects"
-					onClick={async () => {
+					on:click={async () => {
 						if (
 							confirm(
 								"Are you sure you want to delete all recently tracked projects?"
@@ -294,18 +329,16 @@
 
 	.customize-properties .item {
 		margin-bottom: 5px;
-		border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-		padding: 5px 8px;
+		padding: 5px 0px;
 		box-sizing: border-box;
 	}
 
 	.item .title {
 		font-size: 10pt;
 		font-weight: bold;
-		border-left: 3px solid var(--main-color);
 		border-top-left-radius: 3px;
 		border-bottom-left-radius: 3px;
-		padding-left: 10px;
+		margin-bottom: 5px;
 	}
 	@media only screen and (min-width: 768px) and (max-width: 1024px) {
 		.architect-body {

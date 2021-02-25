@@ -4,7 +4,7 @@
   import typescript from "highlight.js/lib/languages/typescript";
   import "highlight.js/styles/atom-one-dark.css";
   import ColoredButton from "../components/colored-button/ColoredButton.svelte";
-  import TextArea from "../components/form/text-area/TextArea.svelte";
+  import RichText from "../components/form/rich-text/RichText.svelte";
   import TextInput from "../components/form/text-input/TextInput.svelte";
   import SvgImage from "../components/SVGImage.svelte";
   import { OpenProject } from "../storage/OpenProject";
@@ -82,7 +82,7 @@
           Name:
         </TextInput>
         <TextInput name="title" bind:value={title} required>Title:</TextInput>
-        <TextArea name="description" bind:value={description}>Description:</TextArea>
+        <RichText name="description" bind:value={description}>Description:</RichText>
       </form>
       <div class="file-content-preview">
         File preview

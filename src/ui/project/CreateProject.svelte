@@ -4,7 +4,7 @@
   import { ProjectEntity } from "../../lib/entity/ProjectEntity";
   import type { ProjectDTO } from "../../lib/project/new-project.interface";
   import IconButton from "../components/form/icon-button/IconButton.svelte";
-import TextArea from '../components/form/text-area/TextArea.svelte';
+  import TextArea from "../components/form/text-area/TextArea.svelte";
   import TextInput from "../components/form/text-input/TextInput.svelte";
   import SvgImage from "../components/SVGImage.svelte";
   import { AppRouter } from "../router/AppRouter";
@@ -259,7 +259,7 @@ import TextArea from '../components/form/text-area/TextArea.svelte';
 
         <TextArea bind:value={description} name="description">
           Description:
-          </TextArea>
+        </TextArea>
 
         <TextInput
           class="input"
@@ -433,14 +433,6 @@ import TextArea from '../components/form/text-area/TextArea.svelte';
     width: 100%;
     min-height: 80px;
     height: auto;
-  }
-
-  .input textarea {
-    width: 100%;
-    height: 100px;
-    border-radius: 5px;
-    margin-top: 4px;
-    background-color: rgba(255, 255, 255, 0.6);
   }
 
   .create-project.button {

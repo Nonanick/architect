@@ -2,10 +2,26 @@
   import { createEventDispatcher } from "svelte/internal";
 
   type InputValidationFn = (value: string) => Promise<true | string | string[]>;
+
+  type RadioSliderOption = {
+    label : string;
+    value : string;
+    icon : string;
+    active_color?: string | {
+      bg : string;
+      fg : string;
+    };
+    inactive_color? : string | {
+      bg : string;
+      fg : string;
+    };
+    option_radius?: string;
+  };
+
   export let name: string;
-  export let placeholder: string;
-  export let pattern: string;
   export let value: string;
+
+  export let options : RadioSliderOption[];
 
   export let title: string = "";
 
@@ -60,23 +76,7 @@
     <slot name="input-icon" />
     <label>
       <span class="label-title">{title}</span>
-      <textarea
-        bind:this={inputEl}
-        class="input"
-        type="text"
-        {name}
-        {placeholder}
-        {pattern}
-        bind:value
-        on:change={async (ev) => {
-          dispatch("change", ev);
-          errors = await getValidationErrors();
-        }}
-        on:keyup
-        on:keydown
-        on:keypress
-        on:input
-      />
+     <input type="radio" name="" />
       <slot name="input-button" />
     </label>
   </div>

@@ -157,3 +157,24 @@ button:focus {
 	background: 0;
 	outline: 0;
 }
+
+.hljs {
+	white-space: pre-line;
+	overflow-x: auto;
+}
+
+/** --- Rich Text editor CSS Fixes ---**/
+.ce-block__content,
+.ce-toolbar__content {
+    max-width: 100%;
+}
+.ce-toolbar__plus {
+	left: 4px;
+}
+.ce-toolbar__actions {
+	right: 0px;
+}
+.ce-header {
+	padding-bottom: 15px !important;
+    padding-top: 5px !important;
+}

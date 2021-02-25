@@ -4,6 +4,7 @@
   import typescript from "highlight.js/lib/languages/typescript";
   import "highlight.js/styles/atom-one-dark.css";
   import ColoredButton from "../components/colored-button/ColoredButton.svelte";
+  import TextArea from "../components/form/text-area/TextArea.svelte";
   import TextInput from "../components/form/text-input/TextInput.svelte";
   import SvgImage from "../components/SVGImage.svelte";
   import { OpenProject } from "../storage/OpenProject";
@@ -13,12 +14,14 @@
 
   let entity_name: string;
   let title: string;
+  let description: string;
   let fileContentPreview: string;
   let entityDefinition: Partial<IArchitectEntity> = {};
 
   $: {
     entityDefinition.name = entity_name;
     entityDefinition.title = title;
+    entityDefinition.description = description;
     fileContentPreview = hljs.highlight(
       "typescript",
       EntityModule.GenerateEntityFileContents(entityDefinition)
@@ -67,7 +70,10 @@
           architect.Editor.Launch($OpenProject.root);
         }}
       >
-        Open in Code Editor <SvgImage src="/img/icons/forward.svg" color="rgba(0,0,0,0.7)" />
+        Open in Code Editor <SvgImage
+          src="/img/icons/forward.svg"
+          color="rgba(0,0,0,0.7)"
+        />
       </div>
     </div>
     <div class="editor-viewport">
@@ -75,9 +81,8 @@
         <TextInput name="name" title="Name" bind:value={entity_name} required>
           Name:
         </TextInput>
-        <TextInput name="title"  bind:value={title} required>
-          Title:
-        </TextInput>
+        <TextInput name="title" bind:value={title} required>Title:</TextInput>
+        <TextArea name="description" bind:value={description}>Description:</TextArea>
       </form>
       <div class="file-content-preview">
         File preview
@@ -115,11 +120,30 @@
   .header .title {
     font-size: 18pt;
     line-height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .header .options {
+    white-space: nowrap;
   }
 
   .body {
     position: relative;
     height: calc(100% - 60px);
+    width: 100%;
+    display: block;
+    overflow: hidden;
+  }
+  form {
+    box-sizing: border-box;
+    padding: 5px 10px;
+    background-color: rgba(255,255,255,0.6);
+    border-radius: 4px;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    box-shadow: 1px 1px 4px 1px rgba(0,0,0,0.05);
   }
   .select-editor-style {
     width: 100%;
@@ -151,10 +175,7 @@
     top: 0px;
     left: 0px;
     width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-columns: 1fr 450px;
-    column-gap: 30px;
+    height: auto;
   }
   .file-content-preview code {
     padding: 10px 15px;

@@ -4,6 +4,7 @@
   import { ProjectEntity } from "../../lib/entity/ProjectEntity";
   import type { ProjectDTO } from "../../lib/project/new-project.interface";
   import IconButton from "../components/form/icon-button/IconButton.svelte";
+import TextArea from '../components/form/text-area/TextArea.svelte';
   import TextInput from "../components/form/text-input/TextInput.svelte";
   import SvgImage from "../components/SVGImage.svelte";
   import { AppRouter } from "../router/AppRouter";
@@ -256,14 +257,9 @@
           </TextInput>
         </div>
 
-        <div class="input description">
-          Description: <br />
-          <textarea
-            placeholder="Project description"
-            bind:value={description}
-            name="description"
-          />
-        </div>
+        <TextArea bind:value={description} name="description">
+          Description:
+          </TextArea>
 
         <TextInput
           class="input"

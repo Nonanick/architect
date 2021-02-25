@@ -85,9 +85,7 @@
           dispatch("input", ev);
         }}
       />
-      <slot name="input-button">
-
-      </slot>
+      <slot name="input-button" />
     </label>
   </div>
   <div class="validation-container">

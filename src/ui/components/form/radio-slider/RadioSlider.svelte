@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte/internal";
+  import SvgImage from "../../SVGImage.svelte";
   import type { RadioSliderOptionProps } from "./RadioSliderOptionProps";
 
   type InputValidationFn = (value: string) => Promise<true | string | string[]>;
@@ -9,11 +10,13 @@
 
   export let options: RadioSliderOptionProps[];
 
-  export let title: string = "";
-
   export let errors: string[] = [];
 
   export let validate: InputValidationFn | InputValidationFn[];
+
+  let currentlySelected: RadioSliderOptionProps | undefined;
+
+  $: currentlySelected = options.filter((o) => o.value === value)[0];
 
   let inputEl: HTMLTextAreaElement;
 
@@ -50,6 +53,12 @@
 </script>
 
 <style>
+  .radioslider-container {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    height: 40px;
+    overflow: visible;
+  }
   .label-container {
     display: flex;
     margin-bottom: 3px;
@@ -59,32 +68,78 @@
   .label-container > :global(*:not(:last-child)) {
     padding-right: 5px;
   }
-  .input-container {
+  .options-container {
     position: relative;
-    display: flex;
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    display: grid;
+    grid-auto-columns: 40px;
+    column-gap: 5px;
+    grid-auto-flow: column;
+
     border-radius: 4px;
     height: auto;
     min-height: 40px;
     padding: 0;
   }
 
-  .input-container > label > *:not(:last-child) {
-    border-right: 1px solid rgba(0, 0, 0, 0.2);
-  }
-
-  slot[name="input-icon"] {
-    display: block;
-    flex-grow: 0;
-    height: auto;
-  }
-  label {
+  .option-item {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
     display: flex;
-    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
   }
 
   .label-title {
     display: none;
+  }
+  .label-title.selected {
+    display: block;
+    position: absolute;
+    bottom: -25px;
+    width: 100%;
+    text-align: center;
+  }
+  .options-viewport {
+    position: relative;
+    width: auto;
+    height: 100%;
+  }
+  .options-slider-bg {
+    position: absolute;
+    width: calc(100% - 24px);
+    height: 8px;
+    top: calc(50% - 4px);
+    left: 12px;
+    background-color: gray;
+    border-radius: 4px;
+  }
+
+  input[type="radio"] {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0.01;
+  }
+
+  .icon-bg-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    width: 26px;
+    height: 26px;
+  }
+
+  .icon-bg-container.selected {
+    width: 32px;
+    height: 32px;
+    box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, 0.1);
   }
 
   .validation-container {
@@ -93,42 +148,89 @@
   .input-container.contain-errors {
     border: 1px solid var(--error-color);
   }
-  .input-container.contain-errors > label > *:not(:last-child) {
+  .options-container.contain-errors > label > *:not(:last-child) {
     border-right: 1px solid var(--error-color);
   }
 </style>
 
-<div class="textinput-container {$$props.class}">
+<div class="radioslider-container {$$props.class}" style="--bg-color: ">
   <div class="label-container">
     <slot name="label-icon" />
     <span class="label">
-      <slot>
-        {title}
-      </slot>
+      <slot />
     </span>
   </div>
-  <div class="input-container {errors.length > 0 ? 'contain-errors' : ''}">
-    <slot name="input-icon" />
-    <!-- svelte-ignore a11y-label-has-associated-control -->
+  <div class="options-viewport">
+    <div
+      class="options-slider-bg"
+      style="background-color: {typeof currentlySelected?.active_color ===
+      'string'
+        ? 'gray'
+        : currentlySelected?.active_color.bg ?? 'black'}"
+    />
+    <div class="options-container {errors.length > 0 ? 'contain-errors' : ''}">
+      <!-- svelte-ignore a11y-label-has-associated-control -->
 
-    {#each options as sliderOption}
-      <label>
-        <span class="label-title">{title}</span>
-        SliderOption - {sliderOption.label}
-        <input
-          type="radio"
-          {name}
-          group={name}
-          value={sliderOption.value}
-          on:change
-          on:select={(ev) => {
-            value = sliderOption.value;
-            dispatch("select", ev);
-          }}
-        />
-      </label>
-    {/each}
-    <slot name="input-button" />
+      {#each options as sliderOption}
+        <label class="option-item">
+          <span
+            class="label-title"
+            class:selected={sliderOption.value == value}
+          >
+            {sliderOption.label}
+          </span>
+          <input
+            type="radio"
+            {name}
+            group={name}
+            value={sliderOption.value}
+            on:change={(ev) => {
+              value = sliderOption.value;
+              dispatch("change", ev);
+            }}
+          />
+
+          {#if currentlySelected?.value === sliderOption.value}
+            <div class="option-icon-container">
+              <div
+                class="icon-bg-container selected"
+                style="background-color: {typeof sliderOption.active_color ===
+                'string'
+                  ? 'gray'
+                  : sliderOption.active_color.bg};"
+              >
+                <SvgImage
+                  src={sliderOption.icon}
+                  size="20px"
+                  color={typeof sliderOption.active_color === "string"
+                    ? sliderOption.active_color
+                    : sliderOption.active_color.fg}
+                />
+              </div>
+            </div>
+          {:else}
+            <div class="option-icon-container">
+              <div
+                class="icon-bg-container clickable"
+                style="background-color: {typeof sliderOption.inactive_color ===
+                'string'
+                  ? 'lightgray'
+                  : sliderOption?.inactive_color?.bg ?? 'lightgray'};"
+              >
+                <SvgImage
+                  src={sliderOption.icon}
+                  size="16px"
+                  color={typeof sliderOption?.inactive_color === "string"
+                    ? sliderOption.inactive_color
+                    : sliderOption?.inactive_color?.fg ?? "gray"}
+                />
+              </div>
+            </div>
+          {/if}
+        </label>
+      {/each}
+      <slot name="input-button" />
+    </div>
   </div>
   <div class="validation-container">
     {#each errors as err}

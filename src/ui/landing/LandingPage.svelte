@@ -7,6 +7,8 @@
 	import IconButton from "../components/form/icon-button/IconButton.svelte";
 	import { TrackedProjects } from "../storage/TrackedProjects";
 	import { OpenProject } from "../storage/OpenProject";
+	import RadioSlider from "../components/form/radio-slider/RadioSlider.svelte";
+	import type { RadioSliderOptionProps } from "../components/form/radio-slider/RadioSliderOptionProps";
 
 	let themeConfig = architect.Server.get("config/theme")
 		.then((v) => String(v))
@@ -22,6 +24,78 @@
 			console.error(err);
 			return "";
 		});
+
+	const themeSliderOptions: RadioSliderOptionProps[] = [
+		// Light theme
+		{
+			label: "Light",
+			value: "light",
+			icon: "/img/icons/theme.light.svg",
+			active_color: {
+				bg: "white",
+				fg: "black",
+			},
+			inactive_color: {
+				bg: "gray",
+				fg: "lightgray",
+			},
+		},
+		// Dark theme
+		{
+			label: "Dark",
+			value: "dark",
+			icon: "/img/icons/theme.dark.svg",
+			active_color: {
+				bg: "black",
+				fg: "white",
+			},
+			inactive_color: {
+				bg: "gray",
+				fg: "lightgray",
+			},
+		},
+		// Dark blue
+		{
+			label : "Blueish",
+			value : "blueish",
+			icon : "/img/icons/reload.svg",
+			active_color : {
+				bg : "blue",
+				fg : "lightblue"
+			},
+		}
+	];
+
+	function handleSliderChange(ev: CustomEvent) {
+		console.log('HandleSliderChnage', ev);
+		let newTheme = 	String((ev.detail.srcElement as HTMLInputElement).value) ?? "light";
+		/*architect.Server.patch(
+			"config/theme/" + newTheme
+		).then(_ => {
+			themeConfig = Promise.resolve(newTheme);
+		});*/
+	}
+
+	function handlePickLocationForWorkspace() {
+		window.architect.FileSystem.pickFolder(defaultWorkspace)
+			.then((newLocation) => {
+				defaultWorkspace = String(newLocation);
+			})
+			.catch((failed) => {
+				console.error("Failed to open directory", failed);
+			});
+	}
+
+	function handleResetWorkspaceConfiguration() {
+		architect.Server.patch("config/workspace")
+			.then((resettedValue) => {
+				defaultWorkspace = String(resettedValue);
+				workspaceConfig = Promise.resolve(resettedValue);
+			})
+			.catch((err) => {
+				console.error("Failed to reset workspace default value!", err);
+			});
+	}
 
 	workspaceConfig.then((v) => (defaultWorkspace = v));
 
@@ -43,171 +117,7 @@
 		workspaceConfig = Promise.resolve(defaultWorkspace);
 	}
 
-	async function toggleCurrentTheme(theme: string = "light") {
-		let currentTheme = theme ?? "light";
-		themeConfig = Promise.resolve(currentTheme === "light" ? "dark" : "light");
-		architect.Server.patch(
-			"config/theme/" + (currentTheme === "light" ? "dark" : "light")
-		);
-	}
 </script>
-
-<main class="page" transition:fade>
-	<section class="architect-header">
-		<div class="logo-container">
-			<div class="app-logo">
-				<div class="logo-background">
-					<SVGImage src="/img/architect.logo.svg" color="white" size="90%" />
-				</div>
-			</div>
-		</div>
-		<div class="title-container">
-			<span class="title"> Architect </span>
-		</div>
-		<div class="slogan-container">
-			<div class="slogan">simple, yet powerful</div>
-		</div>
-		<div class="project-actions">
-			<div class="create-project" on:click={() => createArchitectProject()}>
-				<SvgImage
-					src="/img/icons/create.project.svg"
-					color="var(--main-color)"
-				/>
-				New project
-			</div>
-			<div class="open-project" on:click={() => selectArchitectProject()}>
-				<SvgImage src="/img/icons/open.project.svg" color="var(--main-color)" />
-				Open
-			</div>
-		</div>
-	</section>
-	<section class="architect-body">
-		<div class="customize-properties">
-			<div class="properties-title">
-				<h3>Properties</h3>
-			</div>
-			<div class="item">
-				<div class="title">Theme</div>
-				<div class="setter">
-					{#await themeConfig}
-						... loading theme
-					{:then theme}
-						<div
-							style="cursor:pointer"
-							on:click={() => toggleCurrentTheme(String(theme) ?? "light")}
-						>
-							<IconButton
-								icon={{
-									src: "/img/icons/theme." + (theme ?? "light") + ".svg",
-								}}
-							/>
-							{theme ?? "Light"}
-						</div>
-					{/await}
-				</div>
-			</div>
-			<div class="item">
-				<div class="title">Workspace</div>
-				<div class="setter">
-					{#await workspaceConfig}
-						... loading workspace
-					{:then workspace}
-						<div class="input-container">
-							<input
-								type="text"
-								class="text-input"
-								name="default-workspace"
-								bind:value={defaultWorkspace}
-								on:change={() => updateWorkspace()}
-							/>
-							<IconButton
-								label="Pick Location"
-								icon={{ src: "/img/icons/pick.folder.svg" }}
-								showLabel={false}
-								on:click={() => {
-									window.architect.FileSystem.pickFolder(defaultWorkspace)
-										.then((newLocation) => {
-											defaultWorkspace = String(newLocation);
-										})
-										.catch((failed) => {
-											console.error("Failed to open directory", failed);
-										});
-								}}
-							/>
-							<!-- svelte-ignore missing-declaration -->
-							<IconButton
-								icon={{ src: "/img/icons/reload.svg" }}
-								on:click={() => {
-									architect.Server.patch("config/workspace")
-										.then((resettedValue) => {
-											defaultWorkspace = String(resettedValue);
-											workspaceConfig = Promise.resolve(resettedValue);
-										})
-										.catch((err) => {
-											console.error(
-												"Failed to reset workspace default value!",
-												err
-											);
-										});
-								}}
-								label="reset value"
-								showLabel={false}
-							/>
-						</div>
-					{/await}
-				</div>
-			</div>
-			<div class="item" />
-		</div>
-		<div class="recently-open">
-			<div class="recently-open-title">
-				<h3>Recently open</h3>
-
-				<IconButton
-					showLabel={false}
-					icon={{
-						src: "/img/icons/trash.svg",
-						color: "var(--error-color)",
-					}}
-					label="Empty recent projects"
-					on:click={async () => {
-						if (
-							confirm(
-								"Are you sure you want to delete all recently tracked projects?"
-							)
-						) {
-							TrackedProjects.truncate();
-						}
-					}}
-				/>
-			</div>
-			{#if $TrackedProjects.length === 0}
-				No recent project avaliable!
-			{/if}
-			{#each $TrackedProjects as project}
-				<RecentProject
-					on:dblclick={() => {
-						$OpenProject = project;
-						AppRouter.navigateTo("project-explorer");
-					}}
-					projectInfo={project}
-				/>
-			{/each}
-		</div>
-		<div class="architect-tips">
-			<div class="tips-title">
-				<h3>Did you know?</h3>
-			</div>
-			<div class="tip-slider">
-				<div class="slide-container" />
-				<div class="slide-controller">
-					<div class="previous">&lt;</div>
-					<div class="next">&gt;</div>
-				</div>
-			</div>
-		</div>
-	</section>
-</main>
 
 <style>
 	.architect-header {
@@ -365,3 +275,137 @@
 		}
 	}
 </style>
+
+<main class="page" transition:fade>
+	<section class="architect-header">
+		<div class="logo-container">
+			<div class="app-logo">
+				<div class="logo-background">
+					<SVGImage src="/img/architect.logo.svg" color="white" size="90%" />
+				</div>
+			</div>
+		</div>
+		<div class="title-container">
+			<span class="title"> Architect </span>
+		</div>
+		<div class="slogan-container">
+			<div class="slogan">simple, yet powerful</div>
+		</div>
+		<div class="project-actions">
+			<div class="create-project" on:click={() => createArchitectProject()}>
+				<SvgImage
+					src="/img/icons/create.project.svg"
+					color="var(--main-color)"
+				/>
+				New project
+			</div>
+			<div class="open-project" on:click={() => selectArchitectProject()}>
+				<SvgImage src="/img/icons/open.project.svg" color="var(--main-color)" />
+				Open
+			</div>
+		</div>
+	</section>
+	<section class="architect-body">
+		<div class="customize-properties">
+			<div class="properties-title">
+				<h3>Properties</h3>
+			</div>
+			<div class="item">
+				<div class="title">Theme</div>
+				<div class="setter">
+					{#await themeConfig}
+						... loading theme
+					{:then theme}
+						<RadioSlider
+							value={String(theme ?? "light")}
+							name="theme"
+							options={themeSliderOptions}
+							on:change={ev => handleSliderChange(ev)}
+						>
+							Theme:
+						</RadioSlider>
+					{/await}
+				</div>
+			</div>
+			<div class="item">
+				<div class="title">Workspace</div>
+				<div class="setter">
+					{#await workspaceConfig}
+						... loading workspace
+					{:then workspace}
+						<div class="input-container">
+							<input
+								type="text"
+								class="text-input"
+								name="default-workspace"
+								bind:value={defaultWorkspace}
+								on:change={() => updateWorkspace()}
+							/>
+							<IconButton
+								label="Pick Location"
+								icon={{ src: "/img/icons/pick.folder.svg" }}
+								showLabel={false}
+								on:click={handlePickLocationForWorkspace}
+							/>
+							<!-- svelte-ignore missing-declaration -->
+							<IconButton
+								icon={{ src: "/img/icons/reload.svg" }}
+								on:click={handleResetWorkspaceConfiguration}
+								label="reset value"
+								showLabel={false}
+							/>
+						</div>
+					{/await}
+				</div>
+			</div>
+			<div class="item" />
+		</div>
+		<div class="recently-open">
+			<div class="recently-open-title">
+				<h3>Recently open</h3>
+
+				<IconButton
+					showLabel={false}
+					icon={{
+						src: "/img/icons/trash.svg",
+						color: "var(--error-color)",
+					}}
+					label="Empty recent projects"
+					on:click={async () => {
+						if (
+							confirm(
+								"Are you sure you want to delete all recently tracked projects?"
+							)
+						) {
+							TrackedProjects.truncate();
+						}
+					}}
+				/>
+			</div>
+			{#if $TrackedProjects.length === 0}
+				No recent project avaliable!
+			{/if}
+			{#each $TrackedProjects as project}
+				<RecentProject
+					on:dblclick={() => {
+						$OpenProject = project;
+						AppRouter.navigateTo("project-explorer");
+					}}
+					projectInfo={project}
+				/>
+			{/each}
+		</div>
+		<div class="architect-tips">
+			<div class="tips-title">
+				<h3>Did you know?</h3>
+			</div>
+			<div class="tip-slider">
+				<div class="slide-container" />
+				<div class="slide-controller">
+					<div class="previous">&lt;</div>
+					<div class="next">&gt;</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</main>

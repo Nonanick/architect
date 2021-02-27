@@ -7,17 +7,19 @@ let app: Viewport;
 (window as any).Buffer = (window as any).Buffler;
 
 app = new Viewport({
-	target: document.body,
-	props: {
-		router: AppRouter
-	}
+  target: document.body,
+  props: {
+    router: AppRouter
+  }
 });
 
-if(window.architect == undefined) {
-	window.architect = BrowserServices as any;
+if (window.architect == undefined) {
+  window.architect = BrowserServices as any;
 }
 
-export default app; 
+var architect = window.architect;
+
+export default app;
 
 declare global {
 

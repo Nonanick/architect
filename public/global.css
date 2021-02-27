@@ -47,7 +47,6 @@ input, button, select, textarea {
 	font-size: inherit;
 	-webkit-padding: 0.4em 0;
 	padding: 0.4em;
-	margin: 0 0 0.5em 0;
 	box-sizing: border-box;
 	border: 1px solid #ccc;
 	border-radius: 2px;
@@ -144,7 +143,7 @@ button:focus {
 	padding: 0;
 }
 
-.input-container > label > *:not(:last-child) {
+.input-container>label>*:not(:last-child) {
 	border-right: 1px solid rgba(0, 0, 0, 0.2);
 }
 
@@ -164,17 +163,20 @@ button:focus {
 }
 
 /** --- Rich Text editor CSS Fixes ---**/
-.ce-block__content,
-.ce-toolbar__content {
-    max-width: 100%;
+
+.ce-block__content, .ce-toolbar__content {
+	max-width: 100%;
 }
+
 .ce-toolbar__plus {
 	left: 4px;
 }
+
 .ce-toolbar__actions {
 	right: 0px;
 }
+
 .ce-header {
 	padding-bottom: 15px !important;
-    padding-top: 5px !important;
+	padding-top: 5px !important;
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
   import SvgImage from "../../../components/SVGImage.svelte";
-import { AppRouter } from '../../../router/AppRouter';
+  import { AppRouter } from "../../../router/AppRouter";
   import { OpenProject } from "../../../storage/OpenProject";
 
   import NavigationItem from "./NavigationItem.svelte";
@@ -8,10 +8,68 @@ import { AppRouter } from '../../../router/AppRouter';
   let searchInput: HTMLInputElement;
 </script>
 
+<style>
+  .title {
+    font-size: 22pt;
+    font-weight: 400;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: text-decoration-color 0.4s;
+  }
+  .title:hover {
+    text-decoration-color: var(--main-color);
+  }
+
+  .search {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    position: relative;
+  }
+  .search :global(.icon) {
+    position: absolute;
+    user-select: none;
+    top: 11px;
+    left: 8px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    opacity: 0.4;
+    transition: opacity 0.4s;
+  }
+  .search:hover :global(.icon) {
+    opacity: 0.7;
+  }
+  .search input {
+    border: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    outline: 0;
+    font-size: 10pt;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 4px 10px;
+    padding-left: 40px;
+  }
+  .project-items {
+    margin-top: 20px;
+    position: relative;
+    overflow: hidden;
+    height: auto;
+    width: 100%;
+    padding: 0;
+    box-sizing: border-box;
+  }
+</style>
+
 <nav class="side-menu">
-  <div class="title" on:click={() => {
-     AppRouter.navigateTo('project-explorer');
-  }}>
+  <div
+    class="title"
+    on:click={() => {
+      AppRouter.navigateTo("project-explorer");
+    }}
+  >
     {$OpenProject?.title ?? "pick a project!"}
   </div>
   <div
@@ -33,7 +91,7 @@ import { AppRouter } from '../../../router/AppRouter';
           icon: "/img/icons/add.svg",
           title: "add entity",
           onClick: () => {
-            AppRouter.navigateTo('project-explorer/new-entity');
+            AppRouter.navigateTo("project-explorer/new-entity");
           },
         },
       ]}
@@ -79,51 +137,3 @@ import { AppRouter } from '../../../router/AppRouter';
     />
   </div>
 </nav>
-
-<style>
-  .title {
-    font-size: 22pt;
-    font-weight: 400;
-  }
-
-  .search {
-    width: 100%;
-    height: 40px;
-    line-height: 40px;
-    position: relative;
-  }
-  .search :global(.icon) {
-    position: absolute;
-    user-select: none;
-    top: 11px;
-    left: 8px;
-    width: 20px;
-    height: 20px;
-    text-align: center;
-    opacity: 0.4;
-    transition: opacity 0.4s;
-  }
-  .search:hover :global(.icon) {
-    opacity: 0.7;
-  }
-  .search input {
-    border: 0;
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    outline: 0;
-    font-size: 10pt;
-    width: 100%;
-    box-sizing: border-box;
-    padding: 4px 10px;
-    padding-left: 40px;
-  }
-  .project-items {
-    margin-top: 20px;
-    position: relative;
-    overflow: hidden;
-    height: auto;
-    width: 100%;
-    padding: 0;
-    box-sizing: border-box;
-  }
-</style>

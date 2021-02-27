@@ -36,10 +36,6 @@
 		AppRouter.navigateTo("new-project");
 	}
 
-	function reloadTrackedProjects() {
-		TrackedProjects.truncate();
-	}
-
 	function updateWorkspace() {
 		architect.Server.post("config/workspace", {
 			value: defaultWorkspace,
@@ -138,6 +134,7 @@
 										});
 								}}
 							/>
+							<!-- svelte-ignore missing-declaration -->
 							<IconButton
 								icon={{ src: "/img/icons/reload.svg" }}
 								on:click={() => {

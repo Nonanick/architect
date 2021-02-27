@@ -126,12 +126,13 @@
     position: relative;
     width: 100%;
     height: auto;
-    min-height: auto;
+    min-height: 55px;
     line-height: 40px;
     border: 0;
     background: 0;
     outline: 0;
     resize: vertical;
+
   }
 
   .label-title {

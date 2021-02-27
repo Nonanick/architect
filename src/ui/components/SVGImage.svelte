@@ -26,17 +26,17 @@
     padding-top: calc(var(--aspect-ratio) * 100%);
     background-color: var(--icon-color);
 
-    mask-image: var(--source);
     -webkit-mask-image: var(--source);
+    mask-image: var(--source);
 
-    mask-repeat: no-repeat;
     -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
 
-    mask-position: center;
     -webkit-mask-position: center;
+    mask-position: center;
 
-    mask-size: 100%;
     -webkit-mask-size: 100%;
+    mask-size: 100%;
   }
 </style>
 

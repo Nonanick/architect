@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-	<base href="./">
 	<meta charset='utf-8'>
+	<base href="./">
 	<meta name='viewport' content='width=device-width,initial-scale=1'>
 	<meta http-equiv="Content-Security-Policy"
 				content="
@@ -17,14 +17,7 @@
 	<link rel='stylesheet' href='/fonts/titilium.css'>
 	<link rel='stylesheet' href='/global.css'>
 	<link rel='stylesheet' href='/build/bundle.css'>
-	<link rel='stylesheet' href='/build/monaco-editor.css'>
 
-	<script type="module">
-		import * as monacoEditor from './build/monaco-editor.js';
-		var monaco = monacoEditor;
-		window.monaco = monacoEditor;
-		console.log(monacoEditor);
-	</script>
 	<script defer src='./build/bundle.js'></script>
 
 </head>

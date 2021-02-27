@@ -1,27 +1,13 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte/internal";
+  import type { RadioSliderOptionProps } from "./RadioSliderOptionProps";
 
   type InputValidationFn = (value: string) => Promise<true | string | string[]>;
-
-  type RadioSliderOption = {
-    label : string;
-    value : string;
-    icon : string;
-    active_color?: string | {
-      bg : string;
-      fg : string;
-    };
-    inactive_color? : string | {
-      bg : string;
-      fg : string;
-    };
-    option_radius?: string;
-  };
 
   export let name: string;
   export let value: string;
 
-  export let options : RadioSliderOption[];
+  export let options: RadioSliderOptionProps[];
 
   export let title: string = "";
 
@@ -63,32 +49,6 @@
   }
 </script>
 
-<div class="textinput-container {$$props.class}">
-  <div class="label-container">
-    <slot name="label-icon" />
-    <span class="label">
-      <slot>
-        {title}
-      </slot>
-    </span>
-  </div>
-  <div class="input-container {errors.length > 0 ? 'contain-errors' : ''}">
-    <slot name="input-icon" />
-    <label>
-      <span class="label-title">{title}</span>
-     <input type="radio" name="" />
-      <slot name="input-button" />
-    </label>
-  </div>
-  <div class="validation-container">
-    {#each errors as err}
-      <div class="validation-error">
-        {err}
-      </div>
-    {/each}
-  </div>
-</div>
-
 <style>
   .label-container {
     display: flex;
@@ -122,17 +82,6 @@
     display: flex;
     flex-grow: 1;
   }
-  .input-container textarea {
-    position: relative;
-    width: 100%;
-    height: auto;
-    min-height: auto;
-    line-height: 40px;
-    border: 0;
-    background: 0;
-    outline: 0;
-    resize: vertical;
-  }
 
   .label-title {
     display: none;
@@ -148,3 +97,44 @@
     border-right: 1px solid var(--error-color);
   }
 </style>
+
+<div class="textinput-container {$$props.class}">
+  <div class="label-container">
+    <slot name="label-icon" />
+    <span class="label">
+      <slot>
+        {title}
+      </slot>
+    </span>
+  </div>
+  <div class="input-container {errors.length > 0 ? 'contain-errors' : ''}">
+    <slot name="input-icon" />
+    <!-- svelte-ignore a11y-label-has-associated-control -->
+
+    {#each options as sliderOption}
+      <label>
+        <span class="label-title">{title}</span>
+        SliderOption - {sliderOption.label}
+        <input
+          type="radio"
+          {name}
+          group={name}
+          value={sliderOption.value}
+          on:change
+          on:select={(ev) => {
+            value = sliderOption.value;
+            dispatch("select", ev);
+          }}
+        />
+      </label>
+    {/each}
+    <slot name="input-button" />
+  </div>
+  <div class="validation-container">
+    {#each errors as err}
+      <div class="validation-error">
+        {err}
+      </div>
+    {/each}
+  </div>
+</div>

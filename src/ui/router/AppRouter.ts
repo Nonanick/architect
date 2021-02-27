@@ -71,7 +71,6 @@ class Router {
     }
     if (Array.isArray(activateRoute.onActivation)) {
       for (let activationStep of activateRoute.onActivation) {
-        console.log("Running activation step: ", urlParams, queryParams);
         await activationStep(pureURL, { ...urlParams }, { ...queryParams });
       }
     } else {
@@ -127,7 +126,7 @@ class Router {
   }
 
   routeNotFound(url?: string) {
-    
+
   }
 
   routeGuarded(route?: Route) {

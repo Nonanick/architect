@@ -4,9 +4,9 @@ import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
-const svelteConfig = require('./svelte.config'); 
 import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
+const svelteConfig = require('./svelte.config');
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -31,7 +31,7 @@ function serve() {
 	};
 }
 
-export default [{ 
+export default [{
 	input: 'src/ui/ui.boot.ts',
 	output: {
 		sourcemap: false,

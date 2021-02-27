@@ -6,9 +6,5 @@ export interface RadioSliderOptionProps {
     bg: string;
     fg: string;
   };
-  inactive_color?: string | {
-    bg: string;
-    fg: string;
-  };
   option_radius?: string;
 };

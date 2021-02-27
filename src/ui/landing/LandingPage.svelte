@@ -25,6 +25,7 @@
 			return "";
 		});
 
+	// Server defined? Put up variable definitions togheter with the theme metadata and voila? 
 	const themeSliderOptions: RadioSliderOptionProps[] = [
 		// Light theme
 		{
@@ -33,11 +34,7 @@
 			icon: "/img/icons/theme.light.svg",
 			active_color: {
 				bg: "white",
-				fg: "black",
-			},
-			inactive_color: {
-				bg: "gray",
-				fg: "lightgray",
+				fg: "#BD632F",
 			},
 		},
 		// Dark theme
@@ -46,34 +43,20 @@
 			value: "dark",
 			icon: "/img/icons/theme.dark.svg",
 			active_color: {
-				bg: "black",
-				fg: "white",
-			},
-			inactive_color: {
-				bg: "gray",
-				fg: "lightgray",
+				bg: "#202030",
+				fg: "#D5F2E3",
 			},
 		},
-		// Dark blue
-		{
-			label : "Blueish",
-			value : "blueish",
-			icon : "/img/icons/reload.svg",
-			active_color : {
-				bg : "blue",
-				fg : "lightblue"
-			},
-		}
 	];
 
 	function handleSliderChange(ev: CustomEvent) {
 		console.log('HandleSliderChnage', ev);
 		let newTheme = 	String((ev.detail.srcElement as HTMLInputElement).value) ?? "light";
-		/*architect.Server.patch(
+		architect.Server.patch(
 			"config/theme/" + newTheme
 		).then(_ => {
 			themeConfig = Promise.resolve(newTheme);
-		});*/
+		});
 	}
 
 	function handlePickLocationForWorkspace() {
@@ -224,12 +207,15 @@
 		display: flex;
 		align-items: center;
 	}
+
 	.project-actions div > :global(div) {
 		margin-right: 10px;
 	}
+
 	.project-actions div:hover {
 		background-color: rgba(0, 0, 0, 0.1);
 	}
+
 	.project-actions div:active {
 		background-color: rgba(0, 0, 0, 0.2);
 	}
@@ -246,6 +232,46 @@
 		border-top-left-radius: 3px;
 		border-bottom-left-radius: 3px;
 		margin-bottom: 5px;
+	}
+
+	.architect-tips {
+		display: grid;
+    grid-template-rows: 40px 1fr;
+    row-gap: 20px;
+	}
+
+	.tip-slider {
+		display: grid;
+    grid-template-rows: auto 40px;
+		row-gap: 10px;
+	}
+
+	.slide-container {
+		background-color: rgba(255,255,255,0.8);
+    border-radius: 5px;
+    box-shadow: 1px 1px 4px 1px rgba(0,0,0,0.1);
+		min-height: 40px;
+		padding: 10px 15px;
+		box-sizing: border-box;
+		padding-bottom: 20px;
+	}
+
+	.slide-controller {
+		display: flex;
+    align-items: center;
+    justify-content: center;
+	}
+
+	.slide-controller > div {
+		margin: 0 8px;
+		background-color: var(--secondary-color);
+		color: var(--text-on-secondary-color);
+		cursor: pointer;
+		height: 30px;
+		width: 30px;
+		line-height: 30px;
+		text-align: center;
+		border-radius: 50%;
 	}
 	@media only screen and (min-width: 768px) and (max-width: 1024px) {
 		.architect-body {
@@ -308,7 +334,7 @@
 	<section class="architect-body">
 		<div class="customize-properties">
 			<div class="properties-title">
-				<h3>Properties</h3>
+				<h3>Configurations</h3>
 			</div>
 			<div class="item">
 				<div class="title">Theme</div>
@@ -320,9 +346,10 @@
 							value={String(theme ?? "light")}
 							name="theme"
 							options={themeSliderOptions}
+							showLabels={false}
 							on:change={ev => handleSliderChange(ev)}
 						>
-							Theme:
+							{themeSliderOptions.filter(o => o.value === String(theme ?? "light"))[0].label}
 						</RadioSlider>
 					{/await}
 				</div>
@@ -400,7 +427,10 @@
 				<h3>Did you know?</h3>
 			</div>
 			<div class="tip-slider">
-				<div class="slide-container" />
+				<div class="slide-container" >Creating the form pieces and then using them instead of breaking your chain of tought each time you need
+					an specific input type is actually better?<br />
+					Try it before implementing subform / item form for entities!
+				</div>
 				<div class="slide-controller">
 					<div class="previous">&lt;</div>
 					<div class="next">&gt;</div>

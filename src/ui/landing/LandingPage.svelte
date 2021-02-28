@@ -6,9 +6,9 @@
 	import { fade } from "svelte/transition";
 	import IconButton from "../components/form/icon-button/IconButton.svelte";
 	import { TrackedProjects } from "../storage/TrackedProjects";
-	import { OpenProject } from "../storage/OpenProject";
 	import RadioSlider from "../components/form/radio-slider/RadioSlider.svelte";
 	import type { RadioSliderOptionProps } from "../components/form/radio-slider/RadioSliderOptionProps";
+	import { OpenProject } from "../storage/OpenProject";
 
 	let themeConfig = architect.Server.get("config/theme")
 		.then((v) => String(v))
@@ -25,7 +25,7 @@
 			return "";
 		});
 
-	// Server defined? Put up variable definitions togheter with the theme metadata and voila? 
+	// Server defined? Put up variable definitions togheter with the theme metadata and voila?
 	const themeSliderOptions: RadioSliderOptionProps[] = [
 		// Light theme
 		{
@@ -50,11 +50,10 @@
 	];
 
 	function handleSliderChange(ev: CustomEvent) {
-		console.log('HandleSliderChnage', ev);
-		let newTheme = 	String((ev.detail.srcElement as HTMLInputElement).value) ?? "light";
-		architect.Server.patch(
-			"config/theme/" + newTheme
-		).then(_ => {
+		console.log("HandleSliderChnage", ev);
+		let newTheme =
+			String((ev.detail.srcElement as HTMLInputElement).value) ?? "light";
+		architect.Server.patch("config/theme/" + newTheme).then((_) => {
 			themeConfig = Promise.resolve(newTheme);
 		});
 	}
@@ -85,7 +84,7 @@
 	let defaultWorkspace: string;
 
 	async function selectArchitectProject(initialDir?: string) {
-		let folderPath = await architect.FileSystem.pickFolder();
+		let folderPath = await architect.FileSystem.pickFolder(initialDir);
 		AppRouter.navigateTo("project-explorer?path=" + encodeURI(folderPath));
 	}
 
@@ -99,7 +98,6 @@
 		});
 		workspaceConfig = Promise.resolve(defaultWorkspace);
 	}
-
 </script>
 
 <style>
@@ -236,20 +234,20 @@
 
 	.architect-tips {
 		display: grid;
-    grid-template-rows: 40px 1fr;
-    row-gap: 20px;
+		grid-template-rows: 40px 1fr;
+		row-gap: 20px;
 	}
 
 	.tip-slider {
 		display: grid;
-    grid-template-rows: auto 40px;
+		grid-template-rows: auto 40px;
 		row-gap: 10px;
 	}
 
 	.slide-container {
-		background-color: rgba(255,255,255,0.8);
-    border-radius: 5px;
-    box-shadow: 1px 1px 4px 1px rgba(0,0,0,0.1);
+		background-color: rgba(255, 255, 255, 0.8);
+		border-radius: 5px;
+		box-shadow: 1px 1px 4px 1px rgba(0, 0, 0, 0.1);
 		min-height: 40px;
 		padding: 10px 15px;
 		box-sizing: border-box;
@@ -258,8 +256,8 @@
 
 	.slide-controller {
 		display: flex;
-    align-items: center;
-    justify-content: center;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.slide-controller > div {
@@ -347,9 +345,11 @@
 							name="theme"
 							options={themeSliderOptions}
 							showLabels={false}
-							on:change={ev => handleSliderChange(ev)}
+							on:change={(ev) => handleSliderChange(ev)}
 						>
-							{themeSliderOptions.filter(o => o.value === String(theme ?? "light"))[0].label}
+							{themeSliderOptions.filter(
+								(o) => o.value === String(theme ?? "light")
+							)[0].label}
 						</RadioSlider>
 					{/await}
 				</div>
@@ -427,8 +427,10 @@
 				<h3>Did you know?</h3>
 			</div>
 			<div class="tip-slider">
-				<div class="slide-container" >Creating the form pieces and then using them instead of breaking your chain of tought each time you need
-					an specific input type is actually better?<br />
+				<div class="slide-container">
+					Creating the form pieces and then using them instead of breaking your
+					chain of tought each time you need an specific input type is actually
+					better?<br />
 					Try it before implementing subform / item form for entities!
 				</div>
 				<div class="slide-controller">

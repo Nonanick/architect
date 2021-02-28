@@ -10,6 +10,7 @@
   import TextArea from "../components/form/text-area/TextArea.svelte";
   import IconButton from "../components/form/icon-button/IconButton.svelte";
   import "highlight.js/styles/atom-one-dark.css";
+import Select from '../components/form/select/Select.svelte';
 
   let entity_name: string;
   let title: string;
@@ -219,9 +220,12 @@
             keepTitleInSync = false;
           }}>Title:</TextInput
         >
-        <TextArea name="description" bind:value={description}
-          >Description:</TextArea
-        >
+        <TextArea name="description" bind:value={description}>
+          Description:
+        </TextArea>
+        <Select name="test" title="Testing">
+          
+        </Select>
       </form>
       <div class="file-content-preview">
         File preview

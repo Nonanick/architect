@@ -10,7 +10,10 @@
   import TextArea from "../components/form/text-area/TextArea.svelte";
   import IconButton from "../components/form/icon-button/IconButton.svelte";
   import "highlight.js/styles/atom-one-dark.css";
-import Select from '../components/form/select/Select.svelte';
+  import Select from "../components/form/select/Select.svelte";
+  import EmbeddedList from "../components/list/EmbeddedList.svelte";
+  import { Entity } from "clerk";
+  import { EntityProperty } from "../../lib/entity_property/EntityProperty";
 
   let entity_name: string;
   let title: string;
@@ -22,6 +25,7 @@ import Select from '../components/form/select/Select.svelte';
 
   let properties: IArchitectEntityProperty[] = [];
 
+  let propertyEntity: Entity = Entity.instance(EntityProperty);
   function syncTitle() {
     if (keepTitleInSync) {
       title = EntityModule.ConvertEntityNameToTitle(entity_name);
@@ -223,14 +227,14 @@ import Select from '../components/form/select/Select.svelte';
         <TextArea name="description" bind:value={description}>
           Description:
         </TextArea>
-        <Select name="test" title="Testing">
-          
-        </Select>
+        <Select name="test">Testing:</Select>
+        <label>Properties</label>
+        <EmbeddedList fieldMetadata={{}} rows={[]} />
       </form>
       <div class="file-content-preview">
         File preview
         <pre><code class="language-typescript hljs">{@html fileContentPreview}</code></pre>
       </div>
-    </div></sector
-  >
+    </div>
+  </sector>
 </div>

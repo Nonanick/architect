@@ -11,6 +11,5 @@ const EntityDefinition : IArchitectEntity = ${JSON.stringify(entity, null, 2)};
 export default EntityDefinition;`
     );
   },
-
   ...EntityLib
 };

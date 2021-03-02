@@ -13,9 +13,7 @@ export default {
   EntityProperty: {
     ...EntityProperty,
     ListViews: {
-      EntityFormView: {
-
-      }
+      EntityFormView
     }
   }
 };

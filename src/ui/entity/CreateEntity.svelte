@@ -12,8 +12,8 @@
   import "highlight.js/styles/atom-one-dark.css";
   import Select from "../components/form/select/Select.svelte";
   import EmbeddedList from "../components/list/EmbeddedList.svelte";
-  import { Entity } from "clerk";
-  import { EntityProperty } from "../../lib/entity_property/EntityProperty";
+  import PropertyModule from "./entity_property.module";
+  import { Entity } from "clerk/dist/entity";
 
   let entity_name: string;
   let title: string;
@@ -25,7 +25,8 @@
 
   let properties: IArchitectEntityProperty[] = [];
 
-  let propertyEntity: Entity = Entity.instance(EntityProperty);
+  let propertyEntity: Entity = Entity.instance(PropertyModule.EntityProperty);
+
   function syncTitle() {
     if (keepTitleInSync) {
       title = EntityModule.ConvertEntityNameToTitle(entity_name);
@@ -35,6 +36,11 @@
     entityDefinition.name = entity_name;
     entityDefinition.title = title;
     entityDefinition.description = description;
+    entityDefinition.properties = {};
+    properties.forEach(prop => {
+      entityDefinition.properties[prop.name] = {...prop};
+    });
+    
     fileContentPreview = CodeHighlight.highlight(
       "typescript",
       EntityModule.GenerateEntityFileContents(entityDefinition)
@@ -228,8 +234,11 @@
           Description:
         </TextArea>
         <Select name="test">Testing:</Select>
-        <label>Properties</label>
-        <EmbeddedList fieldMetadata={{}} rows={[]} />
+        <div>Properties</div>
+        <EmbeddedList
+          fieldMetadata={PropertyModule.EntityProperty.ListViews.EntityFormView}
+          bind:rows={properties}
+        />
       </form>
       <div class="file-content-preview">
         File preview

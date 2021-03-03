@@ -12,7 +12,7 @@
   import "highlight.js/styles/atom-one-dark.css";
   import Select from "../components/form/select/Select.svelte";
   import EmbeddedList from "../components/list/EmbeddedList.svelte";
-  import PropertyModule from "./entity_property.module";
+  import PropertyModule from "./property/entity_property.module";
   import { Entity } from "clerk/dist/entity";
 
   let entity_name: string;

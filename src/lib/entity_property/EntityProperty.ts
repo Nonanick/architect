@@ -1,6 +1,6 @@
-import type { IEntity } from "clerk";
+import { Entity } from "clerk";
 
-const EntityDefinition = <IEntity>{
+const EntityDefinition = Entity.define({
   name: 'new prop',
   properties: {
     name: {
@@ -16,8 +16,7 @@ const EntityDefinition = <IEntity>{
     },
     description: String,
   }
-} as const;
+});
 
-const EntityProperty = (() => ({ ...EntityDefinition } as const))();
 
-export { EntityProperty };
+export { EntityDefinition as EntityProperty };

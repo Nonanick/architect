@@ -12,8 +12,8 @@ export interface ListFieldMetadata {
   maskFunction?: FieldMaskFunction;
 }
 
-export type FieldMetadataOfEntity<T extends IEntity = IEntity> = {
-  [name in keyof T['properties']]: ListFieldMetadata
+export type FieldMetadataOfEntity<T extends IEntity> = {
+  [name in keyof T['properties']]: Omit<ListFieldMetadata, "name">
 };
 
 export type FieldMaskFunction = (value: string) => any;

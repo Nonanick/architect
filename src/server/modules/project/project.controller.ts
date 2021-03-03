@@ -166,32 +166,4 @@ export class ProjectController extends Controller {
   public installProjectDependencies: Resolver = async (req) => {
   };
 
-
-  @Route({
-    url: 'analyze',
-    methods: 'post',
-    schema: {
-      body: {
-        type: 'object',
-        required: ['target'],
-        properties: {
-          target: { type: 'string' }
-        }
-      }
-    }
-  })
-  public analyzeProjectFolder: Resolver = async (req) => {
-    try {
-      let manifest = await ProjectModule.loadManifest(
-        path.join(req.get('target'), '.architect', 'manifest.json')
-      );
-
-      console.log('Project Manifest file: ', manifest);
-
-      return manifest;
-    } catch (err) {
-      console.error("[ProjectController] Faile to reach projects manifest!", err);
-      return new Error("Failed to reach project's manifest!");
-    }
-  };
 }

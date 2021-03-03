@@ -2,18 +2,24 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "CommonJS",
-    "lib": ["ESNext"],
-    
+    "lib": [
+      "ESNext"
+    ],
+    "allowJs": true,
     "importHelpers": true,
-
     "rootDir": "./src",
     "outDir": "./dist",
-
     "strict": true,
+    "esModuleInterop": true,
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
-      "@architect/*" : ["./.architect/typings/*"], 
+      "@architect/*": [
+        "./.architect/typings/*"
+      ],
+      "@dtos/*": [
+        "./src/data/dtos/*"
+      ]
     }
   }
 }

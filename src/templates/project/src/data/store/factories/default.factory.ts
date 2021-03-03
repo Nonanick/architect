@@ -1,19 +1,9 @@
-import { Factory, IArchive, IProperty, Maybe, StoredEntity } from "clerk";
+import { Factory, IArchive, IProperty, IPropertyIdentifier, Maybe, StoredEntity } from "clerk";
 import { nanoid } from "nanoid";
+import DefaultArchive from "../archives/default.archive";
 
 export default class ArchitectDefaultFactory extends Factory {
-  get defaultIdentifier(): Pick<
-    IProperty,
-    | "name"
-    | "type"
-    | "isDescriptive"
-    | "private"
-    | "unique"
-    | "default"
-    | "validate"
-    | "sanitize"
-    | "proxy"
-  > {
+  get defaultIdentifier(): IPropertyIdentifier {
     return {
       name: "_id",
       type: String,
@@ -21,10 +11,14 @@ export default class ArchitectDefaultFactory extends Factory {
       unique: true,
     };
   }
+  private _archive = DefaultArchive;
+
   get archive(): IArchive {
-    throw new Error("Method not implemented.");
+    return this._archive;
   }
+
   hydrateEntity(entity: StoredEntity<unknown>): Maybe<StoredEntity<unknown>> {
-    throw new Error("Method not implemented.");
+
+    return entity;
   }
 }

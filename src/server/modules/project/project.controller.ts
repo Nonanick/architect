@@ -106,7 +106,7 @@ export class ProjectController extends Controller {
     return Promise.all([
       ProjectModule.copyArchitectMetadata(path.join(req.get("target"), '.architect')),
       FileSystem.copyFolder(
-        path.resolve(__dirname, '..', '..', '..', 'lib', 'typings'),
+        path.resolve(__dirname, '..', '..', '..', 'lib', 'architect','typings'),
         path.join(req.get("target"), '.architect', 'typings')
       )
     ])

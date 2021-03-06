@@ -12,8 +12,9 @@
     "baseUrl": "./",
     "esModuleInterop": true,
     "experimentalDecorators": true,
+    "isolatedModules":  false,
     "paths": {
-      "@architect/*" : ["./src/lib/typings/*"]
+      "@architect/*" : ["src/lib/architect/typings/*"]
     }
   },
   "include": [

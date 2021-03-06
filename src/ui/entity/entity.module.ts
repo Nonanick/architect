@@ -1,12 +1,12 @@
-import type { IArchitectEntity } from '@architect/entity/IArchitectEntity';
+import type { IEntity } from '@architect/entity/IEntity';
 import EntityLib from '../../lib/entity/entity.lib';
 
 export default {
-  GenerateEntityFileContents(entity: Partial<IArchitectEntity>) {
+  GenerateEntityFileContents(entity: Partial<IEntity>) {
     return (
-      `import type { IArchitectEntity } from '@architect/entity';
+      `import type { IEntity } from '@architect/entity';
 
-const EntityDefinition : IArchitectEntity = ${JSON.stringify(entity, null, 2)};
+const EntityDefinition : IEntity = ${JSON.stringify(entity, null, 2)};
 
 export default EntityDefinition;`
     );

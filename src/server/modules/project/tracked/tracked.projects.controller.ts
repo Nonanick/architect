@@ -1,6 +1,6 @@
 import { Entity } from "clerk";
 import { Controller, Resolver, Route } from "maestro";
-import type { ProjectDTO } from "../../../../lib/project/new-project.interface";
+import type { ProjectDTO } from "../../../../lib/project/new_project.interface";
 import { ProjectEntity } from "../../../data/entities";
 import { storage } from "../../../data/store/ElectronStore";
 

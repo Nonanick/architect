@@ -18,6 +18,7 @@ const TrackedProjectsStore: Writable<ProjectDTO[]> = writable(
 
 export const TrackedProjects = {
   subscribe: TrackedProjectsStore.subscribe,
+  update : TrackedProjectsStore.update,
   push: (newProject: ProjectDTO) => {
     architect.Server
       .post('project/tracked', newProject)

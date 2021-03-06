@@ -42,8 +42,8 @@ export const ProjectModule = {
         .post(
           "project/configure-project",
           {
-            target: projectRoot,
             ...info,
+            root: projectRoot,
             created_at: info.created_at.toString(),
           },
         ),
@@ -52,7 +52,12 @@ export const ProjectModule = {
     yield {
       title: "Installing project dependencies",
       resolved: architect.Server
-        .post("project/install-project-dependencies", { target: projectRoot }),
+        .post("project/install-project-dependencies",
+          {
+            package_manager: 'yarn',
+            project_path: projectRoot
+          }
+        ),
     };
 
     yield {

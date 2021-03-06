@@ -3,7 +3,7 @@ import { Controller, Resolver, Route, RouteResponse } from "maestro";
 import { SchemaFromEntity } from "maestro-clerk";
 import { ProjectEntity } from "../../../data/entities";
 import path from 'path';
-import fs from 'fs/promises';
+import { promises as fs } from 'fs';
 
 export class ProjectAnalyzerController extends Controller {
   get baseURL(): string {

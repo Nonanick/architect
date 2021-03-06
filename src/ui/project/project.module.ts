@@ -1,4 +1,4 @@
-import type { ProjectDTO } from "../../lib/project/new-project.interface";
+import type { ProjectDTO } from "../../lib/project/new_project.interface";
 import { ProjectModule as ProjectLib } from "../../lib/project/project.lib";
 
 export const ProjectModule = {

@@ -1,7 +1,7 @@
 import path from "path";
 import { performance} from 'perf_hooks';
 import { promises as fs } from "fs";
-import type { ProjectDTO } from "../../../lib/project/new-project.interface";
+import type { ProjectDTO } from "../../../lib/project/new_project.interface";
 import { ProjectModule as ProjectLib } from "../../../lib/project/project.lib";
 import { FileSystem } from "../../services/file-system/file-system.service";
 import { exec } from 'child_process';

@@ -1,5 +1,5 @@
 import { writable, Writable } from 'svelte/store';
-import type { ProjectDTO } from '../../lib/project/new-project.interface';
+import type { ProjectDTO } from '../../lib/project/new_project.interface';
 
 const TrackedProjectsStore: Writable<ProjectDTO[]> = writable(
   [],

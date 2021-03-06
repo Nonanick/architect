@@ -6,7 +6,7 @@ import { ConfigStore } from "../configuration/configuration.controller";
 import { ProjectModule, ArchitectProjectTemplatePath, NodePackageManagers } from "./project.module";
 import { FileSystem } from "../../services/file-system/file-system.service";
 import { ProjectEntity } from "../../../lib/entity/ProjectEntity";
-import type { ProjectDTO } from "../../../lib/project/new-project.interface";
+import type { ProjectDTO } from "../../../lib/project/new_project.interface";
 import { Entity, ModelOf } from 'clerk';
 import { CastObjectToEntityModel, SchemaFromEntity } from 'maestro-clerk';
 

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import type { ProjectDTO } from "../../../lib/project/new-project.interface";
+  import type { ProjectDTO } from "../../../lib/project/new_project.interface";
 
   import IconButton from "../../components/form/icon-button/IconButton.svelte";
   import { AppRouter } from "../../router/AppRouter";

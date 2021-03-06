@@ -62,6 +62,7 @@
 		window.architect.FileSystem.pickFolder(defaultWorkspace)
 			.then((newLocation) => {
 				defaultWorkspace = String(newLocation);
+				updateWorkspace();
 			})
 			.catch((failed) => {
 				console.error("Failed to open directory", failed);

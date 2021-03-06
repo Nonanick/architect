@@ -1,5 +1,5 @@
 import { writable, Writable } from 'svelte/store';
-import type { ProjectDTO } from '../../lib/project/new-project.interface';
+import type { ProjectDTO } from '../../lib/project/new_project.interface';
 import ModalWindows from './ModalWindows';
 import PickAProject from '../project/PickAProject.svelte';
 

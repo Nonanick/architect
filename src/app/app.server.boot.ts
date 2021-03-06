@@ -87,7 +87,7 @@ function attachWorkerToIPC(worker: Worker) {
 
     let workerResponseListener = (response: IPCResponse) => {
       if (response._id === reqId) {
-        console.log("[AppWorker] Received response for request" + reqId);
+        console.log(`[AppWorker] Received response for request '${reqId}' - ${req.url}\n`,response.payload);
         ev.reply(IPCAdapterNewResponseEvent, response);
         worker.off("message", workerResponseListener);
       }

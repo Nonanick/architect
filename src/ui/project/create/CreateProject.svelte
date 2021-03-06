@@ -2,7 +2,7 @@
   import { Entity } from "clerk";
   import { fade, scale } from "svelte/transition";
   import { ProjectEntity } from "../../../lib/entity/ProjectEntity";
-  import type { ProjectDTO } from "../../../lib/project/new-project.interface";
+  import type { ProjectDTO } from "../../../lib/project/new_project.interface";
   import SvgImage from "../../components/SVGImage.svelte";
   import type { SVGImageProps } from "../../components/SVGImageProps";
   import { AppRouter } from "../../router/AppRouter";

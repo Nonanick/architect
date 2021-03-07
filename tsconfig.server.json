@@ -9,8 +9,13 @@
     "sourceMap": false,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": false,
+    "isolatedModules":  false,
     "moduleResolution": "node",
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "baseUrl": "./",
+    "paths": {
+      "@architect/*" : ["src/lib/architect/typings/*"]
+    }
   },
   "include": [
     "src/server",

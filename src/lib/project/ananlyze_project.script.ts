@@ -1,4 +1,4 @@
-import type { ProjectDTO } from './new-project.interface';
+import type { ProjectDTO } from './new_project.interface';
 
 export async function AnalyzeWorkspace(
   workspaceFolder : string

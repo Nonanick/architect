@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import type { ProjectDTO } from "../../../lib/project/new-project.interface";
+  import type { ProjectDTO } from "../../../lib/project/new_project.interface";
 
   import IconButton from "../../components/form/icon-button/IconButton.svelte";
   import { AppRouter } from "../../router/AppRouter";
@@ -35,7 +35,7 @@
     <div class="options">
       <IconButton
         icon={{ src: "/img/icons/trash.svg", color: "var(--error-color)" }}
-        onClick={async () => {
+        on:click={async () => {
           if (projectInfo.name != "") {
             TrackedProjects.remove(projectInfo.name);
             dispatcher("deleted", projectInfo.name);
@@ -47,7 +47,7 @@
           src: "/img/icons/open.project.svg",
           color: "var(--main-color)",
         }}
-        onClick={() => {
+        on:click={() => {
           $OpenProject = projectInfo;
           if (projectInfo.name != "") AppRouter.navigateTo("open-project");
         }}

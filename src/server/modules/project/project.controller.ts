@@ -3,10 +3,10 @@ import path from "path";
 import { Controller, Resolver, Route } from "maestro";
 import { storage } from "../../data/store/ElectronStore";
 import { ConfigStore } from "../configuration/configuration.controller";
-import { ProjectService, ArchitectProjectTemplatePath } from "./project.service";
+import { ProjectModule, ArchitectProjectTemplatePath, NodePackageManagers } from "./project.module";
 import { FileSystem } from "../../services/file-system/file-system.service";
 import { ProjectEntity } from "../../../lib/entity/ProjectEntity";
-import type { ProjectDTO } from "../../../lib/project/new-project.interface";
+import type { ProjectDTO } from "../../../lib/project/new_project.interface";
 import { Entity, ModelOf } from 'clerk';
 import { CastObjectToEntityModel, SchemaFromEntity } from 'maestro-clerk';
 
@@ -106,12 +106,12 @@ export class ProjectController extends Controller {
     return Promise.all([
       ProjectService.copyArchitectMetadata(path.join(req.get("target"), '.architect')),
       FileSystem.copyFolder(
-        path.resolve(__dirname, '..', '..', '..', 'lib', 'typings'),
+        path.resolve(__dirname, '..', '..', '..', 'lib', 'architect', 'typings'),
         path.join(req.get("target"), '.architect', 'typings')
       )
     ])
       .then(_ => {
-        return `Sucesfully architect metadata of '${ArchitectProjectTemplatePath}' into '${req.get('target')}'!`;
+        return `Sucesfully copied architect metadata of '${ArchitectProjectTemplatePath}' into '${req.get('target')}'!`;
       }).catch(err => {
         return new Error(`Failed to copy architect metadata into '${req.get('target')}'!\n${err.message}`);
       });
@@ -153,17 +153,46 @@ export class ProjectController extends Controller {
     let projectModel = <ModelOf<ProjectDTO>>req.byOrigin?.body;
 
     if (projectModel != null) {
-      console.log("Received and casted body props to model of entity!\n", projectModel);
+      let info = await projectModel.$json<ProjectDTO>();
+      let root = info.root;
+      let configureProject = await ProjectModule.configurePackageJsonFile(root, info);
+
+      return configureProject;
+    } else {
+      return new Error("Failed to load project information!");
     }
 
-    return "OK!";
   };
 
   @Route({
     url: "install-project-dependencies",
     methods: "post",
+    schema: {
+      body: {
+        type: 'object',
+        required: ['package_manager', 'project_path'],
+        properties: {
+          package_manager: {
+            type: 'string',
+            enum: Object.keys(NodePackageManagers),
+            default: Object.keys(NodePackageManagers)[0]
+          },
+          project_path: {
+            type: 'string',
+          }
+        },
+        additionalProperties: false,
+      }
+    }
   })
   public installProjectDependencies: Resolver = async (req) => {
+    let response = await ProjectModule.installProjectDependencies(
+      req.get('package_manager', 'body'),
+      req.get('project_path')
+    );
+
+    return response;
+
   };
 
 }

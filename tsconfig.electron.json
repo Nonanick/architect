@@ -11,8 +11,11 @@
     "sourceMap": false,
     "esModuleInterop": true,
     "moduleResolution": "Node",
-    "baseUrl": "src",
-    "experimentalDecorators": true
+    "baseUrl": "./",
+    "experimentalDecorators": true,
+    "paths": {
+      "@architect/*" : ["src/lib/architect/typings/*"]
+    }
   },
   "include": [
     "src"

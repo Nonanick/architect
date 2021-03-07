@@ -102,25 +102,32 @@ export async function installProjectDependencies(
   project_root: string
 ) {
   let startTime = performance.now();
-  let installCommandChild = exec(
+
+  let runPackageManager = exec(
     NodePackageManagers[manager].install,
     { windowsHide: true, cwd: project_root },
     (err, output, errOutput) => {
-      console.log('callback fn:\nany error?', err, '\noutput', output, '\nerrors:', errOutput);
+      if (err != null)
+        console.log(
+          'Callback from package manager with Error!',
+          '\nERROR: ', err,
+          '\n[STDOUT]: ', output,
+          '\n[STDERR]: ', errOutput
+        );
     }
   );
 
   let errorBuffer = "";
   let outputBuffer = "";
-  installCommandChild.stdout.on("data", (data) => {
+  runPackageManager.stdout.on("data", (data) => {
     outputBuffer += String(data);
   });
-  installCommandChild.stderr.on("data", (data) => {
+  runPackageManager.stderr.on("data", (data) => {
     errorBuffer += String(data);
   });
 
   return new Promise((resolve, reject) => {
-    installCommandChild.on("exit", (code, signal) => {
+    runPackageManager.on("exit", (code, signal) => {
       if (code === 0) {
         let endTime = performance.now();
         resolve(`All dependencies were installed sucessfully in ${(endTime - startTime)}ms\nOutput:\n${outputBuffer}`);
@@ -129,7 +136,6 @@ export async function installProjectDependencies(
           `Package Manager failed ot install dependencies and resolved with code: "${code}"\nSTDERR output: ${errorBuffer}`
         );
       }
-      console.log('Code: ', code, 'Signal', signal);
     });
   });
 

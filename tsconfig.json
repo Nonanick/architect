@@ -14,7 +14,7 @@
     "experimentalDecorators": true,
     "isolatedModules":  false,
     "paths": {
-      "@architect/*" : ["src/lib/architect/typings/*"]
+      "@architect/*" : ["./src/lib/architect/typings/*"]
     }
   },
   "include": [

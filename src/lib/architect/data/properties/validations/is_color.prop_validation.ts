@@ -1,4 +1,4 @@
-import { IPropertyValidation } from '../../../../.architect/typings/property_validation/IPropertyValidation';
+import type { IPropertyValidation } from '@architect/property/validation/IPropertyValidation';
 
 let validHtmlColors : string[] = [];
 

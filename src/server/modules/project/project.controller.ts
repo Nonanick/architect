@@ -1,14 +1,15 @@
+import { Entity, ModelOf } from 'clerk';
+import { Controller, Resolver, Route } from "maestro";
+import { CastObjectToEntityModel } from 'maestro-clerk';
 import os from "os";
 import path from "path";
-import { Controller, Resolver, Route } from "maestro";
-import { storage } from "../../data/store/ElectronStore";
-import { ConfigStore } from "../configuration/configuration.controller";
-import { ProjectModule, ArchitectProjectTemplatePath, NodePackageManagers } from "./project.module";
-import { FileSystem } from "../../services/file-system/file-system.service";
 import { ProjectEntity } from "../../../lib/entity/ProjectEntity";
 import type { ProjectDTO } from "../../../lib/project/new_project.interface";
-import { Entity, ModelOf } from 'clerk';
-import { CastObjectToEntityModel, SchemaFromEntity } from 'maestro-clerk';
+import { storage } from "../../data/store/ElectronStore";
+import { FileSystem } from "../../services/file-system/file-system.service";
+import { ConfigStore } from "../configuration/configuration.controller";
+import ProjectSchema from "./project.schemas";
+import { ArchitectProjectTemplatePath, ProjectService } from "./project.service";
 
 export const ProjectDefaultFolderName = "architect-workspace";
 
@@ -21,18 +22,7 @@ export class ProjectController extends Controller {
   @Route({
     url: "create-folder",
     methods: "post",
-    schema: {
-      body: {
-        type: "object",
-        required: ["target"],
-        properties: {
-          target: {
-            type: "string",
-            minLength: 3,
-          },
-        },
-      },
-    },
+    schema: ProjectSchema.CreateProjectFodler,
   })
   public createFolder: Resolver = async (req) => {
     let folderPath = req.get("target");
@@ -47,7 +37,6 @@ export class ProjectController extends Controller {
     }
 
     let creation = await FileSystem.createFolder(folderPath);
-    console.log("[ProjectController]", creation);
 
     return creation != null
       ? `OK! Directory '${folderPath}' was created successfully!`
@@ -58,9 +47,7 @@ export class ProjectController extends Controller {
     url: "default-workspace",
     schema: {
       response: {
-        "2xx": {
-          type: "string",
-        },
+        "2xx": { type: "string", },
       },
     },
   })
@@ -73,9 +60,7 @@ export class ProjectController extends Controller {
     url: "current-user",
     schema: {
       response: {
-        "2xx": {
-          type: "string",
-        },
+        "2xx": { type: "string", },
       },
     },
   })
@@ -86,21 +71,7 @@ export class ProjectController extends Controller {
   @Route({
     url: "install-architect",
     methods: "post",
-    schema: {
-      body: {
-        type: "object",
-        properties: {
-          target: {
-            type: "string",
-          },
-          folderName: {
-            type: "string",
-            default: ".architect",
-          },
-        },
-        required: ["target"],
-      },
-    },
+    schema: ProjectSchema.InstallArchitect,
   })
   public installArchitect: Resolver = async (req) => {
     return Promise.all([
@@ -120,17 +91,7 @@ export class ProjectController extends Controller {
   @Route({
     url: "copy-template-project",
     methods: "post",
-    schema: {
-      body: {
-        type: "object",
-        required: ["target"],
-        properties: {
-          target: {
-            type: "string",
-          },
-        },
-      },
-    },
+    schema: ProjectSchema.CopyTemplateProject,
   })
   public copyTemplateProject: Resolver = async (req) => {
     return ProjectService.copyEmptyProjectTemplate(req.get("target"))
@@ -144,9 +105,7 @@ export class ProjectController extends Controller {
   @Route({
     url: "configure-project",
     methods: ["post", "patch"],
-    schema: {
-      body: SchemaFromEntity(Entity.instance(ProjectEntity)),
-    },
+    schema: ProjectSchema.ConfigureProject,
     cast: CastObjectToEntityModel(Entity.instance(ProjectEntity))
   })
   public configureProject: Resolver = async (req) => {
@@ -155,7 +114,7 @@ export class ProjectController extends Controller {
     if (projectModel != null) {
       let info = await projectModel.$json<ProjectDTO>();
       let root = info.root;
-      let configureProject = await ProjectModule.configurePackageJsonFile(root, info);
+      let configureProject = await ProjectService.configurePackageJsonFile(root, info);
 
       return configureProject;
     } else {
@@ -167,26 +126,10 @@ export class ProjectController extends Controller {
   @Route({
     url: "install-project-dependencies",
     methods: "post",
-    schema: {
-      body: {
-        type: 'object',
-        required: ['package_manager', 'project_path'],
-        properties: {
-          package_manager: {
-            type: 'string',
-            enum: Object.keys(NodePackageManagers),
-            default: Object.keys(NodePackageManagers)[0]
-          },
-          project_path: {
-            type: 'string',
-          }
-        },
-        additionalProperties: false,
-      }
-    }
+    schema: ProjectSchema.InstallDependencies
   })
   public installProjectDependencies: Resolver = async (req) => {
-    let response = await ProjectModule.installProjectDependencies(
+    let response = await ProjectService.installProjectDependencies(
       req.get('package_manager', 'body'),
       req.get('project_path')
     );

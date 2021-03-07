@@ -1,9 +1,9 @@
 import { Entity } from "clerk";
-import { Controller, Resolver, Route, RouteResponse } from "maestro";
-import { SchemaFromEntity } from "maestro-clerk";
-import { ProjectEntity } from "../../../data/entities";
-import path from 'path';
 import { promises as fs } from 'fs';
+import { Controller, Resolver, Route } from "maestro";
+import path from 'path';
+import { ProjectEntity } from "../../data/entities";
+import ProjectAnalyzerSchemas from "./project_analyzer.schemas";
 
 export class ProjectAnalyzerController extends Controller {
 
@@ -14,24 +14,7 @@ export class ProjectAnalyzerController extends Controller {
   @Route({
     url: 'path',
     methods: 'post',
-    schema: {
-      body: {
-        type: 'object',
-        required: ['root'],
-        properties: {
-          root: { type: 'string' }
-        },
-        additionalProperties: false,
-      },
-      response: {
-        '2xx': SchemaFromEntity(Entity.instance(ProjectEntity)),
-        '404': {
-          type: 'object',
-          properties: { message: { type: 'string' }, }
-        },
-        '5xx': { type: 'string' }
-      }
-    }
+    schema: ProjectAnalyzerSchemas.OpenMetadataJsonFileFromProjectRoot
   })
   public openMetadataFromPath: Resolver = async (req) => {
 
@@ -52,5 +35,4 @@ export class ProjectAnalyzerController extends Controller {
     return response;
   };
 
-  public;
 }

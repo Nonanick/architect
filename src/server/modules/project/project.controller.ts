@@ -3,7 +3,7 @@ import path from "path";
 import { Controller, Resolver, Route } from "maestro";
 import { storage } from "../../data/store/ElectronStore";
 import { ConfigStore } from "../configuration/configuration.controller";
-import { ProjectModule, ArchitectProjectTemplatePath } from "./project.module";
+import { ProjectService, ArchitectProjectTemplatePath } from "./project.service";
 import { FileSystem } from "../../services/file-system/file-system.service";
 import { ProjectEntity } from "../../../lib/entity/ProjectEntity";
 import type { ProjectDTO } from "../../../lib/project/new-project.interface";
@@ -104,7 +104,7 @@ export class ProjectController extends Controller {
   })
   public installArchitect: Resolver = async (req) => {
     return Promise.all([
-      ProjectModule.copyArchitectMetadata(path.join(req.get("target"), '.architect')),
+      ProjectService.copyArchitectMetadata(path.join(req.get("target"), '.architect')),
       FileSystem.copyFolder(
         path.resolve(__dirname, '..', '..', '..', 'lib', 'typings'),
         path.join(req.get("target"), '.architect', 'typings')
@@ -133,7 +133,7 @@ export class ProjectController extends Controller {
     },
   })
   public copyTemplateProject: Resolver = async (req) => {
-    return ProjectModule.copyEmptyProjectTemplate(req.get("target"))
+    return ProjectService.copyEmptyProjectTemplate(req.get("target"))
       .then(_ => {
         return `Sucesfully copied '${ArchitectProjectTemplatePath}' into '${req.get('target')}'!`;
       }).catch(err => {

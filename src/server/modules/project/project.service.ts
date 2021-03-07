@@ -39,7 +39,7 @@ async function copyEmptyProjectTemplate(to: string) {
   return FileSystem.copyFolder(ArchitectProjectTemplatePath, to);
 }
 
-async function copyArchitectMetadata(to : string) {
+async function copyArchitectMetadata(to: string) {
   return FileSystem.copyFolder(ArchitectMetadataTemplatePath, to);
 }
 
@@ -59,17 +59,17 @@ async function updateProjectFolder(
   packageConfig.version = info.version;
 }
 
-async function loadManifest( path : string) {
-  let data = await fs.readFile(path, { encoding : 'utf-8'});
+async function loadManifest(path: string) {
+  let data = await fs.readFile(path, { encoding: 'utf-8' });
   try {
     let manifestData = JSON.parse(data);
     return manifestData;
-  } catch(err) {
+  } catch (err) {
     throw new Error("Failed to load manifest file!");
   }
 }
 
-export const ProjectModule = {
+export const ProjectService = {
   ...ProjectLib,
   createProjectManifest,
   copyEmptyProjectTemplate,

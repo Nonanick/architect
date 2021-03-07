@@ -6,6 +6,7 @@ import path from 'path';
 import fs from 'fs/promises';
 
 export class ProjectAnalyzerController extends Controller {
+
   get baseURL(): string {
     return 'project/analyze';
   }

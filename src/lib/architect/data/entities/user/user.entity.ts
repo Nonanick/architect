@@ -1,5 +1,5 @@
 import type { IEntity } from '@architect/entity';
-import SecurePasswordValidation from '../../properties/validations/secure_password.prop_validation';
+import SecurePasswordValidation from '../../properties/validations/secure_password';
 
 const EntityDefinition : IEntity = {
   name : 'user',

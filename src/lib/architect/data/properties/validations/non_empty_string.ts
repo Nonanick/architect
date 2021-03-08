@@ -1,4 +1,4 @@
-import { IPropertyValidation } from '@architect/property_validation/IPropertyValidation';
+import type { IPropertyValidation } from '@architect/property/validation/IPropertyValidation';
 
 const ValidationDefinition : IPropertyValidation = {
   name : 'non_empty_string',

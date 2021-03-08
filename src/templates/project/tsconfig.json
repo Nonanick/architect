@@ -7,7 +7,7 @@
     ],
     "allowJs": true,
     "importHelpers": true,
-    "rootDir": "./src",
+    "rootDir": "./",
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
@@ -21,5 +21,8 @@
         "./src/data/dtos/*"
       ]
     }
-  }
+  },
+  "include": [
+    "src",".architect/typings"
+  ]
 }

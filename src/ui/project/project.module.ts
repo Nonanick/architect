@@ -54,7 +54,7 @@ export const ProjectModule = {
       resolved: architect.Server
         .post("project/install-project-dependencies",
           {
-            package_manager: 'yarn',
+            package_manager: 'pnpm',
             project_path: projectRoot
           }
         ),

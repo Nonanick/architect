@@ -137,6 +137,7 @@
 		align-items: flex-end;
 		flex-direction: column;
 	}
+	
 	.logo-background {
 		border-radius: 50%;
 		position: relative;
@@ -154,7 +155,7 @@
 		font-size: max(40px, calc(var(--header-size) * 0.45));
 		line-height: max(56px, calc(var(--header-size) * 0.8));
 		font-weight: bold;
-		color: var(--main-color);
+		color: var(--secondary-color);
 	}
 
 	.slogan-container {

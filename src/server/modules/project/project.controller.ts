@@ -6,7 +6,7 @@ import path from "path";
 import { ProjectEntity } from "../../../lib/entity/ProjectEntity";
 import type { ProjectDTO } from "../../../lib/project/new_project.interface";
 import { storage } from "../../data/store/ElectronStore";
-import { FileSystem } from "../../services/file-system/file-system.service";
+import { FileSystem } from "../../../lib/file_system/file-system.service";
 import { ConfigStore } from "../configuration/configuration.controller";
 import ProjectSchema from "./project.schemas";
 import { ArchitectProjectTemplatePath, ProjectService } from "./project.service";

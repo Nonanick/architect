@@ -1,7 +1,7 @@
 import { Entity } from "clerk";
 import type { RouteSchema } from "maestro"
 import { SchemaFromEntity } from "maestro-clerk";
-import { ProjectEntity } from "src/lib/entity/ProjectEntity";
+import { ProjectEntity } from '../../data/entities';
 import { NodePackageManagers } from "./project.service";
 
 const InstallDependencies: RouteSchema = {

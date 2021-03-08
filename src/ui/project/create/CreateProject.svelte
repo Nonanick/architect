@@ -54,7 +54,7 @@
     },
     done: {
       onClick: () => {
-        AppRouter.navigateTo("/project-explorer");
+        AppRouter.navigateTo("project-explorer");
       },
       title: "Done! Open your new project!",
     },
@@ -85,6 +85,11 @@
 
   let createProjectSteps: ProjectCreationStep[] = [];
 
+  async function sleep(timeInMili : number) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, timeInMili);
+    })
+  }
   async function createProject() {
     if (creationState !== "create") return;
 
@@ -152,6 +157,7 @@
         console.error("Failed to create project", err);
         return;
       }
+      await sleep(100);
     }
 
     creationState = "done";

@@ -1,5 +1,6 @@
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
+import jsonPlugin from '@rollup/plugin-json';
 import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
@@ -66,6 +67,7 @@ export default [{
 		}),
 		commonjs({
 		}),
+		jsonPlugin({ compact : true}),
 		typescript({
 			module: 'esnext',
 			target: "ESNext",

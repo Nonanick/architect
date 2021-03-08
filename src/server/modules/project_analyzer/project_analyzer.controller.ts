@@ -3,7 +3,8 @@ import { promises as fs } from 'fs';
 import { Controller, Resolver, Route } from "maestro";
 import path from 'path';
 import { ProjectEntity } from "../../data/entities";
-import ProjectAnalyzerSchemas from "./project_analyzer.schemas";
+import AnalyzerSchemas from "./project_analyzer.schemas";
+import AnalyzerService from './project_analyzer.service';
 
 export class ProjectAnalyzerController extends Controller {
 
@@ -14,25 +15,27 @@ export class ProjectAnalyzerController extends Controller {
   @Route({
     url: 'path',
     methods: 'post',
-    schema: ProjectAnalyzerSchemas.OpenMetadataJsonFileFromProjectRoot
+    schema: AnalyzerSchemas.OpenMetadataJsonFileFromProjectRoot
   })
   public openMetadataFromPath: Resolver = async (req) => {
 
-    let expectMetadataPath = path.join(req.get('path'), '.architect', 'manifest.json');
-    let response = fs.readFile(expectMetadataPath, 'utf-8').then(data => {
-      try {
-        let projectSettings = JSON.parse(data);
-        let projectModel = Entity.instance(ProjectEntity).model();
-        projectModel.$set(projectSettings);
-        return projectModel.$json();
-      } catch (err) {
-        return new Error("Failed to parse project manifest file! Cannot read project configurations!");
-      }
-    }).catch(err => {
-      return err;
-    });
+    let expectedMetadataPath = path.join(
+      req.get('path'),
+      '.architect',
+      'manifest.json'
+    );
 
-    return response;
+    return AnalyzerService.LoadProjectMetadata(expectedMetadataPath);
+
   };
+
+  @Route({
+    url : 'files',
+    methods : 'post',
+    schema: AnalyzerSchemas.AnalyzeFilesFromProjectSource
+  })
+  public analyzeFilesFromProjectSource : Resolver = async (req) => {
+    return AnalyzerService.CategoryzeFilesInProject(req.get("src"));
+  }
 
 }

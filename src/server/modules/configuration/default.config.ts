@@ -5,7 +5,8 @@ import type { Configuration } from './configuration.type';
 const DefaultConfig : Partial<Configuration> = {
   username : os.userInfo().username,
   workspace : path.join(os.userInfo().homedir, 'architect-workspace'),
-  theme : "light"
+  theme : "light",
+  package_manager : 'pnpm'
 };
 
 export default {

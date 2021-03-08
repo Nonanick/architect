@@ -1,9 +1,8 @@
-import type { IEntity } from 'clerk';
-import type { IModelProcedureRequest } from 'clerk/dist/procedure/model/IModelProcedureRequest';
+import { Entity, IProcedureRequest } from 'clerk';
 import { nanoid } from 'nanoid/non-secure';
 import { DefaultIdentifier } from './default.identifier';
 
-export const ProjectEntity: IEntity = {
+export const ProjectEntity = Entity.define({
   name: 'project',
   identifier: {
     ...DefaultIdentifier,
@@ -46,11 +45,11 @@ export const ProjectEntity: IEntity = {
       procedure: 'create',
       appliesTo: 'model',
       proxies: "request",
-      async apply(req: IModelProcedureRequest) {
+      async apply(req: IProcedureRequest) {
         req.model.set('_id', nanoid());
         return req;
 
       },
     }
   }
-};
+});

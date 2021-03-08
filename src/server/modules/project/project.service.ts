@@ -3,22 +3,17 @@ import { performance } from 'perf_hooks';
 import { promises as fs } from "fs";
 import type { ProjectDTO } from "../../../lib/project/new_project.interface";
 import { ProjectModule as ProjectLib } from "../../../lib/project/project.lib";
-import { FileSystem } from "../../services/file-system/file-system.service";
-import { exec } from 'child_process';
+import { FileSystem } from "../../../lib/file_system/file-system.service";
+import { exec as exec_command } from 'child_process';
+import { Yarn } from './package_managers/Yarn';
+import { NPM } from './package_managers/NPM';
+import { PNPM } from './package_managers/PNPM';
+import type { ExecOptions } from 'node:child_process';
 
 export const NodePackageManagers = {
-  'yarn': {
-    install: 'yarn',
-    update: 'yarn update'
-  },
-  'npm': {
-    install: 'npm i',
-    update: 'npm update'
-  },
-  'pnpm': {
-    install: 'pnpm install',
-    update: 'pnpm update'
-  },
+  'yarn': Yarn,
+  'npm': NPM,
+  'pnpm': PNPM,
 } as const;
 
 async function createProjectManifest(
@@ -102,42 +97,46 @@ export async function installProjectDependencies(
   project_root: string
 ) {
   let startTime = performance.now();
-
-  let runPackageManager = exec(
-    NodePackageManagers[manager].install,
-    { windowsHide: true, cwd: project_root },
-    (err, output, errOutput) => {
-      if (err != null)
-        console.log(
-          'Callback from package manager with Error!',
-          '\nERROR: ', err,
-          '\n[STDOUT]: ', output,
-          '\n[STDERR]: ', errOutput
-        );
-    }
-  );
-
-  let errorBuffer = "";
   let outputBuffer = "";
-  runPackageManager.stdout.on("data", (data) => {
-    outputBuffer += String(data);
-  });
-  runPackageManager.stderr.on("data", (data) => {
-    errorBuffer += String(data);
+  const PackageManager = NodePackageManagers[manager];
+  return exec(
+    PackageManager.install_dependencies,
+    { windowsHide: true, cwd: project_root },
+  ).then(output => {
+    outputBuffer += "> Run package manager 'install':\n" + output;
+    return exec(
+      PackageManager.install_clerk,
+      { windowsHide: true, cwd: project_root }
+    )
+  }).then(output => {
+    outputBuffer += "> Install 'clerk' package:\n" + output;
+    return exec(
+      PackageManager.install_maestro,
+      { windowsHide: true, cwd: project_root }
+    )
+  }).then(output => {
+    outputBuffer += "> Install 'maestro' package:\n" + output;
+    let endTime = performance.now();
+    return Promise.resolve(
+      `All dependencies were installed sucessfully in ${((endTime - startTime)/1000).toFixed(4)}s\nOutput:\n${outputBuffer}`
+    );
+  }).catch(([err, errOutput]) => {
+    return Promise.reject(
+      `Package Manager failed ot install dependencies!"${err.message}"\nSTDERR output: ${errOutput}`
+    );
   });
 
-  return new Promise((resolve, reject) => {
-    runPackageManager.on("exit", (code, signal) => {
-      if (code === 0) {
-        let endTime = performance.now();
-        resolve(`All dependencies were installed sucessfully in ${(endTime - startTime)}ms\nOutput:\n${outputBuffer}`);
-      } else {
-        reject(
-          `Package Manager failed ot install dependencies and resolved with code: "${code}"\nSTDERR output: ${errorBuffer}`
-        );
+}
+
+async function exec(command: string, options: ExecOptions = {}): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    exec_command(command, options, (err, output, errorOutput) => {
+      if (err != null) {
+        reject([err, errorOutput]);
       }
+      resolve(output);
     });
-  });
+  })
 
 }
 

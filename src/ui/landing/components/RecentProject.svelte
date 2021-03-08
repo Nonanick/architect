@@ -49,7 +49,7 @@
         }}
         on:click={() => {
           $OpenProject = projectInfo;
-          if (projectInfo.name != "") AppRouter.navigateTo("open-project");
+          if (projectInfo.name != "") AppRouter.navigateTo("project-explorer");
         }}
       />
     </div>

@@ -1,8 +1,9 @@
 import { Entity } from "clerk";
 import { Controller, Resolver, Route } from "maestro";
-import type { ProjectDTO } from "../../../../lib/project/new_project.interface";
-import { ProjectEntity } from "../../../data/entities";
-import { storage } from "../../../data/store/ElectronStore";
+import type { ProjectDTO } from "../../../lib/project/new_project.interface";
+import { ProjectEntity } from "../../data/entities";
+import { storage } from "../../data/store/ElectronStore";
+import TrackedProjectSchemas from "./tracked_projects.schema";
 
 export class TrackedProjectsController extends Controller {
 
@@ -13,39 +14,21 @@ export class TrackedProjectsController extends Controller {
   @Route({
     url: "",
     methods: "post",
-    schema: {
-      body: {
-        type: "object",
-        required: ["name", "title", "root"],
-        properties: {
-          name: { type: "string" },
-          title: { type: "string" },
-          root: { type: "string" },
-          metadata_root: { type: "string" },
-          icon: { type: "string" },
-          version: { type: "string" },
-          author: { type: "string" },
-        },
-        additionalProperties: false,
-      },
-    },
+    schema: TrackedProjectSchemas.AddTrackedProject,
   })
   public addTrackedProject: Resolver = async (req) => {
-    let model = Entity.instance(ProjectEntity).model<
-      ProjectDTO
-    >();
-    model.$set(
-      req.get(
-        ["name", "title", "root", "metadata_root", "icon", "version", "author"],
-      ),
-    );
+
+    let model = Entity.instance(ProjectEntity).model<ProjectDTO>();
+
+    model.$set(req.get(
+      ["name", "title", "root", "metadata_root", "icon", "version", "author"],
+    ));
 
     let values = await model.$commit(true);
 
     if (values instanceof Error) {
       return values;
     }
-
 
     let projects: any[] = storage("projects").get("tracked") as any[] ?? [];
     projects.push(values);

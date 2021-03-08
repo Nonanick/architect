@@ -1,4 +1,4 @@
-import { FileSystem } from "../../../../server/services/file-system/file-system.service";
+import { FileSystem } from "../../../../lib/file_system/file-system.service";
 import type { FileSystem as FSInterface } from "../../interfaces/file_system/file_system.service";
 import { ipcRenderer, IpcRendererEvent, OpenDialogReturnValue, shell } from "electron";
 import { nanoid } from "nanoid";

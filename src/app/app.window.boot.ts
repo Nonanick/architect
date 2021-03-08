@@ -15,6 +15,7 @@ export function bootWindow(): BrowserWindow {
     height: 400,
     show: false,
     autoHideMenuBar: true,
+    darkTheme : true,
     icon: path.join(ArchitectPublicPath, "img", "favicon.png"),
 
     webPreferences: {

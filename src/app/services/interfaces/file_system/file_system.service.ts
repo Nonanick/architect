@@ -1,4 +1,5 @@
-import type { Dir, Dirent } from "fs";
+import type { Dirent } from "fs";
+import type { FolderTracker } from './folder_tracker.interface';
 
 export interface FileSystem {
   folderInfo(path: string): Promise<Dirent[] | undefined>;
@@ -8,4 +9,5 @@ export interface FileSystem {
   joinPath(...paths: string[]): string;
   resolvePath(...paths: string[]): string;
   fileExists(path : string) : Promise<boolean>;
+  trackFolder(path : string) : Promise<FolderTracker>;
 }

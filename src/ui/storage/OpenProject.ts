@@ -2,6 +2,9 @@ import { writable, Writable } from 'svelte/store';
 import type { ProjectDTO } from '../../lib/project/new_project.interface';
 import ModalWindows from './ModalWindows';
 import PickAProject from '../project/PickAProject.svelte';
+import type { FolderTracker } from '../../app/services/interfaces/file_system/folder_tracker.interface';
+
+export let OpenProjectTracker : FolderTracker | undefined;
 
 export const OpenProject: Writable<undefined | ProjectDTO> = writable<ProjectDTO | undefined>(
   undefined,
@@ -23,10 +26,27 @@ export const OpenProject: Writable<undefined | ProjectDTO> = writable<ProjectDTO
   }
 );
 
-OpenProject.subscribe((newValue) => {
-  if (newValue != null)
+OpenProject.subscribe(async (newValue) => {
+  if (newValue != null) { 
+    await initializeTrackerToProject(newValue);
     sessionStorage.setItem('open-project', JSON.stringify(newValue));
+  }
 });
+
+
+async function initializeTrackerToProject(project : ProjectDTO) {
+  if(OpenProjectTracker != null) {
+    await OpenProjectTracker.stop();
+  }
+
+  OpenProjectTracker = await window.architect.FileSystem.trackFolder(project.root);
+
+  OpenProjectTracker.on("all",(ev , path) => {
+    console.log("Tracker reported event", ev, "on", path);
+  });
+  
+  console.log("New Open project, tracking file changes!");
+}
 
 
 export default {

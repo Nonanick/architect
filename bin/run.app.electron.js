@@ -52,7 +52,7 @@ function WatchForChanges() {
 
   for (let subpath of ["app", "lib"]) {
     let p = path.resolve(
-      __dirname, '..', 'src', subpath
+      __dirname, '..', 'src', subpath, '**/*'
     );
     chokidar
       .watch(p, {

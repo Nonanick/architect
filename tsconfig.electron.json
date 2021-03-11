@@ -14,7 +14,7 @@
     "baseUrl": "./",
     "experimentalDecorators": true,
     "paths": {
-      "@architect/*" : ["src/lib/architect/typings/*"]
+      "@architect/*" : ["./src/lib/architect/typings/*"]
     }
   },
   "include": [

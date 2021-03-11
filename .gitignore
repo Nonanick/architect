@@ -4,6 +4,7 @@
 .DS_Store
 package-lock.json
 yarn.lock
+pnpm-lock.yaml
 
 
 # All other files inside src folder are just built files

@@ -29,6 +29,12 @@ const AnalyzeFilesFromProjectSource : RouteSchema = {
     properties : {
       src : {
         type : 'string'
+      },
+      categories : {
+        type :'array',
+        items : {
+          type : 'string'
+        }
       }
     },
     additionalProperties : false

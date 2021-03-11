@@ -2,10 +2,27 @@
   import SvgImage from "../../../components/SVGImage.svelte";
   import { AppRouter } from "../../../router/AppRouter";
   import { OpenProject } from "../../../storage/OpenProject";
-
+  import type { IEntity } from "@architect/entity";
   import NavigationItem from "./NavigationItem.svelte";
 
   let searchInput: HTMLInputElement;
+
+  let projectEntities: IEntity[] = [];
+
+  $: {
+    if ($OpenProject != null) {
+      architect.Server.post("project/analyze/files", {
+        src: $OpenProject.root,
+        categories : ["entity"]
+      })
+        .then((analysis) => {
+          console.log("Analyzer response =>", analysis);
+        })
+        .catch((err) => {
+          console.error("Failed to analyze files form open project!", err);
+        });
+    }
+  }
 </script>
 
 <style>
@@ -87,6 +104,13 @@
       title="entities"
       collapsed={true}
       children={[
+        ...projectEntities.map((entity) => ({
+          icon: entity.icon ?? "/img/icons/sphere.geometry.svg",
+          title: entity.title,
+          onClick: () => {
+            console.log("Clicked", entity);
+          },
+        })),
         {
           icon: "/img/icons/add.svg",
           title: "add entity",

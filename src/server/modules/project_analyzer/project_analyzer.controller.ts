@@ -1,8 +1,5 @@
-import { Entity } from "clerk";
-import { promises as fs } from 'fs';
 import { Controller, Resolver, Route } from "maestro";
 import path from 'path';
-import { ProjectEntity } from "../../data/entities";
 import AnalyzerSchemas from "./project_analyzer.schemas";
 import AnalyzerService from './project_analyzer.service';
 
@@ -35,7 +32,7 @@ export class ProjectAnalyzerController extends Controller {
     schema: AnalyzerSchemas.AnalyzeFilesFromProjectSource
   })
   public analyzeFilesFromProjectSource : Resolver = async (req) => {
-    return AnalyzerService.CategoryzeFilesInProject(req.get("src"));
+    return AnalyzerService.CategoryzeFilesInProject(req.get("src"), req.get("categories"));
   }
 
 }

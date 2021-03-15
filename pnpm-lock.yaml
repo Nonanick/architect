@@ -99,8 +99,7 @@ packages:
       global-agent: 2.1.12
       global-tunnel-ng: 2.7.1
     resolution:
-<<<<<<< HEAD
-      integrity: sha512-NFwSnVZQK7dhOYF1NQCt+HGqgL1aNdj0LUSx75uCqnZJqyiWCVdAMFV4b4/kC8HjUJAnsvdSEmjEt4G2qNQ9+Q==
+      integrity: sha512-6nr9DbJPUR9Xujw6zD3y+rS95TyItEVM0NVjt1EehY2vUWfIgPiIPVHxCvaTS0xr2B+DRxovYVKbuOWqC35kjg==
   /@nodelib/fs.scandir/2.1.4:
     dependencies:
       '@nodelib/fs.stat': 2.0.4
@@ -125,9 +124,6 @@ packages:
       node: '>= 8'
     resolution:
       integrity: sha512-8Broas6vTtW4GIXTAHDoE32hnN2M5ykgCpWGbuXHQ15vEMqr23pB76e/GZcYsZCHALv50ktd24qhEyKr6wBtow==
-=======
-      integrity: sha512-6nr9DbJPUR9Xujw6zD3y+rS95TyItEVM0NVjt1EehY2vUWfIgPiIPVHxCvaTS0xr2B+DRxovYVKbuOWqC35kjg==
->>>>>>> 02a63ec488e44106c12de9942b3dfc9ded5da151
   /@polka/url/1.0.0-next.11:
     dev: true
     resolution:
@@ -1310,7 +1306,6 @@ packages:
     dev: true
     resolution:
       integrity: sha512-abv/qOcuPfk3URPfDzmZU1LKmuw8kT+0nIHvKrKgFrwifol/doWcdA4ZqsWQ8ENrFKkd67Mfpo/LovbIUsbt3w==
-<<<<<<< HEAD
   /merge2/1.4.1:
     dev: false
     engines:
@@ -1326,10 +1321,7 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-y7FpHSbMUMoyPbYUSzO6PaZ6FyRnQOpHuKwbo1G+Knck95XVU4QAiKdGEnj5wwoS7PlOgthX/09u5iFJ+aYf5Q==
-  /mime/2.5.0:
-=======
   /mime/2.5.2:
->>>>>>> 02a63ec488e44106c12de9942b3dfc9ded5da151
     dev: true
     engines:
       node: '>=4.0.0'
@@ -2330,12 +2322,6 @@ specifiers:
   svelte: ^3.35.0
   svelte-check: ^1.2.3
   svelte-preprocess: ^4.6.9
-<<<<<<< HEAD
-  tslib: ^2.0.0
-  typescript: ^4.2.3
-  v8-compile-cache: ^2.2.0
-=======
   tslib: ^2.1.0
   typescript: ^4.2.3
   v8-compile-cache: ^2.3.0
->>>>>>> 02a63ec488e44106c12de9942b3dfc9ded5da151

@@ -1,6 +1,7 @@
 import type { IPropertyValidation } from '@architect/property/validation/IPropertyValidation'
 
 const ValidationDefinition = (checkAgainsArray: any[]) => {
+  
   const generated : IPropertyValidation = {
     name : 'in_array',
     title : 'Check if value is inside array',

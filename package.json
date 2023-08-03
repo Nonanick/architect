@@ -48,7 +48,7 @@
     "esm": "^3.2.25",
     "fast-glob": "^3.2.5",
     "highlight.js": "^10.6.0",
-    "nanoid": "^3.1.20",
+    "nanoid": "^3.1.31",
     "path-to-regexp": "^6.2.0",
     "v8-compile-cache": "^2.3.0"
   },
